@@ -1,0 +1,343 @@
+﻿.message {
+    text-align: right;
+    color: red;
+    font-size: 14px;
+    margin: 2px 6px;
+    animation-name: myAnimation;
+    animation-duration: 10000ms;
+    animation-fill-mode: forwards;
+}
+
+.input-box.button {
+    color: #fff;
+    letter-spacing: 1px;
+    border: none;
+    background: #FF6600;
+    cursor: pointer;
+}
+
+    .input-box.button:hover {
+        background: #0e4bf1;
+    }
+
+.link-filter {
+    color: #fff;
+    letter-spacing: 1px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+    .link-filter:hover {
+        background: #FF6600;
+    }
+
+.modal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: block;
+    background: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    width: 100%;
+    transform: scale(0);
+    transition-duration: 0s;
+    z-index: 99;
+    display: flex;
+}
+
+.modal-confirmation {
+    position: fixed;
+    display: none;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    animation: fadeIn linear 0.5s;
+    z-index: 99;
+}
+
+.modal-content {
+    margin: auto;
+    animation: growth linear 0.2s;
+}
+
+    .modal-content.modal-content-confirmation {
+        min-width: 400px;
+        border-left: 5px solid #ffb702;
+        color: #ffb702;
+        top: -20px;
+        animation: slideInBottom linear 0.2s;
+        border-radius: 6px;
+    }
+
+.modal-content-confirmation .modal-content {
+    border: 0;
+}
+
+.modal-confirm-content-title {
+    font-size: 1.4rem;
+}
+
+.modal-body p {
+    color: black;
+    margin: 0;
+}
+
+
+#insert-modal {
+    margin: auto;
+    width: 60%;
+    padding: 15px 35px 15px 35px;
+    background: #fff;
+    transform: scale(0);
+    transition-duration: 0.4s;
+    z-index: 99;
+    border-radius: 5px;
+    box-shadow: 0px 0px 1px 1px #ccc;
+}
+
+#more-modal {
+    margin: auto;
+    width: 40%;
+    padding: 15px 35px 15px 35px;
+    background: #fff;
+    transform: scale(0);
+    transition-duration: 0.4s;
+    z-index: 99;
+    border-radius: 5px;
+    box-shadow: 0px 0px 1px 1px #ccc;
+}
+
+#upload-products-modal {
+    margin: auto;
+    width: 40%;
+    padding: 15px 35px 15px 35px;
+    background: #fff;
+    transform: scale(0);
+    transition-duration: 0.4s;
+    z-index: 99;
+    border-radius: 5px;
+    box-shadow: 0px 0px 1px 1px #ccc;
+}
+
+#update-modal {
+    margin: auto;
+    width: 60%;
+    display: block;
+    padding: 15px 35px 15px 35px;
+    background: #fff;
+    transform: scale(0);
+    transition-duration: 0.4s;
+    z-index: 99;
+    border-radius: 5px;
+    box-shadow: 0px 0px 1px 1px #ccc;
+}
+
+.active {
+    z-index: 3;
+}
+
+.link-paging {
+    background-color: white;
+    color: black;
+    transition: background-color 0.3s ease-in-out;
+}
+
+    .link-paging:hover {
+        background-color: #ff6533;
+        color: white;
+    }
+
+.page-item.active.link-active a {
+    background-color: #ff6533;
+    color: white;
+    border-color: #ff6533;
+}
+
+.nav-profile {
+    color: #012970;
+}
+
+    .nav-profile img {
+        max-height: 50px;
+    }
+
+    .nav-profile span {
+        font-size: 20px;
+        font-weight: 600;
+        color: black;
+    }
+
+.menuUser li {
+    list-style-type: none;
+    transition: 0.5s;
+    position: relative;
+}
+
+    .menuUser li ul {
+        position: absolute;
+        background-color: white;
+        list-style-type: none;
+        display: none;
+        text-align: center;
+        font-size: 15px;
+        width: 300px;
+        z-index: 10;
+    }
+
+    .menuUser li:hover > ul {
+        display: block;
+    }
+
+.dropdown-menu .dropdown-header,
+.dropdown-menu .dropdown-footer {
+    text-align: center;
+    padding: 10px 25px;
+}
+
+    .dropdown-menu .dropdown-header span {
+        font-size: 18px;
+    }
+
+    .dropdown-menu .dropdown-header h3 {
+        font-size: 20px;
+        color: black;
+    }
+
+    .dropdown-menu .dropdown-footer a {
+        color: #444444;
+        text-decoration: underline;
+    }
+
+        .dropdown-menu .dropdown-footer a:hover {
+            text-decoration: none;
+        }
+
+.dropdown-menu .dropdown-divider {
+    color: #a5c5fe;
+    margin: 0;
+}
+
+.dropdown-menu .dropdown-item {
+    font-size: 18px;
+    color: black;
+    padding: 10px;
+    transition: 0.3s;
+}
+
+    .dropdown-menu .dropdown-item i {
+        margin-right: 10px;
+        font-size: 18px;
+        line-height: 0;
+    }
+
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #FF9966;
+    }
+
+.eyebutton {
+    background-color: transparent;
+    border-left: 0;
+    cursor:pointer;
+    position:absolute;
+    right:2px;
+    top:2px;
+    z-index:99;
+    height:90%;
+    border:0;
+}   
+
+@keyframes growth {
+    from {
+        scale: 0;
+    }
+
+    to {
+        scale: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInBottom {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.menu li {
+    list-style-type: none;
+    transition: 0.5s;
+    position: relative;
+    padding: 0;
+    margin: 0;
+}
+
+    .menu li ul {
+        position: absolute;
+        background-color: white;
+        list-style-type: none;
+        display: none;
+        /*text-align: center;*/
+        font-size: 15px;
+        width: 300px;
+        padding: 0;
+        margin: 0;
+        z-index: 10;
+        left: 0;
+        top: 70px;
+        text-align: left;
+        border-radius: 2px;
+        border: 1px solid #f6f9ff;
+        background-color: white;
+    }
+
+    .menu li:hover > ul {
+        display: block;
+    }
+
+.menu ul li {
+    width: 100%;
+    padding: 20px;
+    margin-right: 10px;
+    font-size: 18px;
+    line-height: 0;
+    border: 1px solid #f6f9ff;
+}
+
+    .menu ul li a {
+        text-decoration: none;
+        color: black;
+        padding-top:10px;
+        padding-bottom:10px;
+        padding-left:10px;
+        padding-right:100px;
+    }
+
+    .menu ul li:hover {
+        background-color: #FF9966;
+    }
+
+.lable-navbar {
+    padding: 20px;
+    font-size: 20px;
+}
+
+    .lable-navbar:hover {
+        color: #ff6533;
+    }

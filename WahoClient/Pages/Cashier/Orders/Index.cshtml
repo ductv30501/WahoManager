@@ -1,0 +1,102 @@
+﻿@page
+@model WahoClient.Pages.Cashier.Orders.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].OderState)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Region)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Cod)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].OrderDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].EstimatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Total)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Deposit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Active)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Shipper)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].UserNameNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Oder[0].Waho)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Oder) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OderState)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Region)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EstimatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Total)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Deposit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.CustomerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Shipper.ShipperId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserNameNavigation.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Waho.WahoId)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.OderId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.OderId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.OderId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

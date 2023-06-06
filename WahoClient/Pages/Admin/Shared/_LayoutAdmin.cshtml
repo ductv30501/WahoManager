@@ -1,0 +1,224 @@
+﻿@using BusinessObjects.WahoModels;
+@using Microsoft.AspNetCore.Http
+@using System.Text.Json
+
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var employeeJson = HttpContextAccessor.HttpContext.Session.GetString("Employee");
+    var employee = JsonSerializer.Deserialize<Employee>(employeeJson);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Waho</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/WahoClient.styles.css" asp-append-version="true" />
+    <link href="~/css/styles.css" rel="stylesheet" />
+    <link href="~/css/modal.css" rel="stylesheet" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-page="/Admin/Index">
+                    <div class="d-flex">
+                        <h2 class="mx-auto d-flex align-items-center">
+                            <img src="~/img/wahologo.png" width="60px" height="60px" />Wa<span class="primary-color">Ho</span>
+                        </h2>
+                    </div>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <div class="d-flex">
+                        <ul class="menu">
+                            <li>
+                                <div class="lable-navbar">
+                                    <span class="d-none d-md-block"><i class="bi bi-people-fill"></i> Admin</span>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <a asp-page="/Admin/Customers/Index">
+                                            <i class="bi bi-people-fill"></i> Khách Hàng
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a asp-page="/Admin/Employees/Index">
+                                            <i class="bi bi-person-fill-gear"></i> Nhân Viên
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a asp-page="/Admin/Suppliers/Index">
+                                            <i class="bi bi-person-lines-fill"></i> Nhà Cung Cấp
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="menu">
+                            <li>
+                                <div class="lable-navbar">
+                                    <span class="d-none d-md-block"><i class="bi bi-box-seam-fill"></i> Sản phẩm </span>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <a asp-page="/WarehouseStaff/Products/Index">
+                                            <i class="bi bi-box-seam-fill"></i> Sản phẩm
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a asp-page="/WarehouseStaff/InventorySheetManager/Index">
+                                            <i class="bi bi-box2-fill"></i> Kiểm Kho
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <ul class="menu">
+                            <li>
+                                <div class="lable-navbar">
+                                    <span class="d-none d-md-block"><i class="bi bi-receipt-cutoff"></i> Thu ngân</span>
+                                </div>
+                                <ul>
+                                    <li>
+                                        <a asp-page="/Cashier/Bills/Index">
+                                            <i class="bi bi-receipt-cutoff"></i> Hóa Đơn
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a asp-page="/Cashier/Orders/Index">
+                                            <i class="bi bi-truck"></i> Vận Đơn
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a asp-page="/Cashier/ReturnOrders/Index">
+                                            <i class="bi bi-receipt"></i> Hoàn Đơn
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <ul class="menuUser">
+                        <li>
+                            <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#">
+                                <img src="~/img/profile-img.jpg" alt="Profile" class="rounded-circle">
+                                <span class="d-none d-md-block dropdown-toggle ps-2">@employee.EmployeeName</span>
+                            </a><!-- End Profile Iamge Icon -->
+
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">
+                                    <h3>@employee.EmployeeName</h3>
+                                    @if (employee.Role == 1)
+                                    {
+                                        <span>Admin</span>
+                                    }
+                                    else
+                                    {
+                                        @if (employee.Role == 2)
+                                        {
+                                            <span>Thu ngân</span>
+                                        }
+                                        else
+                                        {
+                                            <span>Nhân viên kho</span>
+                                        }
+                                    }
+
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-page="/UserProfile/UserProfile" asp-route-userName="@employee.UserName">
+                                        <i class="bi bi-person"></i>
+                                        <span>Thông tin cá nhân</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-page="/ChangePassword">
+                                        <i class="bi bi-gear"></i>
+                                        <span>Đổi mật khẩu</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" href="#">
+                                        <i class="bi bi-question-circle"></i>
+                                        <span>Trợ giúp?</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex align-items-center" asp-page="/LogOut">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        <span>Đăng xuất</span>
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container-fluid bg-dark text-white border-top py-2 px-sm-3 px-md-5">
+            <div class="row">
+                <div class="col-lg-6 text-center text-md-left mb-3 mb-md-0">
+                    <p class="m-0 text-white">
+                        &copy; <a href="#">Bản quyền thuộc về Waho</a>. Thiết kế bởi <a href="#">Waho</a>
+                    </p>
+                </div>
+                <div class="col-lg-6 text-center text-md-right">
+                    <ul class="nav d-inline-flex">
+                        <li class="nav-item">
+                            <a class="nav-link text-white py-0" href="#"><p>Chính Sách Và Điều Khoản</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white py-0" href="#"><p>Câu Hỏi</p></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-white py-0" href="#"><p>Trợ Giúp</p></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

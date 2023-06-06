@@ -1,0 +1,420 @@
+﻿:root {
+    --primary: #ff6533;
+    --primary-active: #FF9966;
+}
+
+select option:hover {
+    background-color: var(--primary-active);
+}
+
+.hr {
+    height: 1px;
+    background-color: gray;
+}
+
+.nav-item p {
+    margin: 0;
+}
+
+.nav-item:hover p {
+    color: var(--primary-active);
+}
+
+.nav-item:hover {
+    border-bottom: 2px solid var(--primary-active);
+}
+
+.primary-color {
+    color: var(--primary);
+}
+
+
+.btn-primary {
+    background-color: var(--primary);
+    border: solid 2px var(--primary);
+    outline: none;
+}
+
+    .btn-primary:hover {
+        background-color: var(--primary-active);
+        border: solid 2px var(--primary-active);
+    }
+
+    .btn-primary:focus {
+        background-color: var(--primary-active);
+        border: solid 2px var(--primary-active);
+        box-shadow: 0 0 8px var(--primary-active);
+    }
+
+    .btn-primary:active {
+        background-color: var(--primary-active);
+        border: solid 2px var(--primary-active);
+        box-shadow: 0 0 8px var(--primary-active);
+    }
+
+
+.btn-outline-primary {
+    color: var(--primary);
+    border: solid 2px var(--primary);
+}
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-active);
+        border: solid 2px var(--primary-active);
+    }
+
+    .btn-outline-primary:focus {
+        background-color: var(--primary-active);
+        border: solid 2px var(--primary-active);
+        box-shadow: 0 0 8px var(--primary-active);
+    }
+
+    .btn-outline-primary:active {
+        background-color: var(--primary-active);
+        border: solid 2px var(--primary-active);
+        box-shadow: 0 0 8px var(--primary-active);
+    }
+
+.span-input-primary {
+    background-color: var(--primary);
+    border: solid 2px var(--primary);
+    color: white;
+}
+
+.bg-waho {
+    background-image: url('../img/background.png');
+    background-size: cover;
+    min-height: 100vh;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border: solid 0.8px var(--primary-active);
+}
+
+.form-check-input:focus {
+    background-color: var(--primary);
+    box-shadow: 0 0 8px var(--primary-active);
+    border: solid 0.8px var(--primary-active);
+}
+
+.bg-waho-white {
+    background-color: #f2f2f2;
+}
+
+.form-container {
+    background-color: white;
+    border-radius: 5px;
+}
+a {
+    text-decoration: none;
+    color: black;
+}
+
+    a:hover {
+        color: var(--primary-active)
+    }
+
+.login-container {
+    margin-top: 140px;
+}
+
+.access-denied {
+    margin-top: 55px;
+}
+
+.reg-container {
+    margin-top: 40px;
+}
+
+.vertical {
+    opacity: 0.3;
+}
+
+
+.form-control:focus {
+    box-shadow: 0 0 8px var(--primary-active);
+    border-color: var(--primary-active);
+}
+
+.form-select:focus {
+    box-shadow: 0 0 8px var(--primary-active);
+    border-color: var(--primary-active);
+}
+
+#EpassInput {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+
+#password {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+#newPassword {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+
+.wt-widgettitle {
+    margin-bottom: 10px;
+    padding-bottom: 17px;
+    font-weight: 700;
+    font-size: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+    .wt-widgettitle h2 {
+        margin: 0;
+        display: block;
+        font-weight: 400;
+        font-size: 15px;
+        line-height: 18px;
+    }
+
+.wt-widgetcontent {
+    float: left;
+    width: 100%;
+}
+
+.wt-categoriescontent {
+    float: left;
+    width: 100%;
+    list-style: none;
+    line-height: 14px;
+}
+
+    .wt-categoriescontent label {
+        float: left;
+        width: 100%;
+        line-height: inherit;
+        list-style-type: none;
+        margin-top: 20px;
+    }
+
+    .wt-categoriescontent input {
+        float: left;
+        width: 100%;
+        line-height: inherit;
+        list-style-type: none;
+        border-width: 0px;
+        border-bottom-width: 1px;
+        margin-top: 10px;
+        padding: 5px 10px 5px 10px;
+    }
+
+        .wt-categoriescontent input:hover {
+            float: left;
+            width: 100%;
+            line-height: inherit;
+            list-style-type: none;
+            border-width: 0px;
+            border-bottom-width: 1px;
+            margin-top: 10px;
+            padding: 5px 10px 5px 10px;
+            border-color: #FF6600;
+        }
+
+    .wt-categoriescontent div {
+        float: left;
+        width: 100%;
+        line-height: inherit;
+        list-style-type: none;
+        border-width: 0px;
+        border-bottom-width: 1px;
+        margin-top: 10px;
+        padding: 5px 10px 5px 10px;
+    }
+
+.icon-table {
+    font-size: 20px;
+}
+
+    .icon-table:hover {
+        cursor: pointer;
+        opacity: 0.5;
+    }
+
+.input-table {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 2px solid #ced4da;
+    border-radius: unset;
+    background-color: transparent;
+    text-align: center;
+}
+
+    .input-table:focus {
+        background-color: transparent;
+        box-shadow: none;
+        border-color: var(--primary-active)
+    }
+
+.input-table-payed {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+    border-bottom: 2px solid #ced4da;
+    border-radius: unset;
+    background-color: transparent;
+    text-align: right;
+    font-size: 20px;
+    font-weight: 500;
+    max-width: 200px;
+}
+
+    .input-table-payed:focus {
+        background-color: transparent;
+        box-shadow: none;
+        border-color: var(--primary-active)
+    }
+
+    .input-table-payed::-webkit-inner-spin-button {
+        height: 0px;
+        width: 0px;
+    }
+
+
+
+.icon-edit {
+    color: orange;
+}
+
+.icon-delete {
+    color: red;
+}
+
+.result-search-input {
+    position: absolute;
+    background-color: #fff;
+    border: 2px;
+    border-radius: 5px;
+    right: 0;
+    width: 100%;
+    top: 100%;
+    list-style: none;
+    cursor: pointer;
+    box-shadow: 0px 5px 10px rgb(169, 169, 169);
+    z-index: 1;
+    overflow: hidden;
+    padding-left: 0;
+}
+
+.result-search-items {
+    padding-left: 10px;
+    border-radius: 3px;
+    border-bottom: 1px solid #ced4da;
+    padding-bottom: 10px;
+}
+
+    .result-search-items:hover {
+        background-color: var(--primary);
+        opacity: 0.7;
+        color: white;
+    }
+
+    .result-search-items:active {
+        background-color: var(--primary-active);
+        opacity: 0.7;
+        color: white;
+    }
+
+.result-search-items-noresult {
+    padding-left: 10px;
+    border-radius: 3px;
+    border-bottom: 1px solid #ced4da;
+    padding-bottom: 30px;
+    padding-top: 30px;
+    line-height: 48px;
+}
+
+    .result-search-items-noresult:hover {
+        background-color: var(--primary);
+        opacity: 0.7;
+        color: white;
+    }
+
+    .result-search-items-noresult:active {
+        background-color: var(--primary-active);
+        opacity: 0.7;
+        color: white;
+    }
+
+.bill-form {
+    max-height: 400px;
+}
+
+.toast-message {
+    animation: slideInLeft 0.3s linear, fadeOut linear 1s 3s forwards;
+    top: 32px;
+    right: -8%;
+    box-shadow: 0, 5px, 8px rgba(0, 0, 0, 0.08);
+    max-width: 450px;
+    z-index: 99;
+}
+
+    .toast-message + .toast-message {
+        margin-top: 20px;
+    }
+
+.toast-mess {
+    animation: slideInLeft 0.3s linear, fadeOut linear 1s 3s forwards;
+    top: 5px;
+    right: -360px;
+    box-shadow: 0, 5px, 8px rgba(0, 0, 0, 0.08);
+    max-width: 450px;
+    z-index: 99;
+}
+
+    .toast-mess + .toast-mess {
+        margin-top: 20px;
+    }
+
+
+@keyframes slideInLeft {
+    from {
+        transform: translateX(calc(100% + 32px));
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+.scroll-table {
+    overflow-y: auto;
+}
+
+    .scroll-table::-webkit-scrollbar {
+        background-color: white;
+        width: 8px;
+        height: 10px;
+    }
+
+    .scroll-table::-webkit-scrollbar-thumb {
+        background-color: var(--primary);
+        border-radius: 10px;
+    }
+
+.toast__close {
+    color: var(--primary);
+    cursor: pointer;
+}
+
+    .toast__close:hover {
+        color: var(--primary-active)
+    }
+
+.eyebutton:hover .eye-icon {
+    color: var(--primary-active)
+}

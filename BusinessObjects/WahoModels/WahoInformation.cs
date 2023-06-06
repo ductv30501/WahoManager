@@ -19,12 +19,12 @@ namespace BusinessObjects.WahoModels
         }
 
         public int WahoId { get; set; }
-        public string WahoName { get; set; }
-        public string Address { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
+        public string? WahoName { get; set; }
+        public string? Address { get; set; }
+        public string? Phone { get; set; }
+        public string? Email { get; set; }
         public bool? Active { get; set; }
-        public int? CategoryId { get; set; }
+        public int CategoryId { get; set; }
 
         public virtual Category Category { get; set; }
         public virtual ICollection<Bill> Bills { get; set; }

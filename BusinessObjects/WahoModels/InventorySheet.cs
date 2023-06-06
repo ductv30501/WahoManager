@@ -11,10 +11,10 @@ namespace BusinessObjects.WahoModels
         }
 
         public int InventorySheetId { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public DateTime? Date { get; set; }
         public bool? Active { get; set; }
-        public int? WahoId { get; set; }
+        public int WahoId { get; set; }
         public string UserName { get; set; }
 
         public virtual Employee UserNameNavigation { get; set; }

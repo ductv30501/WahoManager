@@ -1,0 +1,85 @@
+﻿@page
+@model WahoClient.Pages.Cashier.Orders.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Oder</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Oder.OderState" class="control-label"></label>
+                <input asp-for="Oder.OderState" class="form-control" />
+                <span asp-validation-for="Oder.OderState" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.Region" class="control-label"></label>
+                <input asp-for="Oder.Region" class="form-control" />
+                <span asp-validation-for="Oder.Region" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.Cod" class="control-label"></label>
+                <input asp-for="Oder.Cod" class="form-control" />
+                <span asp-validation-for="Oder.Cod" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.OrderDate" class="control-label"></label>
+                <input asp-for="Oder.OrderDate" class="form-control" />
+                <span asp-validation-for="Oder.OrderDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.EstimatedDate" class="control-label"></label>
+                <input asp-for="Oder.EstimatedDate" class="form-control" />
+                <span asp-validation-for="Oder.EstimatedDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.Total" class="control-label"></label>
+                <input asp-for="Oder.Total" class="form-control" />
+                <span asp-validation-for="Oder.Total" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.Deposit" class="control-label"></label>
+                <input asp-for="Oder.Deposit" class="form-control" />
+                <span asp-validation-for="Oder.Deposit" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.Active" class="control-label"></label>
+                <input asp-for="Oder.Active" class="form-control" />
+                <span asp-validation-for="Oder.Active" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.UserName" class="control-label"></label>
+                <select asp-for="Oder.UserName" class ="form-control" asp-items="ViewBag.UserName"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.CustomerId" class="control-label"></label>
+                <select asp-for="Oder.CustomerId" class ="form-control" asp-items="ViewBag.CustomerId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.ShipperId" class="control-label"></label>
+                <select asp-for="Oder.ShipperId" class ="form-control" asp-items="ViewBag.ShipperId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="Oder.WahoId" class="control-label"></label>
+                <select asp-for="Oder.WahoId" class ="form-control" asp-items="ViewBag.WahoId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

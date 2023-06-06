@@ -1,0 +1,52 @@
+﻿@page
+@model WahoClient.Pages.WarehouseStaff.InventorySheetManager.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>InventorySheet</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="InventorySheet.Description" class="control-label"></label>
+                <input asp-for="InventorySheet.Description" class="form-control" />
+                <span asp-validation-for="InventorySheet.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InventorySheet.Date" class="control-label"></label>
+                <input asp-for="InventorySheet.Date" class="form-control" />
+                <span asp-validation-for="InventorySheet.Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InventorySheet.Active" class="control-label"></label>
+                <input asp-for="InventorySheet.Active" class="form-control" />
+                <span asp-validation-for="InventorySheet.Active" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="InventorySheet.WahoId" class="control-label"></label>
+                <select asp-for="InventorySheet.WahoId" class ="form-control" asp-items="ViewBag.WahoId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="InventorySheet.UserName" class="control-label"></label>
+                <select asp-for="InventorySheet.UserName" class ="form-control" asp-items="ViewBag.UserName"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

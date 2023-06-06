@@ -1,0 +1,60 @@
+﻿@page
+@model WahoClient.Pages.WarehouseStaff.InventorySheetManager.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.InventorySheet[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InventorySheet[0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InventorySheet[0].Active)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InventorySheet[0].UserNameNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InventorySheet[0].Waho)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.InventorySheet) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserNameNavigation.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Waho.WahoId)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.InventorySheetId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.InventorySheetId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.InventorySheetId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

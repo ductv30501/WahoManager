@@ -1,0 +1,90 @@
+﻿@page
+@model WahoClient.Pages.Cashier.ReturnOrders.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].Active)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].PayCustomer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].PaidCustomer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].BillId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].Customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].UserNameNavigation)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ReturnOrder[0].Waho)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.ReturnOrder) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PayCustomer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaidCustomer)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BillId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.CustomerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UserNameNavigation.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Waho.WahoId)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.ReturnOrderId">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.ReturnOrderId">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.ReturnOrderId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

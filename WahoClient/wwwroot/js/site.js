@@ -1,4 +1,7 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function modal(id, position, transform) {
+    var box = document.getElementById(id);
+    var modal = document.getElementsByClassName('modal');
+    modal[position].style.transform = transform;
+    box.style.transform = transform;
+}
 
-// Write your JavaScript code.

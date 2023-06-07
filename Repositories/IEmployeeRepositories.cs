@@ -11,5 +11,10 @@ namespace Repositories
     public interface IEmployeeRepositories
     {
         EmployeeVM GetEmployeeByUsernamePassword(string username, string password);
+        int countPagingEmployee(string textSearch, string status, string title);
+        List<Employee> getEmployeePaging(int pageIndex, int pageSize, string textSearch, string title, string status);
+        string SaveEmployee(PostEmployeeVM employeeVM);
+        Employee findEmployeeByUsername(string username);
+        string updateEmployee(PostEmployeeVM employeeVM);
     }
 }

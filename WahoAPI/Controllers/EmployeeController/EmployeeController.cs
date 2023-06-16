@@ -22,9 +22,9 @@ namespace WahoAPI.Controllers.EmployeeController
             return Ok(employee);
         }
         [HttpGet("countPagingEmployee")]
-        public ActionResult<int> countPagingEmployee(string? textSearch, string status, string title)
+        public ActionResult<int> countPagingEmployee(string? textSearch, string status, string title, int wahoId)
         {
-            var total = respository.countPagingEmployee(textSearch, status,title);
+            var total = respository.countPagingEmployee(textSearch, status,title, wahoId);
             if (total == null)
             {
                 return NotFound();
@@ -32,9 +32,9 @@ namespace WahoAPI.Controllers.EmployeeController
             return Ok(total);
         }
         [HttpGet("getEmployeePaging")]
-        public ActionResult<List<Employee>> getEmployeePaging(int pageIndex, int pageSize, string? textSearch, string title, string status)
+        public ActionResult<List<Employee>> getEmployeePaging(int pageIndex, int pageSize, string? textSearch, string title, string status, int wahoId)
         {
-            var employees = respository.getEmployeePaging(pageIndex, pageSize, textSearch, title, status);
+            var employees = respository.getEmployeePaging(pageIndex, pageSize, textSearch, title, status, wahoId);
             if (employees == null || employees.Count == 0)
             {
                 return NotFound();
@@ -48,9 +48,19 @@ namespace WahoAPI.Controllers.EmployeeController
             return Ok(message);
         }
         [HttpGet("username")]
-        public ActionResult<Employee> findEmployeeByUsername(string username)
+        public ActionResult<Employee> findEmployeeByUsername(string username, int wahoId)
         {
-            Employee employee = respository.findEmployeeByUsername(username);
+            Employee employee = respository.findEmployeeByUsername(username, wahoId);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return Ok(employee);
+        }
+        [HttpGet("usernameAllWaho")]
+        public ActionResult<Employee> findEmployeeByUsernameAll(string username)
+        {
+            Employee employee = respository.findEmployeeByUsernameAll(username);
             if (employee == null)
             {
                 return NotFound();

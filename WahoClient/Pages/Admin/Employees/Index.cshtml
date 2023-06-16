@@ -1,6 +1,14 @@
 ﻿@page
 @model WahoClient.Pages.Admin.Employees.IndexModel
+@using System.Text.Json
+@using BusinessObjects.WahoModels;
 
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var employeeJson = HttpContextAccessor.HttpContext.Session.GetString("Employee");
+    var employee = JsonSerializer.Deserialize<Employee>(employeeJson);
+}
 @{
     ViewData["Title"] = "Index";
 }
@@ -349,7 +357,7 @@
                                                 <td>Chưa kích hoạt</td>
                                             }
                                             <td class="d-flex align-items-center justify-content-between">
-                                                <a onclick="getEmployeeDetail('@(item.UserName)')">
+                                                <a onclick="getEmployeeDetail('@(item.UserName)', @employee.WahoId)">
                                                     <i class="bi bi-pencil-square icon-table icon-edit"></i>
                                                 </a>
                                                 <h6 class="m-0 vertical">|</h6>
@@ -392,7 +400,9 @@
                     }
                     else
                     {
-                        <div class="text-center">Không có nhân viên nào phù hợp</div>
+                        <div class="flex-grow-1 d-flex align-items-center form-container">
+                            <h5 class="m-auto">Không có nhân viên nào nào phù hợp</h5>
+                        </div>
                     }
                 </div>
             </form>
@@ -402,11 +412,11 @@
 <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script>
     // supplier details
-    function getEmployeeDetail(userName) {
+    function getEmployeeDetail(userName, wahoId) {
         $.ajax({
             url: "https://localhost:7019/waho/Employee/username",
             type: "GET",
-            data: { userName: userName },
+            data: { userName: userName, wahoId : wahoId},
             success: function (data) {
                 // Gán dữ liệu vào các trường của form
                 $("#userName").val(data.userName);

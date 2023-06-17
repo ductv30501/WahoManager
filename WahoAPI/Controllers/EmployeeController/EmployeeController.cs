@@ -42,7 +42,7 @@ namespace WahoAPI.Controllers.EmployeeController
             return Ok(employees);
         }
         [HttpPost]
-        public IActionResult PostOrder(PostEmployeeVM pe)
+        public IActionResult PostEmployee(PostEmployeeVM pe)
         {
             string message = respository.SaveEmployee(pe);
             return Ok(message);

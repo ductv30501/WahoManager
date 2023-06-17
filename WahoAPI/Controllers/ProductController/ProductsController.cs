@@ -1,7 +1,10 @@
 ﻿using BusinessObjects.WahoModels;
+using DataAccess;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.ProductRepository;
+using ViewModels.EmployeeViewModels;
+using ViewModels.ProductViewModels;
 
 namespace WahoAPI.Controllers.ProductController
 {
@@ -60,5 +63,52 @@ namespace WahoAPI.Controllers.ProductController
             }
             return Ok(products);
         }
+        [HttpPost]
+        public IActionResult PostProduct(ProductViewModel pvm)
+        {
+            respository.SaveProduct(pvm);
+            return Ok();
+        }
+        [HttpPut]
+        public IActionResult PutProduct(ProductViewModel pvm)
+        {
+            respository.UpdateProduct(pvm);
+            return Ok();
+        }
+        [HttpGet("productId")]
+        public ActionResult<Product> GetProductById(int productId)
+        {
+            Product product = respository.GetProductById(productId);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            return Ok(product);
+        }
+        [HttpGet("wahoId")]
+        public ActionResult<List<Product>> GetProductsByWahoId(int wahoId)
+        {
+            List<Product> products = respository.GetProductsByWahoId(wahoId);
+            if (products == null)
+            {
+                return NotFound();
+            }
+            return Ok(products);
+        }
+        [HttpPost("addproducts")]
+        public IActionResult AddProducts([FromBody] List<ProductViewModel> products)
+        {
+            try
+            {
+                respository.AddListProduct(products);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi và trả về mã lỗi hoặc thông báo lỗi phù hợp
+                return StatusCode(500, "An error occurred while adding products: " + ex.Message);
+            }
+        }
+
     }
 }

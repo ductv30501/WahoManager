@@ -33,26 +33,27 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
-                        <label class="labels">Giá tại cửa hàng</label>
-                        <input name="unitInStock" type="number" min="1000" class="form-control input" placeholder="Nhập giá tại cửa hàng" required />
-                    </div>
-                    <div class="col-md-6">
                         <label class="labels">Thương hiệu</label>
                         <input name="trademark" type="text" class="form-control input" placeholder="Nhập tên thương hiệu" required />
                     </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="labels">Số lượng</label><br />
                         <input name="quantity" type="number" min="1" class="form-control input" placeholder="Vị trí" required />
                     </div>
-                    <div class="col-md-4">
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
                         <label class="labels">Trọng lượng</label>
                         <input name="weight" type="number" min="1" class="form-control input" placeholder="Trọng lượng" />
                     </div>
-                    <div class="col-md-4">
-                        <label class="labels">Vị trí</label><br />
-                        <input name="location" type="text" class="form-control input" placeholder="Vị trí" required />
+                    <div class="col-md-6">
+                        <label class="labels">Vị trí</label>
+                        <select name="location" class="form-select input" aria-label="Default select example">
+                            @foreach (var s in Model.locations)
+                            {
+                                <option value="@(s.LocationId)">@s.Name</option>
+                            }
+                        </select>
                     </div>
                 </div>
                 <div class="row mt-2">
@@ -142,10 +143,6 @@
                     <input type="checkbox" value="Đơn giá" checked id="unitPrice" onclick="showProperty('tbUnitPrice')" class="form-check-input" style="width:20px; height:20px; margin-left:10px; margin-right:10px;border:1px solid #FF9966" />
                     <label class="form-check-label">Đơn giá</label>
                 </div>
-                <div class="form-check d-flex">
-                    <input type="checkbox" value="Giá tại kho" id="unitInStock" onclick="showProperty('tbUnitInStock')" class="form-check-input" style="width:20px; height:20px; margin-left:10px; margin-right:10px;border:1px solid #FF9966" />
-                    <label class="form-check-label">Giá tại kho</label>
-                </div>
             </div>
 
             <div class="col-lg-4">
@@ -212,26 +209,27 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
-                        <label class="labels">Giá tại cửa hàng</label>
-                        <input name="unitInStockUpdate" id="unitInStockUpdate" type="number" min="1000" class="form-control input" placeholder="Nhập giá tại cửa hàng" required />
-                    </div>
-                    <div class="col-md-6">
                         <label class="labels">Thương hiệu</label>
                         <input name="trademarkUpdate" id="trademarkUpdate" type="text" class="form-control input" placeholder="Nhập tên thương hiệu" required />
                     </div>
-                </div>
-                <div class="row mt-2">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="labels">Số lượng</label><br />
                         <input name="quantityUpdate" id="quantityUpdate" type="number" min="1" class="form-control input" placeholder="Vị trí" required />
                     </div>
-                    <div class="col-md-4">
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-6">
                         <label class="labels">Trọng lượng</label>
                         <input name="weightUpdate" id="weightUpdate" type="number" min="1" class="form-control input" placeholder="Trọng lượng" />
                     </div>
-                    <div class="col-md-4">
-                        <label class="labels">Vị trí</label><br />
-                        <input name="locationUpdate" id="locationUpdate" type="text" class="form-control input" placeholder="Vị trí" required />
+                    <div class="col-md-6">
+                        <label class="labels">Vị trí</label>
+                        <select name="locationUpdate" id="locationUpdate" class="form-select input" aria-label="Default select example">
+                            @foreach (var s in Model.locations)
+                            {
+                                <option value="@(s.LocationId)">@s.Name</option>
+                            }
+                        </select>
                     </div>
                 </div>
                 <div class="row mt-2">
@@ -708,19 +706,18 @@
         // product details
         function getProductDetail(productID) {
             $.ajax({
-                url: "/WarehouseStaff/Products/Details",
+                url: "https://localhost:7019/waho/Products/productId?productId="+ productID ,
                 type: "GET",
-                data: { productID: productID },
+                data: { productId: productID },
                 success: function (data) {
                     // Gán dữ liệu vào các trường của form
                     $("#productIDUpdate").val(productID)
                     $("#productNameUpdate").val(data.productName);
                     $("#importPriceUpdate").val(data.importPrice);
-                    $("#unitInStockUpdate").val(data.unitInStock);
                     $("#trademarkUpdate").val(data.trademark);
                     $("#quantityUpdate").val(data.quantity)
                     $("#weightUpdate").val(data.weight);
-                    $("#locationUpdate").val(data.location);
+                    $("#locationUpdate").val(data.locationId);
                     $("#unitUpdate").val(data.unit);
                     $("#unitPriceUpdate").val(data.unitPrice);
                     $("#inventoryLevelMinUpdate").val(data.inventoryLevelMin);
@@ -761,25 +758,6 @@
             return [year, month, day].join('-');
         }
 
-        //delete Product
-        //function DeleteProduct() {
-        //    var productID = $("#productIDUpdate").val().toString();
-        //    if (confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) {
-        //        $.ajax({
-        //            url: '/WarehouseStaff/Products/Delete',
-        //            type: 'GET',
-        //            data: { productID: productID },
-        //            success: function (data) {
-        //                // handle success
-        //                alert("xóa thành công sản phẩm ra khỏi danh sách");
-        //                window.location.reload();
-        //            },
-        //            error: function (jqXHR, textStatus, errorThrown) {
-        //                console.log(textStatus, errorThrown);
-        //            }
-        //        });
-        //    }
-        //}
         function deleteProduct(id, name) {
             renderConfirmationModal(id, name)
             $('#modal-confirmation').css('display', 'flex')
@@ -787,29 +765,29 @@
 
         function renderConfirmationModal(id, name) {
             $('#modal-confirmation').html(`
-                                                    <div class="modal-dialog ">
-                                                        <div class="modal-content modal-content-confirmation">
-                                                            <div class=" modal-header p-1">
-                                                                <h6 class="modal-title ms-3">
-                                                                    <i class="bi bi-exclamation-triangle-fill modal-confirm-content-title"></i>
-                                                                    Xác nhận muốn xoá sản phẩm này?
-                                                                </h6>
-                                                                <h5 class="toast__close mb-0" onclick="closeModalConfirmation()">
-                                                                    <i class="bi bi-x-lg"></i>
-                                                                </h5>
-                                                            </div>
-                                                            <div class="modal-body">
-                                                                <h6>Thông tin hoá đơn:</h6>
-                                                                <p>Mã sản phẩm: ${id}</p>
-                                                                <p>Tên sản phẩm: ${name}</p>
-                                                            </div>
-                                                            <div class="modal-footer p-1">
-                                                                <button type="button" class="btn btn-primary" onclick="handleDelete('${id}')">Xác nhận</button>
-                                                                <button type="button" onclick=" closeModalConfirmation()" class="btn btn-outline-primary"
-                                                                    data-bs-dismiss="modal">Đóng</button>
-                                                            </div>
-                                                        </div>
-                                                    </div>`)
+                                                            <div class="modal-dialog ">
+                                                                <div class="modal-content modal-content-confirmation">
+                                                                    <div class=" modal-header p-1">
+                                                                        <h6 class="modal-title ms-3">
+                                                                            <i class="bi bi-exclamation-triangle-fill modal-confirm-content-title"></i>
+                                                                            Xác nhận muốn xoá sản phẩm này?
+                                                                        </h6>
+                                                                        <h5 class="toast__close mb-0" onclick="closeModalConfirmation()">
+                                                                            <i class="bi bi-x-lg"></i>
+                                                                        </h5>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <h6>Thông tin hoá đơn:</h6>
+                                                                        <p>Mã sản phẩm: ${id}</p>
+                                                                        <p>Tên sản phẩm: ${name}</p>
+                                                                    </div>
+                                                                    <div class="modal-footer p-1">
+                                                                        <button type="button" class="btn btn-primary" onclick="handleDelete('${id}')">Xác nhận</button>
+                                                                        <button type="button" onclick=" closeModalConfirmation()" class="btn btn-outline-primary"
+                                                                            data-bs-dismiss="modal">Đóng</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>`)
         }
 
         function handleDelete(id) {

@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Repositories", "Repositorie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ViewModels", "ViewModels\ViewModels.csproj", "{3D96C6A4-389C-426A-9D6C-02F99D2ECB75}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WahoClient", "WahoClient\WahoClient.csproj", "{149E45BD-68BE-40B9-9B93-A0872A30D628}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WahoClient", "WahoClient\WahoClient.csproj", "{149E45BD-68BE-40B9-9B93-A0872A30D628}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

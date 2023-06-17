@@ -1,0 +1,26 @@
+﻿@page
+@model WahoClient.Pages.accessDeniedModel
+@{
+}
+<div class="row d-flex">
+    <div class="col-md-4 mx-auto form-container access-denied" style="width:700px">
+        <div class="pb-4 px-3">
+            <div class="d-flex mt-4">
+                <h1 class="mx-auto d-flex align-items-center">
+                    <img src="~/img/wahologo.png" width="50px" height="50px" />Wa<span class="primary-color">Ho</span>
+                </h1>
+            </div>
+            <div class="d-flex flex-column">
+                <h3 class="m-auto">Yêu cầu truy cập bị từ chối </h3>
+                <div class="mx-auto mt-4">
+                    <img src="~/img/accessdenied.png" width="644px" height="300px" />
+                </div>
+            </div>
+            <hr />
+            <div class="d-flex flex-column">
+                <div class="m-auto"><h5>Bạn không có quyền để truy cập vào vai trò</h5></div><h5 class="primary-color m-auto">@Model.ReturnUrl</h5>
+                <a class="btn btn-primary mx-auto mt-4" asp-page="./Index"><i class="bi bi-box-arrow-in-left"></i> Vui lòng hãy đăng nhập </a>
+            </div>
+        </div>
+    </div>
+</div>

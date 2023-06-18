@@ -2,6 +2,7 @@
 using BusinessObjects.WahoModels;
 using DataAccess.AutoMapperConfig;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -169,6 +170,21 @@ namespace DataAccess
                     context.Entry<Employee>(employee).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                     context.SaveChanges();
                     return $"dã sửa thông tin của {employee.EmployeeName} thành công";
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static List<Employee> GetEmployeesInWaho(int wahoId)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    List<Employee> employees = context.Employees.Where(e => e.WahoId == wahoId && e.Role != 2).ToList();
+                    return employees;
                 }
             }
             catch (Exception e)

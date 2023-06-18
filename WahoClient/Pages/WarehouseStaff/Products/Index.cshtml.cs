@@ -11,8 +11,7 @@ using System.Net.Http.Headers;
 using ViewModels.EmployeeViewModels;
 using Newtonsoft.Json;
 using System.Text;
-//using System.Text.Json;
-//using System.Text.Json.Serialization;
+
 
 namespace WahoClient.Pages.WarehouseStaff.Products
 {

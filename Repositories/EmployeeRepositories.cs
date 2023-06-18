@@ -18,5 +18,7 @@ namespace Repositories
         public Employee findEmployeeByUsername(string username, int wahoId) => EmployeeDAO.FindEmployeeByUsername(username, wahoId);
         public Employee findEmployeeByUsernameAll(string username) => EmployeeDAO.FindEmployeeByUsernameAll(username);
         public string updateEmployee(PostEmployeeVM employeeVM) => EmployeeDAO.updateEmployee(employeeVM);
+
+        public List<Employee> GetEmployeesInWaho(int wahoId) => EmployeeDAO.GetEmployeesInWaho(wahoId);
     }
 }

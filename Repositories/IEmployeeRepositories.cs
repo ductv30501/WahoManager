@@ -17,5 +17,6 @@ namespace Repositories
         Employee findEmployeeByUsername(string username, int wahoId);
         Employee findEmployeeByUsernameAll(string username);
         string updateEmployee(PostEmployeeVM employeeVM);
+        List<Employee> GetEmployeesInWaho(int wahoId);
     }
 }

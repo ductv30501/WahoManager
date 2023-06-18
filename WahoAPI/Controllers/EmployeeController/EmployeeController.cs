@@ -73,5 +73,15 @@ namespace WahoAPI.Controllers.EmployeeController
             string message = respository.updateEmployee(pe);
             return Ok(message);
         }
+        [HttpGet("EmployeesInWaho")]
+        public ActionResult<List<Employee>> getEmployeeInWaho(int wahoId)
+        {
+            List<Employee> employees = respository.GetEmployeesInWaho(wahoId);
+            if (employees.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(employees);
+        }
     }
 }

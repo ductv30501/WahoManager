@@ -4,87 +4,292 @@
 @{
     ViewData["Title"] = "Edit";
 }
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Waho - Vận đơn</title>
+    <link href="~/css/modal.css" rel="stylesheet" />
 
-<h1>Edit</h1>
+</head>
+<body class="bg-waho-white">
+    <div class="my-4">
+        <div class="d-flex justify-content-between">
+            <h3>Thông tin vận đơn</h3>
+            <div class="form-group">
+                <a class="btn btn-primary" asp-page="./ExportOrders" asp-route-orderId="@Model.Order.OderId">
+                    <i class="bi bi-download"></i> Tải xuống Excel
+                </a>
+            </div>
+        </div>
+        <div class="d-flex mt-2">
+            <div class="form-container flex-grow-1 me-4 " style="max-height:500px">
+                @if (Model.OrderDetails != null && Model.OrderDetails.Count > 0)
+                {
+                    <div class="p-4">
+                        <div class="scroll-table">
+                            <table class="table table-striped table-hover" id="bill-details-table" style="max-height:300px">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th class="tbProductName ">
+                                            Mã sản phẩm
+                                        </th>
+                                        <th class="tbImportPrice ">
+                                            Tên sản phẩm
+                                        </th>
+                                        <th class="tbImportPrice col-2">
+                                            Số lượng
+                                        </th>
+                                        <th class="tbImportPrice col-2">
+                                            Giảm giá(%)
+                                        </th>
+                                        <th class="tbImportPrice ">
+                                            Đơn giá(đ)
+                                        </th>
+                                        <th class="tbImportPrice ">
+                                            Tồn kho
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.OrderDetails)
+                                    {
+                                        <tr class="text-center" id="@("bd-" + item.ProductId)">
+                                            <td>@item.ProductId</td>
+                                            <td>@item.Product.ProductName</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@(item.Discount * 100)</td>
+                                            <td>@item.Product.UnitPrice</td>
+                                            <td>@item.Product.Quantity</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="mt-5 pt-3">
+                        <div class="align-items-center mt-5" id="bill-details-default" style="display:flex">
+                            <h5 class="mx-auto mt-5 pt-5">Vận đơn này không có sản phẩm</h5>
+                        </div>
+                    </div>
+                }
+            </div>
+            @if (TempData["ErrorMessage-export"] != null)
+            {
+                <div id="error-alert" class="d-flex justify-content-end position-absolute toast-message">
+                    <div class="alert alert-danger text-center"><h5>@TempData["ErrorMessage-export"]</h5></div>
+                </div>
+            }
+            @if (TempData["SuccessMessage-export"] != null)
+            {
+                <div id="success-alert" class="d-flex justify-content-end position-absolute toast-message">
+                    <div class="alert alert-success text-center"><h5>@TempData["SuccessMessage-export"]</h5></div>
+                </div>
+            }
+            <div class="form-container col-4">
+                <div class="p-4">
+                    <form method="post">
 
-<h4>Oder</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Oder.OderId" />
-            <div class="form-group">
-                <label asp-for="Oder.OderState" class="control-label"></label>
-                <input asp-for="Oder.OderState" class="form-control" />
-                <span asp-validation-for="Oder.OderState" class="text-danger"></span>
+                        @*update model*@
+                        <div class="modal">
+                            <div id="update-modal">
+                                <div class="row form-container py-4 mb-3">
+                                    <div class="m-auto">
+                                        <div>
+                                            <h4>Thông tin khách hàng</h4>
+                                            <hr />
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-6">
+                                                <label class="control-label">Tên khách hàng</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-tags-fill"></i></span>
+                                                    <input class="form-control" id="customer-name" asp-for="Order.Customer.CustomerName" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-6">
+                                                <label class="control-label">Số điện thoại</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-telephone-fill"></i></span>
+                                                    <input type="number" class="form-control" id="customer-phone" asp-for="Order.Customer.Phone" disabled />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-6">
+                                                <label class="control-label">Ngày sinh</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-calendar-fill"></i></span>
+                                                    <input type="date" class="form-control" id="customer-dob" asp-for="Order.Customer.Dob" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-6">
+                                                <label class="control-label">Email</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-envelope-at-fill"></i></span>
+                                                    <input type="email" class="form-control" id="customer-email" asp-for="Order.Customer.Email" disabled />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="form-group col-6">
+                                                <label class="control-label">Phân loại</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-person-badge-fill"></i></span>
+                                                    <select id="option-primary" class="form-select" asp-for="Order.Customer.TypeOfCustomer" disabled>
+                                                        <option value="-1" class="text-center"> ----- Chọn loại khách hàng -----</option>
+                                                        <option value="false">Cá nhân</option>
+                                                        <option value="true"> Công ty</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group col-6">
+                                                <label class="control-label">Mã thuế</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-upc-scan"></i></span>
+                                                    <input type="text" class="form-control" asp-for="Order.Customer.TaxCode" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Địa chỉ</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-building-fill"></i></span>
+                                                <input type="text" class="form-control" asp-for="Order.Customer.Adress" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Ghi chú</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text span-input-primary" id="basic-addon1"><i class="bi bi-card-text"></i></span>
+                                                <textarea type="text" class="form-control" asp-for="Order.Customer.Description" disabled></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="text-center mt-4">
+                                            <button class="btn btn-outline-primary" type="button" onclick="modal('update-modal', 0, 'scale(0)')">Đóng</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*end update model*@
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div id="bill-info">
+                            <div class="form-group mb-4">
+                                <a class="btn btn-primary" onclick="modal('update-modal', 0, 'scale(1)');">
+                                    <i class="bi bi-person-fill-exclamation"></i> Thông tin khách hàng
+                                </a>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Người tạo</label>
+                                <input class="form-control" asp-for="@Model.Order.UserNameNavigation.EmployeeName" readonly />
+                                <input class="form-control" asp-for="@Model.Order.UserNameNavigation.UserName" hidden />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Ngày tạo</label>
+                                <input class="form-control" type="date" asp-for="@Model.Order.OrderDate" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Tên khách hàng</label>
+                                <input id="bill-customer-name" class="form-control" asp-for="@Model.Order.Customer.CustomerName" readonly />
+                                <input class="form-control" asp-for="@Model.Order.OderId" hidden />
+                                <input class="form-control" asp-for="@Model.Order.UserName" hidden />
+                                <input class="form-control" asp-for="@Model.Order.CustomerId" hidden />
+                                <input class="form-control" asp-for="@Model.Order.Total" hidden />
+                                <input class="form-control" asp-for="@Model.Order.Deposit" hidden />
+                                <input class="form-control" asp-for="@Model.Order.WahoId" hidden />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Số điện thoại</label>
+                                <input id="bill-customer-phone" class="form-control" asp-for="@Model.Order.Customer.Phone" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Tên người giao</label>
+                                <input class="form-control" asp-for="@Model.Order.Shipper.ShipperName" readonly />
+                                <input class="form-control" asp-for="@Model.Order.ShipperId" hidden />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Số điện thoại</label>
+                                <input class="form-control" asp-for="@Model.Order.Shipper.Phone" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Dự kiến giao vào ngày</label>
+                                <input class="form-control" type="date" asp-for="@Model.Order.EstimatedDate" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Mã COD</label>
+                                <input class="form-control" asp-for="@Model.Order.Cod" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Khu vực</label>
+                                <input class="form-control" asp-for="@Model.Order.Region" readonly />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Tình trạng</label>
+                                <select id="option-primary" class="form-select" asp-for="@Model.Order.OderState">
+                                    <option value="notDelivery">Chưa giao hàng</option>
+                                    <option value="pending">Đang giao hàng</option>
+                                    <option value="done">Đã giao hàng</option>
+                                    <option value="cantDelivery">Không giao được</option>
+                                    <option value="cancel">Đã huỷ</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Trạng thái</label>
+                                <select id="option-primary" class="form-select" asp-for="@Model.Order.Active">
+                                    <option value="true"> Chưa xoá</option>
+                                    <option value="false">Đã xoá</option>
+                                </select>
+                            </div>
+                            <div class="form-group d-flex justify-content-between mt-3">
+                                <h5>Tổng tiền hàng:</h5>
+                                <div class="d-flex">
+                                    <h5 id="subTotal" class="me-1">@(Model.Order.Total + Model.Order.Deposit)</h5>
+                                    <h5>đ</h5>
+                                </div>
+                            </div>
+                            <div class="form-group d-flex justify-content-between mt-1 ">
+                                <h5 class="mb-0 align-self-center">Đã trả:</h5>
+                                <div class="d-flex">
+                                    <h5 class="me-1">@Model.Order.Deposit</h5>
+                                    <h5>đ</h5>
+                                </div>
+                            </div>
+                            <div class="form-group d-flex justify-content-between mt-5 ">
+                                <h5>Tổng phải trả:</h5>
+                                <div class="d-flex">
+                                    <h5 id="total" class="me-1">@Model.Order.Total</h5>
+                                    <h5>đ</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group text-center mt-4">
+                            <a asp-page="Index" class="btn btn-outline-primary me-2">Trở lại</a>
+                            <input type="submit" value="Lưu" class="btn btn-primary" />
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Oder.Region" class="control-label"></label>
-                <input asp-for="Oder.Region" class="form-control" />
-                <span asp-validation-for="Oder.Region" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.Cod" class="control-label"></label>
-                <input asp-for="Oder.Cod" class="form-control" />
-                <span asp-validation-for="Oder.Cod" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.OrderDate" class="control-label"></label>
-                <input asp-for="Oder.OrderDate" class="form-control" />
-                <span asp-validation-for="Oder.OrderDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.EstimatedDate" class="control-label"></label>
-                <input asp-for="Oder.EstimatedDate" class="form-control" />
-                <span asp-validation-for="Oder.EstimatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.Total" class="control-label"></label>
-                <input asp-for="Oder.Total" class="form-control" />
-                <span asp-validation-for="Oder.Total" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.Deposit" class="control-label"></label>
-                <input asp-for="Oder.Deposit" class="form-control" />
-                <span asp-validation-for="Oder.Deposit" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.Active" class="control-label"></label>
-                <input asp-for="Oder.Active" class="form-control" />
-                <span asp-validation-for="Oder.Active" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.UserName" class="control-label"></label>
-                <select asp-for="Oder.UserName" class="form-control" asp-items="ViewBag.UserName"></select>
-                <span asp-validation-for="Oder.UserName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.CustomerId" class="control-label"></label>
-                <select asp-for="Oder.CustomerId" class="form-control" asp-items="ViewBag.CustomerId"></select>
-                <span asp-validation-for="Oder.CustomerId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.ShipperId" class="control-label"></label>
-                <select asp-for="Oder.ShipperId" class="form-control" asp-items="ViewBag.ShipperId"></select>
-                <span asp-validation-for="Oder.ShipperId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Oder.WahoId" class="control-label"></label>
-                <select asp-for="Oder.WahoId" class="form-control" asp-items="ViewBag.WahoId"></select>
-                <span asp-validation-for="Oder.WahoId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
+</body>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+<script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    setTimeout(function () {
+        $("#success-alert").fadeOut("slow", function () {
+            $(this).remove();
+        });
+        $("#error-alert").fadeOut("slow", function () {
+            $(this).remove();
+        });
+    }, 3000); // thời gian để tự động ẩn thông báo (tính bằng mili giây)
 
-<div>
-    <a asp-page="./Index">Back to List</a>
-</div>
+</script>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}

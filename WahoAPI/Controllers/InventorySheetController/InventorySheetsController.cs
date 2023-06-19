@@ -6,7 +6,7 @@ using Repositories.ProductRepository;
 using ViewModels.InventorySheetViewModels;
 using ViewModels.ProductViewModels;
 
-namespace WahoAPI.InventorySheetController
+namespace WahoAPI.Controllers.InventorySheetController
 {
     [Route("waho/[controller]")]
     [ApiController]
@@ -16,7 +16,7 @@ namespace WahoAPI.InventorySheetController
         [HttpGet("inventories")]
         public ActionResult<List<InventorySheet>> getinventories(int wahoId)
         {
-            List<InventorySheet> inventories = respository.GetInventorySheetsInWaho (wahoId);
+            List<InventorySheet> inventories = respository.GetInventorySheetsInWaho(wahoId);
             if (inventories == null)
             {
                 return NotFound();
@@ -74,9 +74,9 @@ namespace WahoAPI.InventorySheetController
             return Ok(InventoryDetail);
         }
         [HttpGet("getInventoryDetails-ByProId-InvenId")]
-        public ActionResult<InventorySheetDetail> getInventoryDetailsByProIdInvenId(int productId,int inventorySheetId)
+        public ActionResult<InventorySheetDetail> getInventoryDetailsByProIdInvenId(int productId, int inventorySheetId)
         {
-            InventorySheetDetail InventoryDetail = respository.GetInventorySheetDetailByIDAndProId(productId,inventorySheetId);
+            InventorySheetDetail InventoryDetail = respository.GetInventorySheetDetailByIDAndProId(productId, inventorySheetId);
             if (InventoryDetail == null)
             {
                 return NotFound();
@@ -87,6 +87,20 @@ namespace WahoAPI.InventorySheetController
         public IActionResult PutInventory(InventorySheetVM Ivm)
         {
             respository.UpdateInventorySheet(Ivm);
+            return Ok();
+        }
+        [HttpPost]
+        public IActionResult PosttInventory(InventorySheetVM Ivm)
+        {
+            int inventoryId = respository.SaveInventorySheet(Ivm);
+            PostInventorySheetVM postInventorySheetVM = new PostInventorySheetVM();
+            postInventorySheetVM.InventorySheetId = inventoryId;
+            return Ok(postInventorySheetVM);
+        }
+        [HttpPost("detail")]
+        public IActionResult PosttInventoryDetail([FromBody] List<InventorySheetDetailVM> IDevm)
+        {
+            respository.saveInventoryDetail(IDevm);
             return Ok();
         }
         [HttpPut("detail")]

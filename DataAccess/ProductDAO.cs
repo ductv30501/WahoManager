@@ -16,6 +16,29 @@ namespace DataAccess
     public class ProductDAO
     {
         private static readonly IMapper _mapper = ProductConfigMapper.ConfigureVMtoM();
+        public static List<Product> GetProductsSearch(string textSearch, int wahoId)
+        {
+            List<Product> products = new List<Product>();
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    var query = _context.Products.AsQueryable();
+                    if (!string.IsNullOrEmpty(textSearch))
+                    {
+                        query = query.Where(p => p.ProductName.ToLower().Contains(textSearch.ToLower()) || p.ProductId.ToString().Contains(textSearch));
+                    }
+                    products = query.Where(p => p.Active == true && p.WahoId == wahoId)
+                    .Where(p => p.Quantity > 0)
+                    .Take(5).ToList();
+                    return products;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public static List<SubCategory> GetSubCategories(int wahoId)
         {
             int categoryOfWaho = 0;

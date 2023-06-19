@@ -34,6 +34,46 @@ namespace DataAccess
             }
 
         }
+        public static int SaveInventory(InventorySheetVM inventoryVM)
+        {
+            InventorySheet inventory = _mapper.Map<InventorySheet>(inventoryVM);
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    _context.InventorySheets.Add(inventory);
+                    _context.SaveChanges();
+                    return inventory.InventorySheetId;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static void saveInventoryDetail(List<InventorySheetDetailVM> InDeVm)
+        {
+            //InventorySheet inventory = _mapper.Map<InventorySheet>(inventoryVM);
+            List<InventorySheetDetail> inDetails = new List<InventorySheetDetail>();
+            foreach (var IDVM in InDeVm)
+            {
+                InventorySheetDetail inDe = new InventorySheetDetail();
+                inDe = _mapperDetail.Map<InventorySheetDetail>(IDVM);
+                inDetails.Add(inDe);
+            }
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    _context.InventorySheetDetails.AddRange(inDetails);
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public static void UpdateInventorySheet(InventorySheetVM inventoryVM)
         {
             InventorySheet inventory = _mapper.Map<InventorySheet>(inventoryVM);

@@ -19,6 +19,7 @@ namespace Repositories.ProductRepository
         void UpdateProduct(ProductViewModel productVM);
         Product GetProductById(int productId);
         List<Product> GetProductsByWahoId(int wahoId);
+        List<Product> SearchProducts(string textSearch, int wahoId);
         void AddListProduct(List<ProductViewModel> products);
     }
 }

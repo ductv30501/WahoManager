@@ -9,7 +9,7 @@ using ViewModels.InventorySheetViewModels;
 
 namespace DataAccess.AutoMapperConfig
 {
-    public class InventorySheetDetailMapper
+    public class InventorySheetDetailMapper : Profile
     {
         public static IMapper ConfigureVMtoM()
         {

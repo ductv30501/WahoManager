@@ -85,6 +85,16 @@ namespace WahoAPI.Controllers.ProductController
             }
             return Ok(product);
         }
+        [HttpGet("searchProducts")]
+        public ActionResult<List<Product>> searchProducts(string? textSearch,int wahoId)
+        {
+            List<Product> products = respository.SearchProducts(textSearch,wahoId);
+            if (products.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(products);
+        }
         [HttpGet("wahoId")]
         public ActionResult<List<Product>> GetProductsByWahoId(int wahoId)
         {

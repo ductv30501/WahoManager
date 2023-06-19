@@ -5,26 +5,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ViewModels.EmployeeViewModels;
+using ViewModels.CustomerViewModels;
 
 namespace DataAccess.AutoMapperConfig
 {
-    public class employeeMapper : Profile
+    public class customerMapper:Profile
     {
         public static IMapper Configure()
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<PostCustomerVM, Employee>();
+                cfg.CreateMap<PostCustomerVM, Customer>();
             });
 
             return config.CreateMapper();
         }
-        public static IMapper ConfigureEToEVM()
+        public static IMapper ConfigureCToCVM()
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Employee,PostCustomerVM > ();
+                cfg.CreateMap<List<Customer>, List<GetCustomerVM>>();
             });
 
             return config.CreateMapper();

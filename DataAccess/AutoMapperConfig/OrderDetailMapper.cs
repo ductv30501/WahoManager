@@ -5,17 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ViewModels.InventorySheetViewModels;
+using ViewModels.CustomerViewModels;
+using ViewModels.OrderDetailViewModels;
 
 namespace DataAccess.AutoMapperConfig
 {
-    public class InventorySheetMapper : Profile
+    public class OrderDetailMapper : Profile
     {
         public static IMapper ConfigureVMtoM()
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<InventorySheetVM, InventorySheet>();
+                cfg.CreateMap<OrderDetailVM, OderDetail>();
             });
 
             return config.CreateMapper();
@@ -24,7 +25,7 @@ namespace DataAccess.AutoMapperConfig
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<InventorySheet, InventorySheetVM>();
+                cfg.CreateMap<OderDetail, OrderDetailVM>();
             });
 
             return config.CreateMapper();

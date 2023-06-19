@@ -19,5 +19,7 @@ namespace Repositories.InventorySheetRepository
         InventorySheetDetail GetInventorySheetDetailByIDAndProId(int pro_id, int inventoryid);
         void UpdateInventorySheet(InventorySheetVM inventoryVM);
         void UpdateInventorySheetDetail(InventorySheetDetailVM inventoryDetailVM);
+        int SaveInventorySheet(InventorySheetVM inventoryVM);
+        void saveInventoryDetail(List<InventorySheetDetailVM> InDeVm);
     }
 }

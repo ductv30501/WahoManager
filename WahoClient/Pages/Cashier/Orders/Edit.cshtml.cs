@@ -7,38 +7,62 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.WahoModels;
+using AutoMapper;
+using DataAccess.AutoMapperConfig;
+using System.Net.Http.Headers;
+using Waho.DataService;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using ViewModels.OrderDetailViewModels;
+using System.Text;
+using ViewModels.OrderViewModels;
 
 namespace WahoClient.Pages.Cashier.Orders
 {
     public class EditModel : PageModel
     {
-        private readonly BusinessObjects.WahoModels.WahoS8Context _context;
+        private readonly HttpClient client = null;
+        private string orderAPIUrl = "";
+        private readonly Author _author;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly IMapper _mapper = OrderMapper.ConfigureMToVM();
 
-        public EditModel(BusinessObjects.WahoModels.WahoS8Context context)
+        public EditModel(Author author, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            orderAPIUrl = "https://localhost:7019/waho/Orders";
+            _author = author;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
-        public Oder Oder { get; set; } = default!;
+        public Oder Order { get; set; } = default!;
+
+        public List<OderDetail> OrderDetails { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Oders == null)
+            //author
+            if (!_author.IsAuthor(2))
             {
-                return NotFound();
+                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
             }
-
-            var oder =  await _context.Oders.FirstOrDefaultAsync(m => m.OderId == id);
-            if (oder == null)
+            // get order by order id 
+            HttpResponseMessage responseOder = await client.GetAsync($"{orderAPIUrl}/orderById?orderId={id}");
+            string strDataOder = await responseOder.Content.ReadAsStringAsync();
+            if (responseOder.IsSuccessStatusCode)
             {
-                return NotFound();
+                Order = JsonConvert.DeserializeObject<Oder>(strDataOder);
             }
-            Oder = oder;
-           ViewData["CustomerId"] = new SelectList(_context.Customers, "CustomerId", "CustomerName");
-           ViewData["ShipperId"] = new SelectList(_context.Shippers, "ShipperId", "ShipperId");
-           ViewData["UserName"] = new SelectList(_context.Employees, "UserName", "UserName");
-           ViewData["WahoId"] = new SelectList(_context.WahoInformations, "WahoId", "WahoId");
+            // get order details by order id
+            HttpResponseMessage responseOderDe = await client.GetAsync($"{orderAPIUrl}/orderDetailsById?orderId={id}");
+            string strDataOderDe = await responseOderDe.Content.ReadAsStringAsync();
+            if (responseOderDe.IsSuccessStatusCode)
+            {
+                OrderDetails = JsonConvert.DeserializeObject<List<OderDetail>>(strDataOderDe);
+            }
             return Page();
         }
 
@@ -46,35 +70,17 @@ namespace WahoClient.Pages.Cashier.Orders
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
+            // update order information
+            OrderVM orderVM = _mapper.Map<OrderVM>(Order);
+            var json = JsonConvert.SerializeObject(orderVM);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PutAsync(orderAPIUrl, content);
+            if (response.IsSuccessStatusCode)
             {
-                return Page();
+                TempData["successMessage"] = "Đã sửa thành công thông tin đơn vận";
+                return RedirectToPage("./Index");
             }
-
-            _context.Attach(Oder).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!OderExists(Oder.OderId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             return RedirectToPage("./Index");
-        }
-
-        private bool OderExists(int id)
-        {
-          return (_context.Oders?.Any(e => e.OderId == id)).GetValueOrDefault();
         }
     }
 }

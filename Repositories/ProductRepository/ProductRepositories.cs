@@ -31,6 +31,8 @@ namespace Repositories.ProductRepository
 
         public void SaveProduct(ProductViewModel productVM) => ProductDAO.SaveProducts(productVM);
 
+        public List<Product> SearchProducts(string textSearch, int wahoId) => ProductDAO.GetProductsSearch(textSearch, wahoId);
+
         public void UpdateProduct(ProductViewModel productVM) => ProductDAO.UpdateProducts(productVM);
 
     }

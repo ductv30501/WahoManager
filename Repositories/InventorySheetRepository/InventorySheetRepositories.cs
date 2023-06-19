@@ -26,8 +26,11 @@ namespace Repositories.InventorySheetRepository
         public List<InventorySheet> inventorySheetsPaging(int pageIndex, int pageSize, string textSearch, string employeeID, string raw_dateFrom, string raw_dateTo, int wahoId) 
             => InventorySheetDAO.GetInventorySheetsPaging(pageIndex,pageSize,textSearch,employeeID,raw_dateFrom,raw_dateTo,wahoId);
 
+        public int SaveInventorySheet(InventorySheetVM inventoryVM) => InventorySheetDAO.SaveInventory(inventoryVM);
+
         public void UpdateInventorySheet(InventorySheetVM inventoryVM) => InventorySheetDAO.UpdateInventorySheet(inventoryVM);
 
         public void UpdateInventorySheetDetail(InventorySheetDetailVM inventoryDetailVM) => InventorySheetDAO.UpdateInventorySheetDetail(inventoryDetailVM);
+        public void saveInventoryDetail(List<InventorySheetDetailVM> InDeVm) => InventorySheetDAO.saveInventoryDetail(InDeVm);
     }
 }

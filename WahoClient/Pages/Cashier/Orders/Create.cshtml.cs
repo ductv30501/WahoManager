@@ -19,6 +19,7 @@ using ViewModels.OrderViewModels;
 using ViewModels.OrderDetailViewModels;
 using AutoMapper;
 using DataAccess.AutoMapperConfig;
+using ViewModels.ProductViewModels;
 
 namespace WahoClient.Pages.Cashier.Orders
 {
@@ -26,10 +27,12 @@ namespace WahoClient.Pages.Cashier.Orders
     {
         private readonly HttpClient client = null;
         private string orderAPIUrl = "";
+        private string productAPIUrl = "";
         private string CustomerAPIUrl = "";
         private readonly Author _author;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private static readonly IMapper _mapper = OrderDetailMapper.ConfigureMToVM();
+        private static readonly IMapper _mapperPro = ProductConfigMapper.ConfigureMToVM();
 
         public CreateModel(Author author, IHttpContextAccessor httpContextAccessor)
         {
@@ -37,6 +40,7 @@ namespace WahoClient.Pages.Cashier.Orders
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             orderAPIUrl = "https://localhost:7019/waho/Orders";
+            productAPIUrl = "https://localhost:7019/waho/Products";
             CustomerAPIUrl = "https://localhost:7019/waho/Customers";
             _author = author;
             _httpContextAccessor = httpContextAccessor;
@@ -171,6 +175,20 @@ namespace WahoClient.Pages.Cashier.Orders
                 PostOrderVM postOrderVM = JsonConvert.DeserializeObject<PostOrderVM>(responseContent);
                 foreach (var orderDetail in orderDetails)
                 {
+                    // get product to update quantity
+                    HttpResponseMessage responsePro = await client.GetAsync($"{productAPIUrl}/productId?productId={orderDetail.ProductId}");
+                    string strDataPro = await responsePro.Content.ReadAsStringAsync();
+                    Product product = new Product();
+                    if (responsePro.IsSuccessStatusCode)
+                    {
+                        product = JsonConvert.DeserializeObject<Product>(strDataPro);
+                        product.Quantity -= orderDetail.Quantity;
+                        ProductViewModel ProductVM = _mapperPro.Map<ProductViewModel>(product);
+                        //update data
+                        var jsonProUp = JsonConvert.SerializeObject(ProductVM);
+                        var contentProUp = new StringContent(jsonProUp, Encoding.UTF8, "application/json");
+                        var responseProUp = await client.PutAsync(productAPIUrl, contentProUp);
+                    }
                     // Thiết lập giá trị BillId cho bản ghi BillDetail
                     orderDetail.OderId = postOrderVM.OderId;
                     OrderDetailVM orderDetailVM = _mapper.Map<OrderDetailVM>(orderDetail);

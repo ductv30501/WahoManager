@@ -2,6 +2,7 @@
 using BusinessObjects.WahoModels;
 using DataAccess.AutoMapperConfig;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Noding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,6 +83,22 @@ namespace DataAccess
                 {
                     orderDetails = _context.OderDetails.Include(bd => bd.Product).Where(o => o.OderId == orderId).ToList();
                     return orderDetails;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static OderDetail GetOrderDetailByIdAndProId(int orderId, int productId)
+        {
+            OderDetail orderDetail = new OderDetail();
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    orderDetail = _context.OderDetails.Include(bd => bd.Product).FirstOrDefault(o => o.OderId == orderId && o.ProductId == productId);
+                    return orderDetail;
                 }
             }
             catch (Exception e)

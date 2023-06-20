@@ -23,7 +23,7 @@ namespace DataAccess
             {
                 using (var _context = new WahoS8Context())
                 {
-                    returnOrders = _context.ReturnOrders.Where(r => r.BillId == billId && r.WahoId== wahoId).ToList();
+                    returnOrders = _context.ReturnOrders.Where(r => r.BillId == billId && r.WahoId == wahoId).ToList();
                     return returnOrders;
                 }
             }

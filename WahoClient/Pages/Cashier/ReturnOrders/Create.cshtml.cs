@@ -81,7 +81,7 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             {
                 //get details in the bill of customer
                 List<BillDetail> _billDetails = new List<BillDetail>();
-                
+
                 HttpResponseMessage responseBDetail = await client.GetAsync($"{billAPIUrl}/detailById?billId={bill_id}");
                 string strDataBDetail = await responseBDetail.Content.ReadAsStringAsync();
                 if (responseBDetail.IsSuccessStatusCode)
@@ -183,7 +183,7 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                     if (responseROPs.IsSuccessStatusCode)
                     {
                         _rops = JsonConvert.DeserializeObject<List<ReturnOrderProduct>>(strDataROPs);
-                        returnOrderProducts.AddRange( _rops );
+                        returnOrderProducts.AddRange(_rops);
                     }
                 }
                 //List<ReturnOrderProduct> returnOrderProducts = _context.ReturnOrderProducts
@@ -191,59 +191,65 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                 //                                                .Where(r => r.ReturnOrderId == _returnorderCheck.ReturnOrderId)
                 //                                                .ToList();
                 //  billdetail : list product return 
-                foreach (var billDetail in billDetails)
+                if (returnOrderProducts.Count != 0)
                 {
-                    int totalReturned = 0;
-                    ReturnOrderProduct rOP = new ReturnOrderProduct();
-                    foreach (var r in returnOrderProducts)
+                    foreach (var billDetail in billDetails)
                     {
-                        if (billDetail.ProductId == r.ProductId)
+                        int totalReturned = 0;
+                        ReturnOrderProduct rOP = new ReturnOrderProduct();
+                        foreach (var r in returnOrderProducts)
                         {
-                            totalReturned += r.Quantity;
-                            rOP = r;
-                            rOP.Product = r.Product;
+                            if (billDetail.ProductId == r.ProductId)
+                            {
+                                totalReturned += r.Quantity;
+                                rOP = r;
+                                rOP.Product = r.Product;
+                            }
                         }
-                    }
-                    if (billCategory == 1)
-                    {
-                        // detail of the product of the bill bought
-                        BillDetail detailBill = new BillDetail();
-                        HttpResponseMessage responseBDs = await client.GetAsync($"{billAPIUrl}/detailByIdAndProId?billId={bill_id}&productId={rOP.ProductId}");
-                        string strDataBDs = await responseBDs.Content.ReadAsStringAsync();
-                        if (responseBDs.IsSuccessStatusCode)
+                        if (totalReturned > 0)
                         {
-                            detailBill = JsonConvert.DeserializeObject<BillDetail>(strDataBDs);
-                        }
-                        //var detailBill = _context.BillDetails.Where(r => r.ProductId == r.ProductId)
-                        //                                        .Where(r => r.BillId == Int32.Parse(idBill))
-                        //                                        .FirstOrDefault();
-                        if ((detailBill.Quantity - totalReturned) <= 0)
-                        {
-                            //message error
-                            TempData["ErrorMessage"] = "Sản phẩm " + rOP.Product.ProductName + " đã được hoàn hết số lượng trong bill!" +
-                                                        "Số lượng có thể trả" + (detailBill.Quantity - totalReturned);
-                            return Page();
-                        }
-                    }
-                    else
-                    {
-                        // detail of the product of the ordered
-                        OderDetail detailBill = new OderDetail();
-                        HttpResponseMessage responseODs = await client.GetAsync($"{oderAPIUrl}/OrderDetailByIDProID?orderId={bill_id}&productId={rOP.ProductId}");
-                        string strDataODs = await responseODs.Content.ReadAsStringAsync();
-                        if (responseODs.IsSuccessStatusCode)
-                        {
-                            detailBill = JsonConvert.DeserializeObject<OderDetail>(strDataODs);
-                        }
-                        //var detailBill = _context.OderDetails.Where(r => r.ProductId == r.ProductId)
-                        //                                        .Where(r => r.OderId == Int32.Parse(idBill))
-                        //                                        .FirstOrDefault();
-                        if ((detailBill.Quantity - totalReturned) <= 0)
-                        {
-                            //message error
-                            TempData["ErrorMessage"] = "Sản phẩm " + rOP.Product.ProductName + " đã được hoàn hết số lượng trong order!" +
-                                                        "Số lượng có thể trả" + (detailBill.Quantity - totalReturned);
-                            return Page();
+                            if (billCategory == 1)
+                            {
+                                // detail of the product of the bill bought
+                                BillDetail detailBill = new BillDetail();
+                                HttpResponseMessage responseBDs = await client.GetAsync($"{billAPIUrl}/detailByIdAndProId?billId={bill_id}&productId={rOP.ProductId}");
+                                string strDataBDs = await responseBDs.Content.ReadAsStringAsync();
+                                if (responseBDs.IsSuccessStatusCode)
+                                {
+                                    detailBill = JsonConvert.DeserializeObject<BillDetail>(strDataBDs);
+                                }
+                                //var detailBill = _context.BillDetails.Where(r => r.ProductId == r.ProductId)
+                                //                                        .Where(r => r.BillId == Int32.Parse(idBill))
+                                //                                        .FirstOrDefault();
+                                if ((detailBill.Quantity - totalReturned) <= 0)
+                                {
+                                    //message error
+                                    TempData["ErrorMessage"] = "Sản phẩm " + rOP.Product.ProductName + " đã được hoàn hết số lượng trong bill!" +
+                                                                "Số lượng có thể trả" + (detailBill.Quantity - totalReturned);
+                                    return Page();
+                                }
+                            }
+                            else
+                            {
+                                // detail of the product of the ordered
+                                OderDetail detailBill = new OderDetail();
+                                HttpResponseMessage responseODs = await client.GetAsync($"{oderAPIUrl}/OrderDetailByIDProID?orderId={bill_id}&productId={rOP.ProductId}");
+                                string strDataODs = await responseODs.Content.ReadAsStringAsync();
+                                if (responseODs.IsSuccessStatusCode)
+                                {
+                                    detailBill = JsonConvert.DeserializeObject<OderDetail>(strDataODs);
+                                }
+                                //var detailBill = _context.OderDetails.Where(r => r.ProductId == r.ProductId)
+                                //                                        .Where(r => r.OderId == Int32.Parse(idBill))
+                                //                                        .FirstOrDefault();
+                                if ((detailBill.Quantity - totalReturned) <= 0)
+                                {
+                                    //message error
+                                    TempData["ErrorMessage"] = "Sản phẩm " + rOP.Product.ProductName + " đã được hoàn hết số lượng trong order!" +
+                                                                "Số lượng có thể trả" + (detailBill.Quantity - totalReturned);
+                                    return Page();
+                                }
+                            }
                         }
                     }
                 }

@@ -12,5 +12,6 @@ namespace Repositories.CustomerRepository
     {
         int SaveCustomer(CustomerVM customerVM);
         List<Customer> GetCustomersSearch(string textSearch, int wahoId);
+        Customer getCustomerByBillIdBillType(int billlId, int billType, int wahoId);
     }
 }

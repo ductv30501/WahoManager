@@ -30,5 +30,15 @@ namespace WahoAPI.Controllers.CustomerController
             }
             return Ok(customers);
         }
+        [HttpGet("searchCustomerOfBill")]
+        public ActionResult<Customer> searchCustomerOfBill(int billlId, int billType, int wahoId)
+        {
+            Customer customers = respository.getCustomerByBillIdBillType(billlId, billType, wahoId);
+            if (customers == null || customers == default)
+            {
+                return NotFound();
+            }
+            return Ok(customers);
+        }
     }
 }

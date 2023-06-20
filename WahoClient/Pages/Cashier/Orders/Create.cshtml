@@ -345,6 +345,8 @@
                             // Xử lý lỗi nếu có
                         }
                     });
+                } else {
+                    $('#product-result').html("");
                 }
             }, 500); // Thời gian chờ tính bằng mili giây
         });
@@ -363,7 +365,6 @@
                     return;
                 }
             }
-
             $("#bill-customer-name").val($("#customer-name").val());
             $("#bill-customer-phone").val($("#customer-phone").val());
             modal('insert-modal', 0, 'scale(0)');
@@ -423,6 +424,8 @@
                             // Xử lý lỗi nếu có
                         }
                     });
+                } else {
+                    $('#customer-result').html("");
                 }
             }, 500); // Thời gian chờ tính bằng mili giây
         });
@@ -462,12 +465,12 @@
                                                                                                                             </td>
                                                                                                                         </tr>
                                                                                                                     </table>
-                                                                                                                </li>`
+                                                                                                                </li>`;
                             });
                         } else if (searchQuery) {
                             shipper = `<li class="result-search-items-noresult text-center">
-                                                                                                                            <h6>Không tìm thấy người giao nào<h6/>
-                                                                                                                        </li>`
+                                           <h6>Không tìm thấy người giao nào<h6/>
+                                        </li>`;
                         }
                         $('#shipper-result').html(shipper)
                     },
@@ -547,7 +550,7 @@
 
             $('#bill-info input[name=customerName]').val(customerName);
             $('#bill-info input[name=customerId]').val(customerId);
-            $('#bill-info input[name=phone]').val(phone);
+            $('#bill-info input[name=Customerphone]').val(phone);
 
         }
 

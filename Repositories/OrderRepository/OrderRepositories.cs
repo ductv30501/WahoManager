@@ -23,6 +23,8 @@ namespace Repositories.OrderRepository
 
         public List<OderDetail> GetOrderDetailById(int orderId) => OrderDAO.GetOrderDetailById(orderId);
 
+        public OderDetail GetOrderDetailByIdAndProId(int orderId, int productId) => OrderDAO.GetOrderDetailByIdAndProId(orderId, productId);
+
         public List<Oder> GetOrdersPaging(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string estDateFrom, string estDateTo, string dateTo, string active, int wahoId)
             => OrderDAO.GetOrdersPaging(pageIndex, pageSize, textSearch, status, dateFrom, estDateFrom, estDateTo, dateTo, active, wahoId);
 

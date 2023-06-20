@@ -1,6 +1,7 @@
 ﻿using BusinessObjects.WahoModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Noding;
 using Repositories.OrderRepository;
 using Repositories.ProductRepository;
 using ViewModels.OrderDetailViewModels;
@@ -82,6 +83,16 @@ namespace WahoAPI.Controllers.OrderController
         {
            respository.AddListOrderDetail(orderDetailsVM);
             return Ok();
+        }
+        [HttpGet("OrderDetailByIDProID")]
+        public ActionResult<OderDetail> OrderDetailByIDProID(int orderId, int productId)
+        {
+            OderDetail oderDetail = respository.GetOrderDetailByIdAndProId(orderId,productId);
+            if (oderDetail == null)
+            {
+                return NotFound();
+            }
+            return Ok(oderDetail);
         }
     }
 }

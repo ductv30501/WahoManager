@@ -20,5 +20,7 @@ namespace Repositories
         public string updateEmployee(PostEmployeeVM employeeVM) => EmployeeDAO.updateEmployee(employeeVM);
 
         public List<Employee> GetEmployeesInWaho(int wahoId) => EmployeeDAO.GetEmployeesInWaho(wahoId);
+
+        public List<Employee> GetEmployeesInWahoByRole(int role, int wahoId) => EmployeeDAO.GetEmployeesInWahoByRole(role, wahoId);
     }
 }

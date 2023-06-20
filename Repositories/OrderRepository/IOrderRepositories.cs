@@ -20,6 +20,7 @@ namespace Repositories.OrderRepository
         Oder GetOrderById(int orderId);
         List<OderDetail> GetOrderDetailById(int orderId);
         void UpdateOrder(OrderVM orderVM);
+        OderDetail GetOrderDetailByIdAndProId(int orderId, int productId);
 
     }
 }

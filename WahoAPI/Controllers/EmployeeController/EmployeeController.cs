@@ -83,5 +83,15 @@ namespace WahoAPI.Controllers.EmployeeController
             }
             return Ok(employees);
         }
+        [HttpGet("EmployeesInWahoByRole")]
+        public ActionResult<List<Employee>> EmployeesInWahoByRole(int role,int wahoId)
+        {
+            List<Employee> employees = respository.GetEmployeesInWahoByRole(role, wahoId);
+            if (employees.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(employees);
+        }
     }
 }

@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ViewModels.EmployeeViewModels;
+using ViewModels.OrderViewModels;
 using ViewModels.ReturnOrderViewModels;
 
 namespace DataAccess
@@ -23,7 +24,65 @@ namespace DataAccess
             {
                 using (var _context = new WahoS8Context())
                 {
-                    returnOrders = _context.ReturnOrders.Where(r => r.BillId == billId && r.WahoId == wahoId).ToList();
+                    returnOrders = _context.ReturnOrders.Where(r => r.BillId == billId && r.WahoId == wahoId && r.Active == true).ToList();
+                    return returnOrders;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static void UpdateReturnOrder(ReturnOrderVM returnOrderVM)
+        {
+            ReturnOrder Rorder = _mapper.Map<ReturnOrder>(returnOrderVM);
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    _context.Entry<ReturnOrder>(Rorder).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    _context.SaveChanges();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static ReturnOrder GetReturnOrderByID(int returnOrderId)
+        {
+            ReturnOrder returnOrder = new ReturnOrder();
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    returnOrder = _context.ReturnOrders
+                                            .Include(r => r.Customer)
+                                            .Include(r => r.UserNameNavigation)
+                                            .FirstOrDefault(m => m.ReturnOrderId == returnOrderId);
+                    return returnOrder;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static List<ReturnOrderProduct> RTOProductsPaging(int pageIndex, int pageSize, int id)
+        {
+            List<ReturnOrderProduct> returnOrders = new List<ReturnOrderProduct>();
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    returnOrders = _context.ReturnOrderProducts
+                                  .Include(r => r.ReturnOrder)
+                                  .Include(i => i.Product)
+                                  .Where(r => r.ReturnOrderId == id)
+                                  .OrderBy(i => i.ReturnOrderId)
+                                  .Skip((pageIndex - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToList();
                     return returnOrders;
                 }
             }

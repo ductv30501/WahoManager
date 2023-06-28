@@ -16,5 +16,8 @@ namespace Repositories.ReturnOrderRepository
         List<ReturnOrderProduct> ReturnOrderProductsByReturnID(int returnId);
         int saveReturnOrder(ReturnOrderVM returnOrderVM);
         void saveListReturnOrderProduct(List<ReturnOrderProductVM> returnOrderProductsVM);
+        ReturnOrder GetReturnOrderByID(int returnOrderId);
+        List<ReturnOrderProduct> RTOProductsPaging(int pageIndex, int pageSize, int id);
+        void UpdateReturnOrder(ReturnOrderVM returnOrderVM);
     }
 }

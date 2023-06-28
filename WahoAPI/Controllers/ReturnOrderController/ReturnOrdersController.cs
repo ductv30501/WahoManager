@@ -67,5 +67,31 @@ namespace WahoAPI.Controllers.ReturnOrderController
             respository.saveListReturnOrderProduct(ROPs);
             return Ok();
         }
+        [HttpGet("ROByID")]
+        public ActionResult<ReturnOrder> GetReturnOrderByID(int returnId)
+        {
+            ReturnOrder ROder = respository.GetReturnOrderByID(returnId);
+            if (ROder == null)
+            {
+                return NotFound();
+            }
+            return Ok(ROder);
+        }
+        [HttpGet("ROPSPaging")]
+        public ActionResult<List<ReturnOrderProduct>> ReturnOrderProductsPaging(int pageIndex, int pageSize, int id)
+        {
+            List<ReturnOrderProduct> rOPs = respository.RTOProductsPaging(pageIndex, pageSize, id);
+            if (rOPs.Count == 0)
+            {
+                return NotFound();
+            }
+            return Ok(rOPs);
+        }
+        [HttpPut]
+        public IActionResult putReturnOrder(ReturnOrderVM returnOrderVM)
+        {
+            respository.UpdateReturnOrder(returnOrderVM);
+            return Ok();
+        }
     }
 }

@@ -573,7 +573,7 @@
                     });
                     // search product of bill
                     $.ajax({
-                        url: "https://localhost:7019/waho/Orders/orderDetailsById?orderId=12",
+                        url: "https://localhost:7019/waho/Orders/orderDetailsById?orderId=" + searchQuery,
                         type: 'GET',
                         contentType: "application/json; charset=utf-8",
                         success: function (result, status, xhr) {
@@ -679,7 +679,7 @@
                     });
                     // search product of bill
                     $.ajax({
-                        url: "https://localhost:7019/waho/Orders/orderDetailsById?orderId=12",
+                        url: "https://localhost:7019/waho/Orders/orderDetailsById?orderId=" + searchQuery,
                         type: 'GET',
                         contentType: "application/json; charset=utf-8",
                         success: function (result, status, xhr) {

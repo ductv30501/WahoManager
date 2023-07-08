@@ -14,7 +14,7 @@ namespace BusinessObjects.WahoModels
         public string? OderState { get; set; }
         public string? Region { get; set; }
         public string? Cod { get; set; }
-        public DateTime? OrderDate { get; set; }
+        public DateTime OrderDate { get; set; }
         public DateTime? EstimatedDate { get; set; }
         public decimal Total { get; set; }
         public decimal Deposit { get; set; }

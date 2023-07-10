@@ -39,6 +39,21 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
+        public static List<Category> GetCategories()
+        {
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    return _context.Categories
+                        .ToList();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public static List<SubCategory> GetSubCategories(int wahoId)
         {
             int categoryOfWaho = 0;
@@ -60,7 +75,6 @@ namespace DataAccess
             {
                 throw new Exception(e.Message);
             }
-
         }
         public static void SaveProducts(ProductViewModel productVM)
         {

@@ -93,5 +93,21 @@ namespace WahoAPI.Controllers.EmployeeController
             }
             return Ok(employees);
         }
+        [HttpGet("GetAll")]
+        public ActionResult<List<Employee>> GetAll(int wahoId)
+        {
+            List<Employee> employees = respository.GetAllEmployeesInWaho(wahoId);
+            return Ok(employees);
+        }
+        [HttpGet("GetByEmail")]
+        public ActionResult<Employee> GetByEmail(string email)
+        {
+            Employee employee = respository.GetEmployeesByEmail(email);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return Ok(employee);
+        }
     }
 }

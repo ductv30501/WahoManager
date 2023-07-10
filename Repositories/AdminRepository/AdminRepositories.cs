@@ -11,33 +11,28 @@ namespace Repositories.AdminRepository
 {
     public class AdminRepositories : IAdminRepositories
     {
-        public List<BillDetail> BillDetails(DateTime date) => AdminDAO.BillDetails(date);
+        public List<BillDetail> BillDetails(DateTime date, int wahoID) => AdminDAO.BillDetails(date, wahoID);
 
-        public List<ReturnOrder> ReturnOrdersInDay()
-            => AdminDAO.ReturnOrdersInDay();
+        public List<ReturnOrder> ReturnOrdersInDay(int wahoID)
+            => AdminDAO.ReturnOrdersInDay(wahoID);
 
-        public int TotalBillInDay()
-            => AdminDAO.TotalBillInDay();
+        public int TotalBillInDay(int wahoID)
+            => AdminDAO.TotalBillInDay(wahoID);
 
-        public List<TotalMMVM> totalBillMMVMs(int month, int year)
-            => AdminDAO.totalBillMMVMs(month, year);
+        public List<TotalMMVM> totalBillMMVMs(int month, int year, int wahoID)
+            => AdminDAO.totalBillMMVMs(month, year, wahoID);
 
-        public List<DayInMonth> totalNumberBillDayInMs(int month, int year)
-            => AdminDAO.totalNumberBillDayInMs(month, year);
+        public List<DayInMonth> totalNumberBillDayInMs(int month, int year, int wahoID) => AdminDAO.totalNumberBillDayInMs(month, year, wahoID);
 
-        public List<TotalMMVM> totalNumberBillMs(int month, int year)
-            => totalNumberBillMs(month, year);
+        public List<TotalMMVM> totalNumberBillMs(int month, int year, int wahoID)
+            => totalNumberBillMs(month, year, wahoID);
 
-        public List<DayInMonth> totalNumberOrdersDayInMs(int month, int year)
-            => AdminDAO.totalNumberOrdersDayInMs(month, year);
+        public List<DayInMonth> totalNumberOrdersDayInMs(int month, int year, int wahoID) => AdminDAO.totalNumberOrdersDayInMs(month, year, wahoID);
 
-        public List<TotalMMVM> totalNummberOrdersMMVMs(int month, int year)
-            => AdminDAO.totalNummberOrdersMMVMs(month, year);
+        public List<TotalMMVM> totalNummberOrdersMMVMs(int month, int year, int wahoID) => AdminDAO.totalNummberOrdersMMVMs(month, year, wahoID);
 
-        public List<TotalMMVM> totalOrdersMMVMs(int month, int year)
-            => AdminDAO.totalOrdersMMVMs(month, year);
+        public List<TotalMMVM> totalOrdersMMVMs(int month, int year, int wahoID) => AdminDAO.totalOrdersMMVMs(month, year, wahoID);
 
-        public int TotalReturnInDay()
-            => AdminDAO.TotalReturnInDay();
+        public int TotalReturnInDay(int wahoID) => AdminDAO.TotalReturnInDay(wahoID);
     }
 }

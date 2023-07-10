@@ -23,6 +23,16 @@ namespace WahoAPI.Controllers.ProductController
             }
             return Ok(subCategories);
         }
+        [HttpGet("categories")]
+        public ActionResult<List<Category>> getcategories()
+        {
+            List<Category> Categories = respository.GetCategories();
+            if (Categories == null)
+            {
+                return NotFound();
+            }
+            return Ok(Categories);
+        }
         [HttpGet("suppliers")]
         public ActionResult<List<Supplier>> getsuppliers(int wahoId)
         {

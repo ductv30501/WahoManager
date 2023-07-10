@@ -19,6 +19,9 @@ namespace Repositories.ProductRepository
         public List<Product> GetAllProduct(int pageIndex, int pageSize, string textSearch, int subCategoryID, int location, int priceFrom, int priceTo, string inventoryLevel, int wahoId, string supplierId)
             => ProductDAO.GetAllProduct(pageIndex,pageSize,textSearch,subCategoryID,location,priceFrom,priceTo,inventoryLevel,wahoId, supplierId);
 
+        public List<Category> GetCategories()
+            => ProductDAO.GetCategories();
+
         public List<Location> GetLocations() => ProductDAO.GetLocations();
 
         public Product GetProductById(int productId) => ProductDAO.getProductById(productId);

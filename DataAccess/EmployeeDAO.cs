@@ -192,6 +192,21 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
+        public static List<Employee> GetAllEmployeesInWaho(int wahoId)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    List<Employee> employees = context.Employees.Where(e => e.WahoId == wahoId).ToList();
+                    return employees;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
         public static List<Employee> GetEmployeesInWahoByRole(int role, int wahoId)
         {
             try
@@ -200,6 +215,20 @@ namespace DataAccess
                 {
                     List<Employee> employees = context.Employees.Where(e => e.WahoId == wahoId && e.Role != role).ToList();
                     return employees;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static Employee GetEmployeesByEmail(string email)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    return context.Employees.FirstOrDefault(e => e.Email == email);
                 }
             }
             catch (Exception e)

@@ -21,5 +21,6 @@ namespace Repositories.ProductRepository
         List<Product> GetProductsByWahoId(int wahoId);
         List<Product> SearchProducts(string textSearch, int wahoId);
         void AddListProduct(List<ProductViewModel> products);
+        List<Category> GetCategories();
     }
 }

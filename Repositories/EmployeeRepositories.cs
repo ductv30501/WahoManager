@@ -22,5 +22,11 @@ namespace Repositories
         public List<Employee> GetEmployeesInWaho(int wahoId) => EmployeeDAO.GetEmployeesInWaho(wahoId);
 
         public List<Employee> GetEmployeesInWahoByRole(int role, int wahoId) => EmployeeDAO.GetEmployeesInWahoByRole(role, wahoId);
+
+        public List<Employee> GetAllEmployeesInWaho(int wahoId)
+            => EmployeeDAO.GetAllEmployeesInWaho(wahoId);
+
+        public Employee GetEmployeesByEmail(string email)
+            => EmployeeDAO.GetEmployeesByEmail(email);
     }
 }

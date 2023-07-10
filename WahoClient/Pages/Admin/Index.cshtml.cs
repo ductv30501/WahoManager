@@ -70,13 +70,16 @@ namespace WahoClient.Pages.Admin
             {
                 return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
             }
+            // get data from session
+            var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
+            EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //hóa đơn trong ngày
-            HttpResponseMessage responseNB = await client.GetAsync($"{adminAPIUrl}/TotalBillInDay");
+            HttpResponseMessage responseNB = await client.GetAsync($"{adminAPIUrl}/TotalBillInDay?wahoID={employeeVM.WahoId}");
             string strDataNB = await responseNB.Content.ReadAsStringAsync();
             numberBill = int.Parse(strDataNB);
             //numberBill = _context.Bills.Where(b => b.Date == now).Count();
             //get billdetail in day
-            HttpResponseMessage rBINDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now}");
+            HttpResponseMessage rBINDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now}&wahoID={employeeVM.WahoId}");
             string DataRBDINDay = await rBINDay.Content.ReadAsStringAsync();
             if (rBINDay.IsSuccessStatusCode)
             {
@@ -86,13 +89,13 @@ namespace WahoClient.Pages.Admin
 
             totalMoney = total(billDetailInday);
             //hoàn đơn trong ngày
-            HttpResponseMessage responseNO = await client.GetAsync($"{adminAPIUrl}/TotalReturnInDay");
+            HttpResponseMessage responseNO = await client.GetAsync($"{adminAPIUrl}/TotalReturnInDay?wahoID={employeeVM.WahoId}");
             string strDataNO = await responseNO.Content.ReadAsStringAsync();
             numberReturn = int.Parse(strDataNO);
             //numberReturn = _context.ReturnOrders.Where(b => b.Date == now).Count();
 
             //hoàn đơn
-            HttpResponseMessage rROD = await client.GetAsync($"{adminAPIUrl}/ReturnOrdersInDay");
+            HttpResponseMessage rROD = await client.GetAsync($"{adminAPIUrl}/ReturnOrdersInDay?wahoID={employeeVM.WahoId}");
             string DataROD= await rROD.Content.ReadAsStringAsync();
             if (rROD.IsSuccessStatusCode)
             {
@@ -105,7 +108,7 @@ namespace WahoClient.Pages.Admin
                 totalMoneyReturn += b.PaidCustomer;
             }
             //get bill detail yesterday
-            HttpResponseMessage rBINYesDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddDays(-1)}");
+            HttpResponseMessage rBINYesDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddDays(-1)}&wahoID={employeeVM.WahoId}");
             string DataRBDINYesDay = await rBINYesDay.Content.ReadAsStringAsync();
             if (rBINYesDay.IsSuccessStatusCode)
             {
@@ -122,7 +125,7 @@ namespace WahoClient.Pages.Admin
             {
                 percentYes = numberBill * 100;
             }
-            HttpResponseMessage rBINMonth = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddMonths(-1)}");
+            HttpResponseMessage rBINMonth = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddMonths(-1)}&wahoID={employeeVM.WahoId}");
             string DataRBDINMonth = await rBINMonth.Content.ReadAsStringAsync();
             if (rBINMonth.IsSuccessStatusCode)
             {
@@ -146,7 +149,7 @@ namespace WahoClient.Pages.Admin
                 int monthQueryT = dateQuery.Month;
                 int yearQueryT = dateQuery.Year;
                 //theo doanh số bill
-                HttpResponseMessage rTotalBINMonth = await client.GetAsync($"{adminAPIUrl}/totalBillMMVMs?month={monthQueryT}&year={yearQueryT}");
+                HttpResponseMessage rTotalBINMonth = await client.GetAsync($"{adminAPIUrl}/totalBillMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
                 string DataRTotalBDINMonth = await rTotalBINMonth.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
                 if (rTotalBINMonth.IsSuccessStatusCode)
@@ -155,7 +158,7 @@ namespace WahoClient.Pages.Admin
                 }
                 // order
 
-                HttpResponseMessage rTotalODINMonth = await client.GetAsync($"{adminAPIUrl}/totalOrdersMMVMs?month={monthQueryT}&year={yearQueryT}");
+                HttpResponseMessage rTotalODINMonth = await client.GetAsync($"{adminAPIUrl}/totalOrdersMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
                 string DataRTotalODINMonth = await rTotalODINMonth.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
                 if (rTotalODINMonth.IsSuccessStatusCode)
@@ -196,7 +199,7 @@ namespace WahoClient.Pages.Admin
                 int monthQueryN = dateQuery.Month;
                 int yearQueryN = dateQuery.Year;
                 //theo số lượng
-                HttpResponseMessage RNUMBIll = await client.GetAsync($"{adminAPIUrl}/totalNumberBillMs?month={monthQueryN}&year={yearQueryN}");
+                HttpResponseMessage RNUMBIll = await client.GetAsync($"{adminAPIUrl}/totalNumberBillMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
                 string DataRNumbill = await RNUMBIll.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
                 if (RNUMBIll.IsSuccessStatusCode)
@@ -205,7 +208,7 @@ namespace WahoClient.Pages.Admin
                 }
 
                 // order
-                HttpResponseMessage RNUMOrder = await client.GetAsync($"{adminAPIUrl}/totalNummberOrdersMMVMs?month={monthQueryN}&year={yearQueryN}");
+                HttpResponseMessage RNUMOrder = await client.GetAsync($"{adminAPIUrl}/totalNummberOrdersMMVMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
                 string DataRNumOrder = await RNUMOrder.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
                 if (RNUMOrder.IsSuccessStatusCode)
@@ -244,7 +247,7 @@ namespace WahoClient.Pages.Admin
             //theo doanh số bill
             int monthQuery = dateQueryDay.Month;
             int yearQuery = dateQueryDay.Year;
-            HttpResponseMessage RNUMBIllDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberBillDayInMs?month={monthQuery}&year={yearQuery}");
+            HttpResponseMessage RNUMBIllDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberBillDayInMs?month={monthQuery}&year={yearQuery}&wahoID={employeeVM.WahoId}");
             string DataRNumbillDayINM = await RNUMBIllDayINM.Content.ReadAsStringAsync();
             var resultsDay = new List<DayInMonth>();
             if (RNUMBIllDayINM.IsSuccessStatusCode)
@@ -254,7 +257,7 @@ namespace WahoClient.Pages.Admin
 
             // order
 
-            HttpResponseMessage RNUMOrderDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberOrdersDayInMs?month={monthQuery}&year={yearQuery}");
+            HttpResponseMessage RNUMOrderDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberOrdersDayInMs?month={monthQuery}&year={yearQuery}&wahoID={employeeVM.WahoId}");
             string DataRNumOrderDayINM = await RNUMOrderDayINM.Content.ReadAsStringAsync();
             var resultsOrderDay = new List<DayInMonth>();
             if (RNUMOrderDayINM.IsSuccessStatusCode)

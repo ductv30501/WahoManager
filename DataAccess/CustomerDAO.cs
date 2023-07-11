@@ -16,7 +16,7 @@ namespace DataAccess
         private static readonly IMapper _mapper = customerMapper.Configure();
         private static readonly IMapper _mapperGet = customerMapper.ConfigureCToCVM();
 
-        public static int countPagingEmployee(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
+        public static int CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
-        public List<GetCustomerVM> GetCustomersPagingAndFilter(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
+        public static List<GetCustomerVM> GetCustomersPagingAndFilter(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
         {
 
             List<Customer> customers = new List<Customer>();
@@ -110,33 +110,33 @@ namespace DataAccess
             }
         }
 
-        public static Customer FindCustomerById(string id,, int wahoId)
+        public static Customer FindCustomerById(int id, int wahoId)
         {
-            Customer employee = new Customer();
+            Customer customer = new Customer();
             try
             {
                 using (var context = new WahoS8Context())
                 {
-                    employee = context.Customers.FirstOrDefault(e => e.CustomerId == id);
+                    customer = context.Customers.FirstOrDefault(e => e.CustomerId == id && e.WahoId == wahoId);
                 }
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-            return employee;
+            return customer;
         }
-        public static string updateEmployee(PostCustomerVM employeeVM)
+        public static string UpdateCustomer(PostCustomerVM customerVM)
         {
             try
             {
                 using (var context = new WahoS8Context())
                 {
-                    Employee employee = new Employee();
-                    employee = _mapper.Map<Employee>(employeeVM);
-                    context.Entry<Employee>(employee).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    Customer customer = new Customer();
+                    customer = _mapper.Map<Customer>(customerVM);
+                    context.Entry<Customer>(customer).State = EntityState.Modified;
                     context.SaveChanges();
-                    return $"dã sửa thông tin của {employee.EmployeeName} thành công";
+                    return $"dã sửa thông tin của {customer.CustomerName} thành công";
                 }
             }
             catch (Exception e)

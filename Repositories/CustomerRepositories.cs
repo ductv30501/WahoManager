@@ -5,17 +5,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ViewModels.EmployeeViewModels;
+using ViewModels.CustomerViewModels;
 
 namespace Repositories
 {
-    public class CustomerRepositories
+    public class CustomerRepositories : ICustomerRepositories
     {
-        public int countPagingCustomer(string textSearch, string status, string title) => CustomerDAO.countPagingCustomer(textSearch, status, title);
-        public List<Customer> getCustomerPaging(int pageIndex, int pageSize, string textSearch, string title, string status) => CustomerDAO.getCustomerPaging(pageIndex, pageSize, textSearch, title, status);
-        public CustomerVM GetCustomerByUsernamePassword(string username, string password) => CustomerDAO.GetCustomerByUserAndPass(username, password);
+        public int CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId) => CustomerDAO.CountPagingCustomer(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, typeCustomer, wahoId);
+        public List<GetCustomerVM> GetCustomersPagingAndFilter(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId) => CustomerDAO.GetCustomersPagingAndFilter(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, typeCustomer, wahoId);
         public string SaveCustomer(PostCustomerVM employeeVM) => CustomerDAO.SaveCustomer(employeeVM);
-        public Customer findCustomerByUsername(string username) => CustomerDAO.FindCustomerByUsername(username);
-        public string updateCustomer(PostCustomerVM employeeVM) => CustomerDAO.updateCustomer(employeeVM);
+        public Customer FindCustomerById(int id, int wahoId) => CustomerDAO.FindCustomerById(id, wahoId);
+        public string UpdateCustomer(PostCustomerVM employeeVM) => CustomerDAO.UpdateCustomer(employeeVM);
     }
 }

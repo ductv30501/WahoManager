@@ -13,8 +13,8 @@ namespace DataAccess
 {
     public class CustomerDAO
     {
-        private static readonly IMapper _mapper = customerMapper.Configure();
-        private static readonly IMapper _mapperGet = customerMapper.ConfigureCToCVM();
+        private static readonly IMapper _mapper = customerMapper.ConfigureVMtoM();
+        private static readonly IMapper _mapperGet = customerMapper.ConfigureLMtoLVM();
 
         public static int CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
         {
@@ -136,7 +136,7 @@ namespace DataAccess
                     customer = _mapper.Map<Customer>(customerVM);
                     context.Entry<Customer>(customer).State = EntityState.Modified;
                     context.SaveChanges();
-                    return $"dã sửa thông tin của {customer.CustomerName} thành công";
+                    return $"dã cập nhật thông tin của {customer.CustomerName} thành công";
                 }
             }
             catch (Exception e)

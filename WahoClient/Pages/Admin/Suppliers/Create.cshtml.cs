@@ -6,39 +6,118 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BusinessObjects.WahoModels;
+using System.Net.Http.Headers;
+using Waho.DataService;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using ViewModels.EmployeeViewModels;
+using System.Text;
+using ViewModels.SupplierViewModels;
 
 namespace WahoClient.Pages.Admin.Suppliers
 {
     public class CreateModel : PageModel
     {
-        private readonly BusinessObjects.WahoModels.WahoS8Context _context;
+        private readonly HttpClient client = null;
+        private string supplierAPIUrl = "";
+        private readonly Author _author;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CreateModel(BusinessObjects.WahoModels.WahoS8Context context)
+        public CreateModel(Author author, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            supplierAPIUrl = "https://localhost:7019/waho/Suppliers";
+            _author = author;
+            _httpContextAccessor = httpContextAccessor;
         }
-
+        public string message { get; set; }
+        public string successMessage { get; set; }
         public IActionResult OnGet()
         {
-        ViewData["WahoId"] = new SelectList(_context.WahoInformations, "WahoId", "WahoId");
+            //author
+            if (!_author.IsAuthor(1))
+            {
+                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+            }
             return Page();
         }
 
         [BindProperty]
-        public Supplier Supplier { get; set; } = default!;
-        
+        public SupplierVM Supplier { get; set; } = default!;
+
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-          if (!ModelState.IsValid || _context.Suppliers == null || Supplier == null)
+            var req = HttpContext.Request;
+            //get data form form submit 
+            string raw_conpanyName = req.Form["companyName"];
+            string raw_addres = req.Form["address"];
+            string raw_phone = req.Form["phone"];
+            string raw_taxCode = req.Form["taxCode"];
+            string raw_branch = req.Form["branch"];
+            string raw_description = req.Form["description"];
+            //validate
+            if (string.IsNullOrEmpty(raw_conpanyName))
             {
-                return Page();
+                //message
+                message = "tên nhà cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
             }
-
-            _context.Suppliers.Add(Supplier);
-            await _context.SaveChangesAsync();
-
+            Supplier.CompanyName = raw_conpanyName;
+            if (string.IsNullOrEmpty(raw_addres))
+            {
+                //message
+                message = "địa chỉ cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
+            }
+            Supplier.Address = raw_addres;
+            if (string.IsNullOrEmpty(raw_phone))
+            {
+                //message
+                message = "Số điện thoại của cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
+            }
+            Supplier.Phone = raw_phone;
+            if (string.IsNullOrEmpty(raw_taxCode))
+            {
+                //message
+                message = "Mã số thuế của cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
+            }
+            Supplier.TaxCode = raw_taxCode;
+            if (string.IsNullOrEmpty(raw_branch))
+            {
+                //message
+                message = "Khi nhánh của cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
+            }
+            Supplier.Branch = raw_branch;
+            Supplier.Description = raw_description;
+            Supplier.Active = true;
+            // get data from session
+            var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
+            EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
+            Supplier.WahoId = employeeVM.WahoId;
+            // add supplier
+            var json = JsonConvert.SerializeObject(Supplier);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync(supplierAPIUrl, content);
+            if (response.IsSuccessStatusCode)
+            {
+                successMessage = "Thêm mới nhà cung cấp thành công";
+                TempData["successMessage"] = successMessage;
+                return RedirectToPage("./Index");
+            }
+            // success message
+            TempData["message"] = "Không thêm được nhà cung cấp";
             return RedirectToPage("./Index");
         }
     }

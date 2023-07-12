@@ -6,57 +6,72 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.WahoModels;
+using System.Net.Http.Headers;
+using Waho.DataService;
+using Newtonsoft.Json;
+using System.Drawing.Printing;
+using ViewModels.EmployeeViewModels;
+using AutoMapper;
+using DataAccess.AutoMapperConfig;
+using ViewModels.SupplierViewModels;
+using System.Text;
 
 namespace WahoClient.Pages.Admin.Suppliers
 {
     public class DeleteModel : PageModel
     {
-        private readonly BusinessObjects.WahoModels.WahoS8Context _context;
-
-        public DeleteModel(BusinessObjects.WahoModels.WahoS8Context context)
+        private readonly HttpClient client = null;
+        private string supplierAPIUrl = "";
+        private readonly Author _author;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly IMapper _mapper = SupplierMapper.ConfigureMToVM();
+        public DeleteModel(Author author, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            supplierAPIUrl = "https://localhost:7019/waho/Suppliers";
+            _author = author;
+            _httpContextAccessor = httpContextAccessor;
         }
-
+        public string message { get; set; }
+        public string successMessage { get; set; }
         [BindProperty]
-      public Supplier Supplier { get; set; } = default!;
+        public Supplier Supplier { get; set; } = default!;
 
-        public async Task<IActionResult> OnGetAsync(int? id)
+        public async Task<IActionResult> OnGetAsync(int supplierID)
         {
-            if (id == null || _context.Suppliers == null)
+            //author
+            if (!_author.IsAuthor(1))
             {
-                return NotFound();
+                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
             }
+            HttpResponseMessage responsepaging = await client.GetAsync($"{supplierAPIUrl}/getByID?supId={supplierID}");
+            string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
-            var supplier = await _context.Suppliers.FirstOrDefaultAsync(m => m.SupplierId == id);
-
-            if (supplier == null)
+            if (responsepaging.IsSuccessStatusCode)
             {
-                return NotFound();
+                Supplier = JsonConvert.DeserializeObject<Supplier>(strDatapaging);
             }
-            else 
+            if (Supplier != null)
             {
-                Supplier = supplier;
+                Supplier.Active = false;
+                SupplierVM supplierVM = _mapper.Map<SupplierVM>(Supplier);
+                var json = JsonConvert.SerializeObject(supplierVM);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PutAsync(supplierAPIUrl, content);
+                if (response.IsSuccessStatusCode)
+                {
+                    // message
+                    successMessage = "Xóa thành công nhà cung cấp ra khỏi danh sách";
+                    TempData["successMessage"] = successMessage;
+                    return RedirectToPage("./Index");
+                }
             }
-            return Page();
-        }
-
-        public async Task<IActionResult> OnPostAsync(int? id)
-        {
-            if (id == null || _context.Suppliers == null)
-            {
-                return NotFound();
-            }
-            var supplier = await _context.Suppliers.FindAsync(id);
-
-            if (supplier != null)
-            {
-                Supplier = supplier;
-                _context.Suppliers.Remove(Supplier);
-                await _context.SaveChangesAsync();
-            }
-
+            message = "không tìm thấy nhà cung cấp";
+            TempData["message"] = message;
             return RedirectToPage("./Index");
         }
+
     }
 }

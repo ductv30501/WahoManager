@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
 using ViewModels.EmployeeViewModels;
+using Microsoft.AspNetCore.Http;
 
 namespace WahoClient.Pages.Admin.Employees
 {
@@ -20,13 +21,15 @@ namespace WahoClient.Pages.Admin.Employees
         private readonly HttpClient client = null;
         private string employeeAPIUrl = "";
         private readonly Author _author;
-        public EditModel( Author author)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public EditModel( Author author, IHttpContextAccessor httpContextAccessor)
         {
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             employeeAPIUrl = "https://localhost:7019/waho/Employee";
             _author = author;
+            _httpContextAccessor = httpContextAccessor;
         }
         public string message { get; set; }
         public string successMessage { get; set; }
@@ -58,9 +61,11 @@ namespace WahoClient.Pages.Admin.Employees
             string raw_note = req.Form["note"];
             string raw_role = req.Form["role"];
 
+            // get data from session
+            var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
+            EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // find employee by username
-
-            HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={raw_userName}");
+            HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={raw_userName}&wahoId={eSession.WahoId}");
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             Employee _employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
             PostCustomerVM _Employee = new PostCustomerVM();

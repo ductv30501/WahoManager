@@ -7,35 +7,43 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.WahoModels;
+using System.Net.Http.Headers;
+using Waho.DataService;
+using ViewModels.SupplierViewModels;
+using Newtonsoft.Json;
+using ViewModels.EmployeeViewModels;
+using System.Text;
 
 namespace WahoClient.Pages.Admin.Suppliers
 {
     public class EditModel : PageModel
     {
-        private readonly BusinessObjects.WahoModels.WahoS8Context _context;
+        private readonly HttpClient client = null;
+        private string supplierAPIUrl = "";
+        private readonly Author _author;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public EditModel(BusinessObjects.WahoModels.WahoS8Context context)
+        public EditModel(Author author, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            supplierAPIUrl = "https://localhost:7019/waho/Suppliers";
+            _author = author;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [BindProperty]
-        public Supplier Supplier { get; set; } = default!;
-
+        public SupplierVM Supplier { get; set; } = default!;
+        public string message { get; set; }
+        public string successMessage { get; set; }
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Suppliers == null)
+            //author
+            if (!_author.IsAuthor(1))
             {
-                return NotFound();
+                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
             }
-
-            var supplier =  await _context.Suppliers.FirstOrDefaultAsync(m => m.SupplierId == id);
-            if (supplier == null)
-            {
-                return NotFound();
-            }
-            Supplier = supplier;
-           ViewData["WahoId"] = new SelectList(_context.WahoInformations, "WahoId", "WahoId");
             return Page();
         }
 
@@ -43,35 +51,72 @@ namespace WahoClient.Pages.Admin.Suppliers
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            var req = HttpContext.Request;
+            //get data form form submit 
+            string raw_supplierID = req.Form["supplierIDUpdate"];
+            string raw_conpanyName = req.Form["companyNameUpdate"];
+            string raw_addres = req.Form["addressUpdate"];
+            string raw_phone = req.Form["phoneUpdate"];
+            string raw_taxCode = req.Form["taxCodeUpdate"];
+            string raw_branch = req.Form["branchUpdate"];
+            string raw_description = req.Form["descriptionUpdate"];
 
-            _context.Attach(Supplier).State = EntityState.Modified;
-
-            try
+            Supplier.SupplierId = Int32.Parse(raw_supplierID);
+            //validate
+            if (string.IsNullOrEmpty(raw_conpanyName))
             {
-                await _context.SaveChangesAsync();
+                //message
+                message = "tên nhà cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
             }
-            catch (DbUpdateConcurrencyException)
+            Supplier.CompanyName = raw_conpanyName;
+            if (string.IsNullOrEmpty(raw_addres))
             {
-                if (!SupplierExists(Supplier.SupplierId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                //message
+                message = "địa chỉ cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
             }
-
+            Supplier.Address = raw_addres;
+            if (string.IsNullOrEmpty(raw_phone))
+            {
+                //message
+                message = "Số điện thoại của cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
+            }
+            Supplier.Phone = raw_phone;
+            if (string.IsNullOrEmpty(raw_taxCode))
+            {
+                //message
+                message = "Mã số thuế của cung cấp không được để trống";
+                TempData["message"] = message;
+                return RedirectToPage("./Index");
+            }
+            Supplier.TaxCode = raw_taxCode;
+            Supplier.Branch = raw_branch;
+            Supplier.Description = raw_description;
+            Supplier.Active = true;
+            // get data from session
+            var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
+            EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
+            Supplier.WahoId = employeeVM.WahoId;
+            // update
+            var json = JsonConvert.SerializeObject(Supplier);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PutAsync(supplierAPIUrl, content);
+            if (response.IsSuccessStatusCode)
+            {
+                successMessage = "Chỉnh sửa thông tin nhà cung cấp thành công";
+                TempData["successMessage"] = successMessage;
+                return RedirectToPage("./Index");
+            }
+            // success message
+            TempData["successMessage"] = "Chỉnh sửa thông tin nhà cung cấp thất bại";
             return RedirectToPage("./Index");
         }
 
-        private bool SupplierExists(int id)
-        {
-          return (_context.Suppliers?.Any(e => e.SupplierId == id)).GetValueOrDefault();
-        }
+       
     }
 }

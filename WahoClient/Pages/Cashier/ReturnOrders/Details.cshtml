@@ -5,75 +5,208 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Waho - Sản Phẩm</title>
+    <link href="~/css/modal.css" rel="stylesheet" asp-append-version="true" />
+</head>
+<body style="background: #f2f2f2">
+    @*start filter*@
+    <div style=" padding:10px;margin-top: 20px; border-radius: 10px;" class="col-lg-12">
+        <form method="get" asp-page="./Details" asp-route-pageIndex="@Model.pageIndex" asp-route-pageSize="@Model.pageSize" style="margin-bottom: 20px; ">
+            <div class="d-flex">
+                <div class="form-group me-4">
+                    <select id="inputState" class="form-control" asp-for="@Model.pageSize" onchange="this.form.submit()">
+                        <option value="5"> 5 hàng</option>
+                        <option value="10">10 hàng</option>
+                        <option value="15">15 hàng</option>
+                        <option value="20">20 hàng</option>
+                    </select>
+                    <input name="returnOrderID" type="hidden" value="@Model._returnOrderID" />
+                </div>
+                <div class="form-group me-4">
+                    <a class="btn btn-primary" style="text-decoration: none; color: white" asp-page="./ExportReturnOrderDetail" asp-route-returnOrderID="@Model.ReturnOrder.ReturnOrderId">
+                        Export Excel
+                        <i class="bi bi-download"></i>
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+    @*end filter*@
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div id="error-alert" class="d-flex justify-content-end position-absolute toast-mess">
+            <div class="alert alert-danger text-center"><h5>@TempData["ErrorMessage"]</h5></div>
+        </div>
+    }
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div id="success-alert" class="d-flex justify-content-end position-absolute toast-mess">
+            <div class="alert alert-success text-center"><h5>@TempData["SuccessMessage"]</h5></div>
+        </div>
+    }
+    <div class="bg-waho-white">
+        <div class="my-4">
+            <div class="d-flex mt-2">
+                <form class="form-container col-3 p-3" method="post" asp-page="./Details" id="inventorySheetForm">
+                    <div id="bill-info">
+                        <lable>
+                            <h3>Thông tin hoàn đơn @Model.ReturnOrder.ReturnOrderId</h3>
+                        </lable>
+                        <hr />
+                        <div class="form-group">
+                            <label class="control-label">Mã hóa đơn</label>
+                            <input class="form-control" value="@Model.ReturnOrder.BillId" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Tên khách hàng</label>
+                            <input class="form-control" value="@Model.ReturnOrder.Customer.CustomerName" readonly />
+                            <input name="customerID" type="hidden" value="@Model.ReturnOrder.CustomerId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Người tạo đơn</label>
+                            <input class="form-control" value="@Model.ReturnOrder.UserNameNavigation.EmployeeName" readonly />
+                            <input name="employeeID" type="hidden" value="@Model.ReturnOrder.UserName" />
+                            <input name="returnOrderID" type="hidden" value="@Model.ReturnOrder.ReturnOrderId" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Số tiền cần trả khách</label>
+                            <input class="form-control" name="payCustomer" type="text" value="@Model.ReturnOrder.PayCustomer" readonly />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Số tiền đã trả khách</label>
+                            <input class="form-control" name="paidCustomer" type="text" value="@Model.ReturnOrder.PaidCustomer" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Trạng thái</label>
+                            <div class="form-check d-flex">
+                                <input name="state" type="checkbox" class="form-check-input" style="width:20px; height:20px; margin-left:10px; margin-right:10px;border:1px solid #FF9966" value="true" @(Model.ReturnOrder.State == true ? "checked":"") />
+                                <label class="form-check-label">Đã xử lý</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Ngày tạo</label>
+                            <input class="form-control" name="date" type="datetime" value="@Model.ReturnOrder.Date" />
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Nội dung</label>
+                            <input class="form-control" type="text" name="description" value="@Model.ReturnOrder.Description" />
+                        </div>
+                        <div class="form-group text-center mt-4">
+                            <a class="btn btn-outline-primary me-2" asp-page="./Index"> Quay lại</a>
+                            <button id="btnSubmit" class="btn btn-primary" type="submit">Lưu</button>
+                        </div>
+                    </div>
+                </form>
 
-<div>
-    <h4>ReturnOrder</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.State)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.State)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.Date)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.Date)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.Description)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.Active)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.Active)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.PayCustomer)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.PayCustomer)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.PaidCustomer)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.PaidCustomer)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.BillId)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.BillId)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.Customer)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.Customer.CustomerName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.UserNameNavigation)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.UserNameNavigation.UserName)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.ReturnOrder.Waho)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.ReturnOrder.Waho.WahoId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.ReturnOrder?.ReturnOrderId">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
-</div>
+                <div class="col-lg-9" style="overflow-x: auto; background-color: #fff; border-radius: 10px; padding:10px;margin-left:10px">
+                    @if (Model.TotalCount > 0)
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Tên sản phẩm
+                                    </th>
+                                    <th>
+                                        Thương hiệu
+                                    </th>
+                                    <th>
+                                        Giá tại kho
+                                    </th>
+                                    <th>
+                                        Số lượng
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.returnOrderProducts)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Product.ProductName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Product.Trademark)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Product.Quantity)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Quantity)
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="d-flex mt-5">
+                            <div class="pagination m-auto">
+                                <ul class="pagination">
+                                    @if (Model.pageIndex > 1)
+                                    {
+                                        <li class="page-item"><a class="page-link link-paging" asp-page="./Details" asp-route-pageIndex="@(Model.pageIndex - 1)" asp-route-pageSize="@Model.pageSize" asp-route-returnOrderID="@Model._returnOrderID">Trước</a></li>
+                                    }
+                                    @for (int i = 1; i <= Math.Ceiling(Model.TotalCount / (double)Model.pageSize); i++)
+                                    {
+                                        <li class="page-item @(Model.pageIndex == i ? "active" : "") link-active"><a class="page-link link-paging" asp-page="./Details" asp-route-pageIndex="@i" asp-route-pageSize="@Model.pageSize" asp-route-returnOrderID="@Model._returnOrderID">@i</a></li>
+                                    }
+                                    @if (Model.pageIndex < Math.Ceiling(Model.TotalCount / (double)Model.pageSize))
+                                    {
+                                        <li class="page-item"><a class="page-link link-paging" asp-page="./Details" asp-route-pageIndex="@(Model.pageIndex + 1)" asp-route-pageSize="@Model.pageSize" asp-route-returnOrderID="@Model._returnOrderID">Sau</a></li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center">Không có phiếu hoàn đơn nào</div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../../admin/js/tabler.min.js" defer></script>
+    <script src="../../../admin/js/demo.min.js" defer></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js"></script>
+    <script>
+        $(document).ready(function () {
+            setTimeout(function () {
+                $("#success-alert").fadeOut("slow", function () {
+                    $(this).remove();
+                });
+                $("#error-alert").fadeOut("slow", function () {
+                    $(this).remove();
+                });
+            }, 3000); // thời gian để tự động ẩn thông báo (tính bằng mili giây)
+
+            $('#search-input-bill').keypress(function (event) {
+                var keycode = (event.keyCode ? event.keyCode : event.which);
+                if (keycode == '13') {
+                    event.preventDefault();
+                    // Thực hiện các hành động cần thiết khi người dùng nhấn phím Enter
+                }
+            });
+
+            var delayTimer;
+            $('#search-input-bill').on('input', function () {
+                clearTimeout(delayTimer);
+                delayTimer = setTimeout(function () {
+                    $('#billListForm').submit()
+                }, 500); // Thời gian chờ tính bằng mili giây
+            });
+
+        });
+    </script>
+</body>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    }

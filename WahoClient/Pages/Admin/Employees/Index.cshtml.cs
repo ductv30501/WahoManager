@@ -9,7 +9,10 @@ using BusinessObjects.WahoModels;
 using Waho.DataService;
 using System.Net.Http.Headers;
 using ViewModels.EmployeeViewModels;
-using System.Text.Json;
+//using System.Text.Json;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace WahoClient.Pages.Admin.Employees
 {
@@ -18,6 +21,7 @@ namespace WahoClient.Pages.Admin.Employees
         private readonly HttpClient client = null;
         private string employeeAPIUrl = "";
         private readonly Author _author;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         //message
         [BindProperty(SupportsGet = true)]
         public string message { get; set; }
@@ -38,13 +42,14 @@ namespace WahoClient.Pages.Admin.Employees
         [BindProperty(SupportsGet = true)]
         public string status { get; set; } = "all";
         private string raw_pageSize, raw_textSearch;
-        public IndexModel( Author author)
+        public IndexModel( Author author, IHttpContextAccessor httpContextAccessor)
         {
             client = new HttpClient();
             var contentType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(contentType);
             employeeAPIUrl = "https://localhost:7019/waho/Employee";
             _author = author;
+            _httpContextAccessor = httpContextAccessor;
         }
         [BindProperty(SupportsGet = true)]
         public IList<Employee> Employee { get; set; } = default!;
@@ -82,19 +87,24 @@ namespace WahoClient.Pages.Admin.Employees
             {
                 title = "all";
             }
-            HttpResponseMessage response = await client.GetAsync(employeeAPIUrl + "/countPagingEmployee?textSearch=" + textSearch + "&status=" + status + "&title="+ title);
+            // get data from session
+            var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
+            EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
+            //api total count
+            HttpResponseMessage response = await client.GetAsync(employeeAPIUrl + "/countPagingEmployee?textSearch=" + textSearch + "&status=" + status + "&title="+ title + "&wahoId=" + employeeVM.WahoId);
             string strData = await response.Content.ReadAsStringAsync();
             TotalCount = int.Parse(strData);
 
             message = TempData["message"] as string;
             successMessage = TempData["successMessage"] as string;
-            HttpResponseMessage responsepaging = await client.GetAsync(employeeAPIUrl + "/getEmployeePaging?pageIndex="+ pageIndex + "&pageSize="+ pageSize + "&textSearch=" + textSearch + "&status=" + status + "&title=" + title);
+            // api paging
+            HttpResponseMessage responsepaging = await client.GetAsync(employeeAPIUrl + "/getEmployeePaging?pageIndex="+ pageIndex + "&pageSize="+ pageSize + "&textSearch=" + textSearch + "&status=" + status + "&title=" + title + "&wahoId=" + employeeVM.WahoId);
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
-            var optionspaging = new JsonSerializerOptions
+           
+            if (responsepaging.IsSuccessStatusCode)
             {
-                PropertyNameCaseInsensitive = true,
-            };
-            Employee = JsonSerializer.Deserialize<List<Employee>>(strDatapaging,optionspaging);
+                Employee = JsonConvert.DeserializeObject<List<Employee>>(strDatapaging);
+            }
             return Page();
         }
     }

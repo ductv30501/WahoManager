@@ -51,6 +51,9 @@ namespace WahoClient.Pages.Admin.Employees
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            // get data from session
+            var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
+            EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             var req = HttpContext.Request;
             //get data form form submit 
             string raw_userName = req.Form["userName"];
@@ -74,12 +77,11 @@ namespace WahoClient.Pages.Admin.Employees
             _Employee.UserName = raw_userName;
             // find employee by username
 
-            HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={raw_userName}");
-            string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
-            Employee _employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
-            //Employee _employee = await _context.Employees.FindAsync(_Employee.UserName);
+            HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/usernameAllWaho?username={raw_userName}");
+            //string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
+            //Employee _employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
 
-            if (_employee == null)
+            if (!responseEmployee.IsSuccessStatusCode)
             {
                 _Employee.EmployeeName = raw_EmployeeName;
                 _Employee.Title = raw_title;
@@ -115,9 +117,7 @@ namespace WahoClient.Pages.Admin.Employees
                 _Employee.Address = raw_addrress;
                 _Employee.Password = "wahoEmployee";
                 _Employee.Role = Int32.Parse(raw_role);
-                // get data from session
-                var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
-                EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
+                
                 _Employee.WahoId = employeeVM.WahoId;
                 // call api add new employee
                 var json = JsonConvert.SerializeObject(_Employee);

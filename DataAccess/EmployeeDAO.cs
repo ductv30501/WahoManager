@@ -2,6 +2,7 @@
 using BusinessObjects.WahoModels;
 using DataAccess.AutoMapperConfig;
 using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,14 +41,14 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
-        public static int countPagingEmployee(string textSearch, string status, string title)
+        public static int countPagingEmployee(string textSearch, string status, string title, int wahoId)
         {
             int TotalCount;
             try
             {
                 using (var context = new WahoS8Context())
                 {
-                    var query = context.Employees.AsQueryable();
+                    var query = context.Employees.Where(e => e.WahoId == wahoId).AsQueryable();
                     if (!string.IsNullOrEmpty(textSearch))
                     {
                         query = query.Where(e => e.EmployeeName.ToLower().Contains(textSearch) || e.Email.ToLower().Contains(textSearch)
@@ -72,14 +73,14 @@ namespace DataAccess
             }
             return TotalCount;
         }
-        public static List<Employee> getEmployeePaging(int pageIndex, int pageSize, string textSearch, string title, string status)
+        public static List<Employee> getEmployeePaging(int pageIndex, int pageSize, string textSearch, string title, string status, int wahoId)
         {
             List<Employee> employees = new List<Employee>();
             try
             {
                 using (var context = new WahoS8Context())
                 {
-                    var query = context.Employees.AsQueryable().Where(s => s.Active == true || s.Active == false);
+                    var query = context.Employees.AsQueryable().Where(s => s.Active == true || s.Active == false). Where(e => e.WahoId == wahoId);
                     if (!string.IsNullOrEmpty(textSearch))
                     {
                         query = query.Where(e => e.EmployeeName.ToLower().Contains(textSearch) || e.Email.ToLower().Contains(textSearch)
@@ -126,7 +127,23 @@ namespace DataAccess
             }
         }
 
-        public static Employee FindEmployeeByUsername(string username)
+        public static Employee FindEmployeeByUsername(string username, int wahoId)
+        {
+            Employee employee = new Employee();
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    employee = context.Employees.FirstOrDefault(e => e.UserName == username && e.WahoId == wahoId);
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+            return employee;
+        }
+        public static Employee FindEmployeeByUsernameAll(string username)
         {
             Employee employee = new Employee();
             try
@@ -153,6 +170,65 @@ namespace DataAccess
                     context.Entry<Employee>(employee).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
                     context.SaveChanges();
                     return $"dã sửa thông tin của {employee.EmployeeName} thành công";
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static List<Employee> GetEmployeesInWaho(int wahoId)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    List<Employee> employees = context.Employees.Where(e => e.WahoId == wahoId && e.Role != 2).ToList();
+                    return employees;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static List<Employee> GetAllEmployeesInWaho(int wahoId)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    List<Employee> employees = context.Employees.Where(e => e.WahoId == wahoId).ToList();
+                    return employees;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static List<Employee> GetEmployeesInWahoByRole(int role, int wahoId)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    List<Employee> employees = context.Employees.Where(e => e.WahoId == wahoId && e.Role != role).ToList();
+                    return employees;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static Employee GetEmployeesByEmail(string email)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    return context.Employees.FirstOrDefault(e => e.Email == email);
                 }
             }
             catch (Exception e)

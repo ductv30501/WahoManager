@@ -32,7 +32,8 @@ namespace WahoClient.Pages.Admin.Employees
             _author = author;
             _httpContextAccessor = httpContextAccessor;
         }
-
+        public string message { get; set; }
+        public string successMessage { get; set; }
         public async Task<IActionResult> OnGetAsync(string id)
         {
             //author
@@ -42,8 +43,7 @@ namespace WahoClient.Pages.Admin.Employees
             }
             return Page();
         }
-        public string message { get; set; }
-        public string successMessage { get; set; }
+        
         [BindProperty]
         public Employee Employee { get; set; }
 

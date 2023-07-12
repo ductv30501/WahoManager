@@ -7,35 +7,41 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.WahoModels;
+using System.Net.Http.Headers;
+using Waho.DataService;
+using Newtonsoft.Json;
+using ViewModels.EmployeeViewModels;
+using System.Text;
 
 namespace WahoClient.Pages.Admin.Customers
 {
     public class EditModel : PageModel
     {
-        private readonly BusinessObjects.WahoModels.WahoS8Context _context;
-
-        public EditModel(BusinessObjects.WahoModels.WahoS8Context context)
+        private readonly HttpClient client = null;
+        private string customerAPIUrl = "";
+        private readonly Author _author;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public EditModel(Author author, IHttpContextAccessor httpContextAccessor)
         {
-            _context = context;
+            client = new HttpClient();
+            var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+            client.DefaultRequestHeaders.Accept.Add(contentType);
+            customerAPIUrl = "https://localhost:7019/waho/Customer";
+            _author = author;
+            _httpContextAccessor = httpContextAccessor;
         }
-
+        public string message { get; set; }
+        public string successMessage { get; set; }
         [BindProperty]
         public Customer Customer { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            if (id == null || _context.Customers == null)
+            //author
+            if (!_author.IsAuthor(1))
             {
-                return NotFound();
+                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
             }
-
-            var customer =  await _context.Customers.FirstOrDefaultAsync(m => m.CustomerId == id);
-            if (customer == null)
-            {
-                return NotFound();
-            }
-            Customer = customer;
-           ViewData["WahoId"] = new SelectList(_context.WahoInformations, "WahoId", "WahoId");
             return Page();
         }
 
@@ -43,35 +49,41 @@ namespace WahoClient.Pages.Admin.Customers
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+            // get data from session
+            var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
+            EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
 
-            _context.Attach(Customer).State = EntityState.Modified;
+            string id = HttpContext.Request.Form["id"];
+            string name = HttpContext.Request.Form["name"];
+            string raw_dob = HttpContext.Request.Form["dob"];
+            string phone = HttpContext.Request.Form["phone"];
+            string email = HttpContext.Request.Form["email"];
+            string raw_type = HttpContext.Request.Form["type"];
+            string tax = HttpContext.Request.Form["tax"];
+            string address = HttpContext.Request.Form["address"];
+            string note = HttpContext.Request.Form["note"];
+            string active = HttpContext.Request.Form["active"];
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CustomerExists(Customer.CustomerId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            Customer.CustomerId = int.Parse(id);
+            Customer.CustomerName = name;
+            Customer.Adress = address;
+            Customer.Phone = phone;
+            Customer.Email = email;
+            Customer.Active = true;
+            Customer.Description = note;
+            Customer.TaxCode = tax;
+            Customer.Dob = DateTime.Parse(raw_dob);
+            Customer.TypeOfCustomer = Boolean.Parse(raw_type);
+            Customer.Active = bool.Parse(active);
 
+            //update to data
+            var json = JsonConvert.SerializeObject(Customer);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PutAsync(customerAPIUrl, content);
+            string messageResponse = await response.Content.ReadAsStringAsync();
+
+            TempData["successMessage"] = messageResponse;
             return RedirectToPage("./Index");
-        }
-
-        private bool CustomerExists(int id)
-        {
-          return (_context.Customers?.Any(e => e.CustomerId == id)).GetValueOrDefault();
         }
     }
 }

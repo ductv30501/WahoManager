@@ -109,7 +109,7 @@ namespace DataAccess
             }
             return employees;
         }
-        public static string SaveEmployee(PostCustomerVM employeeVM)
+        public static string SaveEmployee(PostEmployeeVM employeeVM)
         {
             Employee employee = _mapper.Map<Employee>(employeeVM);
             try
@@ -159,7 +159,7 @@ namespace DataAccess
             }
             return employee;
         }
-        public static string updateEmployee(PostCustomerVM employeeVM)
+        public static string updateEmployee(PostEmployeeVM employeeVM)
         {
             try
             {

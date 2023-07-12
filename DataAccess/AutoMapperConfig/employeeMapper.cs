@@ -15,7 +15,7 @@ namespace DataAccess.AutoMapperConfig
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<PostCustomerVM, Employee>();
+                cfg.CreateMap<PostEmployeeVM, Employee>();
             });
 
             return config.CreateMapper();
@@ -24,7 +24,7 @@ namespace DataAccess.AutoMapperConfig
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<Employee,PostCustomerVM > ();
+                cfg.CreateMap<Employee, PostEmployeeVM> ();
             });
 
             return config.CreateMapper();

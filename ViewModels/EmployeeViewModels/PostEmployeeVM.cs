@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace ViewModels.EmployeeViewModels
 {
-    public class PostCustomerVM
+    public class PostEmployeeVM
     {
         [Required(ErrorMessage = "Phải có tên tài khoản")]
         [MinLength(6, ErrorMessage = "phải có ít nhất 6 ký tự")]

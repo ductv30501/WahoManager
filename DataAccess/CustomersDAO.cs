@@ -13,7 +13,7 @@ namespace DataAccess
 {
     public class CustomersDAO
     {
-        private static readonly IMapper _mapper = CustomerMapper.ConfigureVMtoM();
+        private static readonly IMapper _mapper = customerMapper.Configure();
         public static int SaveCustomer(CustomerVM customerVM)
         {
             Customer customer = _mapper.Map<Customer>(customerVM);

@@ -51,8 +51,8 @@ namespace WahoClient.Pages.Admin.Employees
             HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={id}");
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             Employee employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
-            PostCustomerVM postEmployeeVM = new PostCustomerVM();
-            postEmployeeVM = _mapper.Map<PostCustomerVM>(employee);
+            PostEmployeeVM postEmployeeVM = new PostEmployeeVM();
+            postEmployeeVM = _mapper.Map<PostEmployeeVM>(employee);
             if (employee != null)
             {
                 postEmployeeVM.Active = false;

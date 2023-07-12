@@ -68,7 +68,7 @@ namespace WahoAPI.Controllers.EmployeeController
             return Ok(employee);
         }
         [HttpPut]
-        public IActionResult PutEmployee(PostEmployeeVM pe)
+        public IActionResult PutEmployee(PostCustomerVM pe)
         {
             string message = respository.updateEmployee(pe);
             return Ok(message);

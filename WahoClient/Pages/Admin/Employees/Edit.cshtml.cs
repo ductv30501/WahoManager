@@ -68,7 +68,7 @@ namespace WahoClient.Pages.Admin.Employees
             HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={raw_userName}&wahoId={eSession.WahoId}");
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             Employee _employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
-            PostEmployeeVM _Employee = new PostEmployeeVM();
+            PostCustomerVM _Employee = new PostCustomerVM();
             _Employee.UserName = raw_userName;
             _Employee.EmployeeName = raw_EmployeeName;
             _Employee.Title = raw_title;

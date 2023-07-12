@@ -67,7 +67,7 @@ namespace WahoClient.Pages.Admin.Employees
             string raw_note = req.Form["note"];
             string raw_role = req.Form["role"];
 
-            PostEmployeeVM _Employee = new PostEmployeeVM();
+            PostCustomerVM _Employee = new PostCustomerVM();
             if (string.IsNullOrEmpty(raw_userName) || raw_userName.Length < 6)
             {
                 message = "Bạn nhập tài khoản có ít nhất 6 ký tự";

@@ -9,22 +9,22 @@ using ViewModels.CustomerViewModels;
 
 namespace DataAccess.AutoMapperConfig
 {
-    public class customerMapper:Profile
+    public class CustomerMapper : Profile
     {
-        public static IMapper Configure()
+        public static IMapper ConfigureVMtoM()
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<PostCustomerVM, Customer>();
+                cfg.CreateMap<CustomerVM, Customer>();
             });
 
             return config.CreateMapper();
         }
-        public static IMapper ConfigureCToCVM()
+        public static IMapper ConfigureMToVM()
         {
             var config = new MapperConfiguration(cfg =>
             {
-                cfg.CreateMap<List<Customer>, List<GetCustomerVM>>();
+                cfg.CreateMap<Customer, CustomerVM>();
             });
 
             return config.CreateMapper();

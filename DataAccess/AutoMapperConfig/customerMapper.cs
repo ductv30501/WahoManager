@@ -21,13 +21,6 @@ namespace DataAccess.AutoMapperConfig
 
             return config.CreateMapper();
         }
-
-        public static IMapper ConfigureMToVM()
-        {
-            var config = new MapperConfiguration(cfg =>
-            {
-                cfg.CreateMap<Customer, CustomerVM>();
-
         public static IMapper ConfigureMtoVM()
         {
             var config = new MapperConfiguration(cfg =>

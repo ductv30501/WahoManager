@@ -9,7 +9,7 @@ using ViewModels.CustomerViewModels;
 
 namespace DataAccess.AutoMapperConfig
 {
-    public class CustomerMapper : Profile
+    public class customerMapper
     {
         public static IMapper ConfigureVMtoM()
         {
@@ -25,6 +25,16 @@ namespace DataAccess.AutoMapperConfig
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Customer, CustomerVM>();
+            });
+
+            return config.CreateMapper();
+        }
+        public static IMapper ConfigureLMtoLVM()
+        {
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<List<Customer>, List<PostCustomerVM>>();
+
             });
 
             return config.CreateMapper();

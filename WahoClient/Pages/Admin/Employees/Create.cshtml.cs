@@ -32,7 +32,6 @@ namespace WahoClient.Pages.Admin.Employees
             _author = author;
             _httpContextAccessor = httpContextAccessor;
         }
-
         public async Task<IActionResult> OnGetAsync(string id)
         {
             //author

@@ -13,8 +13,8 @@ namespace DataAccess
 {
     public class CustomerDAO
     {
-        private static readonly IMapper _mapper = customerMapper.Configure();
-        private static readonly IMapper _mapperGet = customerMapper.ConfigureCToCVM();
+        private static readonly IMapper _mapper = CustomerMapper.ConfigureVMtoM();
+        private static readonly IMapper _mapperGet = CustomerMapper.ConfigureMToVM();
 
         public static int CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
         {

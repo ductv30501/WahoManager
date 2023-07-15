@@ -9,7 +9,7 @@ using ViewModels.CustomerViewModels;
 
 namespace DataAccess.AutoMapperConfig
 {
-    public class customerMapper : Profile
+    public class CustomerMapper : Profile
     {
         public static IMapper ConfigureVMtoM()
         {

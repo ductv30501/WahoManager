@@ -40,7 +40,7 @@ namespace WahoAPI.Controllers.CustomerController
             string message = respository.SaveCustomer(pe);
             return Ok(message);
         }
-        [HttpGet("username")]
+        [HttpGet("detail")]
         public ActionResult<Employee> FindCustomerById(int id,int wahoId)
         {
             Customer customer = respository.FindCustomerById(id, wahoId);

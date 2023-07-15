@@ -20,35 +20,36 @@
             <form id="insertForm" asp-page="./Create" method="post">
                 <div class="col-md-6">
                     <h4 class="text-right">Thêm sản phẩm mới</h4>
+                    <div id="notification-insert"></div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
                         <label class="labels">Tên sản phẩm</label>
-                        <input name="productName" class="form-control input" type="text" placeholder="Nhập tên sản phẩm" required />
+                        <input name="productName" id="insert-productName" class="form-control input" type="text" placeholder="Nhập tên sản phẩm" required />
                     </div>
                     <div class="col-md-6">
                         <label class="labels">Giá nhập</label>
-                        <input name="importPrice" class="form-control input" type="number" min="1000" placeholder="Điền Giá nhập" required />
+                        <input name="importPrice" id="insert-importPrice" class="form-control input" type="number" min="1000" placeholder="Điền Giá nhập" required />
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
                         <label class="labels">Thương hiệu</label>
-                        <input name="trademark" type="text" class="form-control input" placeholder="Nhập tên thương hiệu" required />
+                        <input name="trademark" id="insert-trademark" type="text" class="form-control input" placeholder="Nhập tên thương hiệu" required />
                     </div>
                     <div class="col-md-6">
                         <label class="labels">Số lượng</label><br />
-                        <input name="quantity" type="number" min="1" class="form-control input" placeholder="Vị trí" required />
+                        <input name="quantity" id="insert-quantity" type="number" min="1" class="form-control input" placeholder="Vị trí" required />
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
                         <label class="labels">Trọng lượng</label>
-                        <input name="weight" type="number" min="1" class="form-control input" placeholder="Trọng lượng" />
+                        <input name="weight" id="insert-weight" type="number" min="1" class="form-control input" placeholder="Trọng lượng" required />
                     </div>
                     <div class="col-md-6">
                         <label class="labels">Vị trí</label>
-                        <select name="location" class="form-select input" aria-label="Default select example">
+                        <select name="location" id="insert-location" class="form-select input" aria-label="Default select example">
                             @foreach (var s in Model.locations)
                             {
                                 <option value="@(s.LocationId)">@s.Name</option>
@@ -59,31 +60,31 @@
                 <div class="row mt-2">
                     <div class="col-md-6">
                         <label class="labels">Đơn vị</label>
-                        <input name="unit" type="text" class="form-control input" placeholder="Đơn vị" required />
+                        <input name="unit" id="insert-unit" type="text" class="form-control input" placeholder="Đơn vị" required />
                     </div>
                     <div class="col-md-6">
                         <label class="labels">Đơn giá</label>
-                        <input name="unitPrice" type="number" min="1000" class="form-control input" placeholder="Đơn giá" required />
+                        <input name="unitPrice" id="insert-unitPrice" type="number" min="1000" class="form-control input" placeholder="Đơn giá" required />
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
                         <label class="labels">Định mức tồn min</label>
-                        <input name="inventoryLevelMin" type="number" min="1" class="form-control input" placeholder="Định mức tồn min" required />
+                        <input name="inventoryLevelMin" id="insert-inventoryLevelMin" type="number" min="1" class="form-control input" placeholder="Định mức tồn min" required />
                     </div>
                     <div class="col-md-6">
                         <label class="labels">Định mức tồn max</label>
-                        <input name="inventoryLevelMax" type="number" min="1" class="form-control input" placeholder="Định mức tồn max" required />
+                        <input name="inventoryLevelMax" id="insert-inventoryLevelMax" type="number" min="1" class="form-control input" placeholder="Định mức tồn max" required />
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-6">
                         <label class="labels">Miêu tả</label>
-                        <input name="description" type="text" class="form-control input" placeholder="nhập Miêu tả" />
+                        <input name="description" id="insert-description" type="text" class="form-control input" placeholder="nhập Miêu tả" />
                     </div>
                     <div class="col-md-6">
                         <label class="labels">Loại sản phẩm</label>
-                        <select name="subCategory" class="form-select input" aria-label="Default select example">
+                        <select name="subCategory" id="insert-subCategory" class="form-select input" aria-label="Default select example">
                             @foreach (var s in Model.subCategories)
                             {
                                 <option value="@(s.SubCategoryId)">@s.SubCategoryName</option>
@@ -94,7 +95,7 @@
                 <div class="row mt-2">
                     <div class="col-md-6">
                         <label class="labels">Nhà cung cấp</label>
-                        <select name="supplierID" class="form-select input" aria-label="Default select example">
+                        <select name="supplierID" id="insert-supplierID" class="form-select input" aria-label="Default select example">
                             @foreach (var s in Model.suppliers)
                             {
                                 <option value="@(s.SupplierId)">@s.CompanyName</option>
@@ -120,7 +121,7 @@
                     </div>
                 </div>
                 <div class="text-center mt-5">
-                    <button id="btnSubmit" class="btn btn-primary" type="submit">Thêm sản phẩm</button>
+                    <button id="btnSubmit" class="btn btn-primary" type="submit" >Thêm sản phẩm</button>
                     <button class="btn btn-outline-primary" type="button" onclick="modal('insert-modal', 0, 'scale(0)')">Đóng</button>
                 </div>
             </form>
@@ -687,6 +688,7 @@
             </form>
         </div>
     </div>
+
     <script>
 
         function showProperty(id) {
@@ -706,7 +708,7 @@
         // product details
         function getProductDetail(productID) {
             $.ajax({
-                url: "https://localhost:7019/waho/Products/productId?productId="+ productID ,
+                url: "https://localhost:7019/waho/Products/productId?productId=" + productID,
                 type: "GET",
                 data: { productId: productID },
                 success: function (data) {
@@ -765,29 +767,29 @@
 
         function renderConfirmationModal(id, name) {
             $('#modal-confirmation').html(`
-                                                            <div class="modal-dialog ">
-                                                                <div class="modal-content modal-content-confirmation">
-                                                                    <div class=" modal-header p-1">
-                                                                        <h6 class="modal-title ms-3">
-                                                                            <i class="bi bi-exclamation-triangle-fill modal-confirm-content-title"></i>
-                                                                            Xác nhận muốn xoá sản phẩm này?
-                                                                        </h6>
-                                                                        <h5 class="toast__close mb-0" onclick="closeModalConfirmation()">
-                                                                            <i class="bi bi-x-lg"></i>
-                                                                        </h5>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        <h6>Thông tin hoá đơn:</h6>
-                                                                        <p>Mã sản phẩm: ${id}</p>
-                                                                        <p>Tên sản phẩm: ${name}</p>
-                                                                    </div>
-                                                                    <div class="modal-footer p-1">
-                                                                        <button type="button" class="btn btn-primary" onclick="handleDelete('${id}')">Xác nhận</button>
-                                                                        <button type="button" onclick=" closeModalConfirmation()" class="btn btn-outline-primary"
-                                                                            data-bs-dismiss="modal">Đóng</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>`)
+                                                                            <div class="modal-dialog ">
+                                                                                <div class="modal-content modal-content-confirmation">
+                                                                                    <div class=" modal-header p-1">
+                                                                                        <h6 class="modal-title ms-3">
+                                                                                            <i class="bi bi-exclamation-triangle-fill modal-confirm-content-title"></i>
+                                                                                            Xác nhận muốn xoá sản phẩm này?
+                                                                                        </h6>
+                                                                                        <h5 class="toast__close mb-0" onclick="closeModalConfirmation()">
+                                                                                            <i class="bi bi-x-lg"></i>
+                                                                                        </h5>
+                                                                                    </div>
+                                                                                    <div class="modal-body">
+                                                                                        <h6>Thông tin hoá đơn:</h6>
+                                                                                        <p>Mã sản phẩm: ${id}</p>
+                                                                                        <p>Tên sản phẩm: ${name}</p>
+                                                                                    </div>
+                                                                                    <div class="modal-footer p-1">
+                                                                                        <button type="button" class="btn btn-primary" onclick="handleDelete('${id}')">Xác nhận</button>
+                                                                                        <button type="button" onclick=" closeModalConfirmation()" class="btn btn-outline-primary"
+                                                                                            data-bs-dismiss="modal">Đóng</button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>`)
         }
 
         function handleDelete(id) {
@@ -798,48 +800,25 @@
         function closeModalConfirmation() {
             $('#modal-confirmation').css('display', 'none')
         }
-
-        var delayTimer;
-
-        $(document).ready(function () {
-            setTimeout(function () {
-                $("#success-alert").fadeOut("slow", function () {
-                    $(this).remove();
-                });
-                $("#error-alert").fadeOut("slow", function () {
-                    $(this).remove();
-                });
-            }, 3000); // thời gian để tự động ẩn thông báo (tính bằng mili giây)
-
-            $('#search-input-bill').keypress(function (event) {
-                var keycode = (event.keyCode ? event.keyCode : event.which);
-                if (keycode == '13') {
-                    event.preventDefault();
-                    // Thực hiện các hành động cần thiết khi người dùng nhấn phím Enter
-                }
-            });
-
-            var delayTimer;
-            $('#search-input-bill').on('input', function () {
-                clearTimeout(delayTimer);
-                delayTimer = setTimeout(function () {
-                    $('#billListForm').submit()
-                }, 500); // Thời gian chờ tính bằng mili giây
-            });
-
-        });
-    </script>
-    <script src="../../../admin/js/tabler.min.js" defer></script>
-    <script src="../../../admin/js/demo.min.js" defer></script>
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.datatables.net/1.12.0/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.12.0/js/dataTables.bootstrap4.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js"></script>
-    <script>
-
-
-        var delayTimer;
+        function checkInsert() {
+            var productName = $("insert-productName").val();
+            var importPrice = $("insert-importPrice").val();
+            var trademark = $("insert-trademark").val();
+            var quantity = $("insert-quantity").val();
+            var weight = $("insert-weight").val();
+            var unit = $("insert-unit").val();
+            var unitPrice = $("insert-unitPrice").val();
+            var inventoryLevelMin = $("insert-inventoryLevelMin").val();
+            var inventoryLevelMax = $("insert-inventoryLevelMax").val();
+            var description = $("insert-description").val();
+            var check = true;
+            console.log(productName);
+            if (productName == "" || importPrice == "" || trademark == "" || quantity == "" || weight == "" || unit == "" || unitPrice == "" || inventoryLevelMin == "" || inventoryLevelMax == "" || description == "") {
+                check = false;
+                $("#notification-insert").html("hãy nhập đủ các trường");
+                console.log("a");
+            }
+        }
 
         $(document).ready(function () {
             setTimeout(function () {
@@ -850,23 +829,6 @@
                     $(this).remove();
                 });
             }, 3000); // thời gian để tự động ẩn thông báo (tính bằng mili giây)
-
-            $('#search-input-bill').keypress(function (event) {
-                var keycode = (event.keyCode ? event.keyCode : event.which);
-                if (keycode == '13') {
-                    event.preventDefault();
-                    // Thực hiện các hành động cần thiết khi người dùng nhấn phím Enter
-                }
-            });
-
-            var delayTimer;
-            $('#search-input-bill').on('input', function () {
-                clearTimeout(delayTimer);
-                delayTimer = setTimeout(function () {
-                    $('#billListForm').submit()
-                }, 500); // Thời gian chờ tính bằng mili giây
-            });
-
         });
     </script>
 </body>

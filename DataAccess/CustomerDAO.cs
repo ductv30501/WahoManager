@@ -16,6 +16,7 @@ namespace DataAccess
         private static readonly IMapper _mapper = customerMapper.ConfigureVMtoM();
         private static readonly IMapper _mapperGet = customerMapper.ConfigureLMtoLVM();
 
+
         public static int CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
         {
             try

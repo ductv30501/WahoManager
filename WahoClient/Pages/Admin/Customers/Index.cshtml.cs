@@ -94,7 +94,7 @@ namespace WahoClient.Pages.Admin.Customers
             message = TempData["message"] as string;
             successMessage = TempData["successMessage"] as string;
             // api paging
-            HttpResponseMessage responsepaging = await client.GetAsync(customerAPIUrl + "/getCustomers?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&status=" + status + "&typeCustomer=" + typeCustomer + "&wahoId=" + employeeVM.WahoId);
+            HttpResponseMessage responsepaging = await client.GetAsync(customerAPIUrl + "/get s?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&status=" + status + "&typeCustomer=" + typeCustomer + "&wahoId=" + employeeVM.WahoId);
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
             if (responsepaging.IsSuccessStatusCode)

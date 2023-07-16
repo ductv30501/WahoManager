@@ -34,6 +34,10 @@ namespace DataAccess
             {
                 using (var _context = new WahoS8Context())
                 {
+                    if (string.IsNullOrEmpty(name))
+                    {
+                        return _context.WahoInformations.FirstOrDefault(w => w.Email == email);
+                    }
                     return _context.WahoInformations.FirstOrDefault(w => w.WahoName == name && w.Email == email);
                 }
             }

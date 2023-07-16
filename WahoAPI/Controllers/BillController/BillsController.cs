@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Repositories.BillRepository;
 using Repositories.ReturnOrderRepository;
 using System.Collections.Generic;
+using ViewModels.BillDetailViewModels;
+using ViewModels.BillViewModel;
 using ViewModels.CustomerViewModels;
+using ViewModels.OrderDetailViewModels;
+using ViewModels.OrderViewModels;
 
 namespace WahoAPI.Controllers.BillController
 {
@@ -34,7 +38,7 @@ namespace WahoAPI.Controllers.BillController
             return Ok(billDetail);
         }
 
-        [HttpGet("getCustomers")]
+        [HttpGet("getBills")]
         public ActionResult<GetCustomerVM> Get(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string active, int wahoId)
         {
             var bill = respository.GetBillsPagingAndFilter(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, active, wahoId);
@@ -55,6 +59,25 @@ namespace WahoAPI.Controllers.BillController
             }
             return Ok(total);
         }
-
+        [HttpPost]
+        public IActionResult saveBill(PostBill PostBill)
+        {
+            int new_billID = respository.saveBill(PostBill);
+            BillIdVM BillIdVM = new BillIdVM();
+            BillIdVM.BillId = new_billID;
+            return Ok(BillIdVM);
+        }
+        [HttpPut]
+        public ActionResult PutBill(PostBill PostBill)
+        {
+            respository.UpdateBill(PostBill);
+            return Ok();
+        }
+        [HttpPost("details")]
+        public IActionResult AddBillDetails([FromBody] List<BillDetailVM> billDetailsVM)
+        {
+            respository.AddListBillDetail(billDetailsVM);
+            return Ok();
+        }
     }
 }

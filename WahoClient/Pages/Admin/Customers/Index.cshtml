@@ -112,7 +112,6 @@
                             <hr />
                         </div>
                         <div class="row">
-                            <input asp-for="employeeVM.WahoId" hidden />
                             <input class="form-control" id="edit-id" name="id" hidden />
                             <div class="form-group col-6">
                                 <label class="control-label">Tên khách hàng</label>
@@ -492,7 +491,7 @@
 
         function getCustomerDetail(id) {
             $.ajax({
-                url: "https://localhost:7019/waho/Customer/detail?id=" + id + "&wahoId=" + $("#WahoId").val(),
+                url: "https://localhost:7019/waho/Customer/detail?id=" + id,
                 type: "GET",
                 data: { id: id },
                 success: function (data) {

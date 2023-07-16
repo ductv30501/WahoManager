@@ -75,6 +75,7 @@ namespace WahoClient.Pages.Admin.Customers
             Customer.Dob = DateTime.Parse(raw_dob);
             Customer.TypeOfCustomer = Boolean.Parse(raw_type);
             Customer.Active = bool.Parse(active);
+            Customer.WahoId = eSession.WahoId;
 
             //update to data
             var json = JsonConvert.SerializeObject(Customer);

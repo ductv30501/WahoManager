@@ -23,7 +23,7 @@ namespace WahoClient.Pages.Cashier.Bills
         private string billAPIUrl = "";
         private readonly Author _author;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private static readonly IMapper _mapper = OrderMapper.ConfigureMToVM();
+        private static readonly IMapper _mapper = BillMapper.ConfigureMToVM();
 
         public DeleteModel(Author author, IHttpContextAccessor httpContextAccessor)
         {
@@ -51,7 +51,7 @@ namespace WahoClient.Pages.Cashier.Bills
                 return NotFound();
             }
             // get order by order id 
-            HttpResponseMessage responseBill = await client.GetAsync($"{billAPIUrl}/detailByIdAndProId?billId={id}&productId=0");
+            HttpResponseMessage responseBill = await client.GetAsync($"{billAPIUrl}/detail?billId={id}");
             string strDataBill = await responseBill.Content.ReadAsStringAsync();
             
             if (responseBill.IsSuccessStatusCode)

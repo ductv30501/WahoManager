@@ -49,7 +49,7 @@ namespace WahoClient.Pages.Cashier.Bills
                 return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
             }
             // get order by order id 
-            HttpResponseMessage responseBill = await client.GetAsync($"{billAPIUrl}/detailByIdAndProId?billId={id}&productId=0");
+            HttpResponseMessage responseBill = await client.GetAsync($"{billAPIUrl}/detail?billId={id}");
             string strDataBill = await responseBill.Content.ReadAsStringAsync();
             if (responseBill.IsSuccessStatusCode)
             {
@@ -79,6 +79,7 @@ namespace WahoClient.Pages.Cashier.Bills
                 TempData["successMessage"] = "Đã sửa thành công thông tin hoá đơn";
                 return RedirectToPage("./Index");
             }
+            TempData["ErrorMessage"] = "Sửa thông tin hoá đơn thất bại";
             return RedirectToPage("./Index");
         }
     }

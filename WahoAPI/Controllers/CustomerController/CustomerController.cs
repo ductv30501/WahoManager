@@ -13,7 +13,7 @@ namespace WahoAPI.Controllers.CustomerController
     {
         private ICustomerRepositories respository = new CustomerRepositories();
         [HttpGet("getCustomers")]
-        public ActionResult<GetCustomerVM> Get(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
+        public ActionResult<Customer> GetCustomersPagingAndFilter(int pageIndex, int pageSize, string? textSearch, string? status, string? dateFrom, string? dateTo, string? typeCustomer, int wahoId)
         {
             var customer = respository.GetCustomersPagingAndFilter(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, typeCustomer, wahoId);
 
@@ -24,7 +24,7 @@ namespace WahoAPI.Controllers.CustomerController
             return Ok(customer);
         }
         [HttpGet("count")]
-        public ActionResult<int> CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
+        public ActionResult<int> CountPagingCustomer(int pageIndex, int pageSize, string? textSearch, string? status, string? dateFrom, string? dateTo, string? typeCustomer, int wahoId)
         {
             var total = respository.CountPagingCustomer(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, typeCustomer, wahoId);
             if (total == null)
@@ -41,9 +41,9 @@ namespace WahoAPI.Controllers.CustomerController
             return Ok(message);
         }
         [HttpGet("detail")]
-        public ActionResult<Employee> FindCustomerById(int id,int wahoId)
+        public ActionResult<Employee> FindCustomerById(int id)
         {
-            Customer customer = respository.FindCustomerById(id, wahoId);
+            Customer customer = respository.FindCustomerById(id);
             if (customer == null)
             {
                 return NotFound();

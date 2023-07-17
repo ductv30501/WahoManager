@@ -47,10 +47,7 @@ namespace DataAccess
                 using (var context = new WahoS8Context())
                 {
                     var query = context.Bills.Where(c => c.WahoId == wahoId).AsQueryable();
-                    else
-                    {
-                        textSearch = "";
-                    }
+
                     if (!string.IsNullOrEmpty(textSearch))
                     {
                         query = query.Where(b => (b.BillId.ToString().Contains(textSearch)
@@ -80,6 +77,23 @@ namespace DataAccess
             }
         }
 
+        public static Bill getBillById(int billId)
+        {
+            Bill bill = new Bill();
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    bill = _context.Bills.Include(b => b.UserNameNavigation).Include(b => b.Customer).SingleOrDefault(b => b.BillId == billId);
+                    return bill;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
         public static List<BillDetail> GetBillDetailById(int billId)
         {
             List<BillDetail> billDetails = new List<BillDetail>();
@@ -87,7 +101,7 @@ namespace DataAccess
             {
                 using (var _context = new WahoS8Context())
                 {
-                    billDetails = _context.BillDetails.Where(b => b.BillId == billId).ToList();
+                    billDetails = _context.BillDetails.Include(b => b.Product).Where(b => b.BillId == billId).ToList();
                     return billDetails;
                 }
             }
@@ -103,15 +117,7 @@ namespace DataAccess
             {
                 using (var _context = new WahoS8Context())
                 {
-                    if (productId != null || productId > 0)
-                    {
-                        billDetail = _context.BillDetails.FirstOrDefault(b => b.BillId == billId && b.ProductId == productId);
-                    }
-                    else
-                    {
-                        billDetail = _context.BillDetails.FirstOrDefault(b => b.BillId == billId);
-
-                    }
+                    billDetail = _context.BillDetails.FirstOrDefault(b => b.BillId == billId && b.ProductId == productId);
                     return billDetail;
                 }
             }

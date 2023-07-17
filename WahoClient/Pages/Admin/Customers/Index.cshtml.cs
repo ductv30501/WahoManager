@@ -87,14 +87,16 @@ namespace WahoClient.Pages.Admin.Customers
             var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //api total count
-            HttpResponseMessage response = await client.GetAsync(customerAPIUrl + "/count?textSearch=" + textSearch + "&status=" + status + "&typeCustomer=" + typeCustomer + "&wahoId=" + employeeVM.WahoId);
+            HttpResponseMessage response = await client.GetAsync(customerAPIUrl + "/count?textSearch=" + textSearch + "&status=" + status + "&dateFrom=" + dateFrom + "&dateTo=" + dateTo + "&typeCustomer=" + typeCustomer + "&wahoId=" + employeeVM.WahoId);
             string strData = await response.Content.ReadAsStringAsync();
-            TotalCount = int.Parse(strData);
-
+            if (response.IsSuccessStatusCode)
+            {
+                TotalCount = int.Parse(strData);
+            }
             message = TempData["message"] as string;
             successMessage = TempData["successMessage"] as string;
             // api paging
-            HttpResponseMessage responsepaging = await client.GetAsync(customerAPIUrl + "/get s?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&status=" + status + "&typeCustomer=" + typeCustomer + "&wahoId=" + employeeVM.WahoId);
+            HttpResponseMessage responsepaging = await client.GetAsync(customerAPIUrl + "/getCustomers?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&status=" + status + "&dateFrom=" + dateFrom + "&dateTo=" + dateTo + "&typeCustomer=" + typeCustomer + "&wahoId=" + employeeVM.WahoId);
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
             if (responsepaging.IsSuccessStatusCode)

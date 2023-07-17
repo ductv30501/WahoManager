@@ -31,7 +31,7 @@ namespace WahoClient.Pages.Cashier.Bills
         private string CustomerAPIUrl = "";
         private readonly Author _author;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private static readonly IMapper _mapper = OrderDetailMapper.ConfigureMToVM();
+        private static readonly IMapper _mapper = BillDetailMapper.ConfigureMToVM();
         private static readonly IMapper _mapperPro = ProductConfigMapper.ConfigureMToVM();
 
         public CreateModel(Author author, IHttpContextAccessor httpContextAccessor)
@@ -153,12 +153,15 @@ namespace WahoClient.Pages.Cashier.Bills
                         //update data
                         var jsonProUp = JsonConvert.SerializeObject(ProductVM);
                         var contentProUp = new StringContent(jsonProUp, Encoding.UTF8, "application/json");
-                        var responseProUp = await client.PutAsync(productAPIUrl, contentProUp);
+                        HttpResponseMessage responseProUp = await client.PutAsync(productAPIUrl, contentProUp);
+                        if (responseProUp.IsSuccessStatusCode)
+                        {
+                            // Thiết lập giá trị BillId cho bản ghi BillDetail
+                            billDetail.BillId = BillIdVM.BillId;
+                            BillDetailVM billDetailVM = _mapper.Map<BillDetailVM>(billDetail);
+                            billDetailsVM.Add(billDetailVM);
+                        }
                     }
-                    // Thiết lập giá trị BillId cho bản ghi BillDetail
-                    billDetail.BillId = BillIdVM.BillId;
-                    BillDetailVM billDetailVM = _mapper.Map<BillDetailVM>(billDetail);
-                    billDetailsVM.Add(billDetailVM);
                 }
                 var jsonBillDe = JsonConvert.SerializeObject(billDetailsVM);
                 var contentBillDe = new StringContent(jsonBillDe, Encoding.UTF8, "application/json");

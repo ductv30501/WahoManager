@@ -14,7 +14,7 @@ namespace WahoAPI.Controllers.AdminController
     {
         private IAdminRepositories respository = new AdminRepositories();
         [HttpGet("BillDetails")]
-        public ActionResult<List<BillDetail>> BillDetails(DateTime date, int wahoID)
+        public ActionResult<List<BillDetail>> BillDetails(string date, int wahoID)
         {
             List<BillDetail> list = respository.BillDetails(date, wahoID);
             if (list.Count == 0)

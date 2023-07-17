@@ -11,7 +11,7 @@ namespace Repositories.AdminRepository
     public interface IAdminRepositories
     {
         int TotalBillInDay(int wahoID);
-        List<BillDetail> BillDetails(DateTime date , int wahoID);
+        List<BillDetail> BillDetails(string date , int wahoID);
         int TotalReturnInDay(int wahoID);
         List<ReturnOrder> ReturnOrdersInDay(int wahoID);
         List<TotalMMVM> totalBillMMVMs(int month, int year, int wahoID);

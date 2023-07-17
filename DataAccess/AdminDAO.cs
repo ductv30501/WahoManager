@@ -25,8 +25,9 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
-        public static List<BillDetail> BillDetails(DateTime date, int wahoID)
+        public static List<BillDetail> BillDetails(string date, int wahoID)
         {
+            DateTime _date = DateTime.Parse(date);
             List<BillDetail> billDetails = new List<BillDetail>(); 
             try
             {
@@ -34,7 +35,7 @@ namespace DataAccess
                 {
                     billDetails = _context.BillDetails.Include(b => b.Bill)
                                                      .Include(b => b.Product)
-                                                     .Where(b => b.Bill.Date == date).ToList();
+                                                     .Where(b => b.Bill.Date.Year == _date.Year && b.Bill.Date.Month == _date.Month).ToList();
                     return billDetails;
                 }
             }

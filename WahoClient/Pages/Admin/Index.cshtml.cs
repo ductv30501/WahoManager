@@ -58,7 +58,7 @@ namespace WahoClient.Pages.Admin
             double totalM = 0;
             foreach (var b in list)
             {
-                totalM += b.Quantity * b.Product.Quantity * (1 - b.Discount);
+                totalM += b.Quantity * b.Product.UnitPrice * (1 - b.Discount);
             }
             return totalM;
         }
@@ -79,7 +79,7 @@ namespace WahoClient.Pages.Admin
             numberBill = int.Parse(strDataNB);
             //numberBill = _context.Bills.Where(b => b.Date == now).Count();
             //get billdetail in day
-            HttpResponseMessage rBINDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now}&wahoID={employeeVM.WahoId}");
+            HttpResponseMessage rBINDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.ToString()}&wahoID={employeeVM.WahoId}");
             string DataRBDINDay = await rBINDay.Content.ReadAsStringAsync();
             if (rBINDay.IsSuccessStatusCode)
             {
@@ -281,6 +281,7 @@ namespace WahoClient.Pages.Admin
                     {
                         tempDay.Add(new KeyValuePair<int, double>(rs.Day, rs.TotalQuantity + ro.TotalQuantity));
                     }
+                    tempDay.Add(new KeyValuePair<int, double>(ro.Day, ro.TotalQuantity));
                 }
                 tempDay.Add(new KeyValuePair<int, double>(rs.Day, rs.TotalQuantity));
             }

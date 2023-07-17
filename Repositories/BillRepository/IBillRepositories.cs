@@ -19,5 +19,6 @@ namespace Repositories.BillRepository
         BillDetail GetBillDetailByIdAndProID(int billId, int productId);
         public List<Bill> GetBillsPagingAndFilter(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string active, int wahoId);
         void UpdateBill(PostBill postBill);
+        Bill getBillById(int billId);
     }
 }

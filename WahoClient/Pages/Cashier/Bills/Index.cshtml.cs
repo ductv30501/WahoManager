@@ -92,7 +92,7 @@ namespace WahoClient.Pages.Cashier.Bills
             var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //api total count
-            HttpResponseMessage response = await client.GetAsync(billAPIUrl + "/count?textSearch=" + textSearch + "&status=" + status + "&active=" + active + "&wahoId=" + employeeVM.WahoId);
+            HttpResponseMessage response = await client.GetAsync(billAPIUrl + "/count?textSearch=" + textSearch + "&status=" + status + "&active=" + active + "&dateFrom=" + dateFrom + "&dateTo=" + dateTo + "&wahoId=" + employeeVM.WahoId);
             string strData = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
@@ -102,7 +102,7 @@ namespace WahoClient.Pages.Cashier.Bills
             message = TempData["message"] as string;
             successMessage = TempData["successMessage"] as string;
             // api paging
-            HttpResponseMessage responsepaging = await client.GetAsync(billAPIUrl + "/getBills?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&status=" + status + "&active=" + active + "&wahoId=" + employeeVM.WahoId);
+            HttpResponseMessage responsepaging = await client.GetAsync(billAPIUrl + "/getBills?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&status=" + status + "&active=" + active + "&dateFrom=" + dateFrom + "&dateTo=" + dateTo + "&wahoId=" + employeeVM.WahoId);
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
             if (responsepaging.IsSuccessStatusCode)

@@ -27,10 +27,22 @@ namespace WahoAPI.Controllers.BillController
             }
             return Ok(billDetails);
         }
+
+        [HttpGet("detail")]
+        public ActionResult<Bill> getBillById(int billId)
+        {
+            Bill bill = respository.getBillById(billId);
+            if (bill == null)
+            {
+                return NotFound();
+            }
+            return Ok(bill);
+        }
+
         [HttpGet("detailByIdAndProId")]
         public ActionResult<BillDetail> getdetailByIdAndProId(int billId, int productId)
         {
-            BillDetail billDetail = respository.GetBillDetailByIdAndProID(billId,productId);
+            BillDetail billDetail = respository.GetBillDetailByIdAndProID(billId, productId);
             if (billDetail == null)
             {
                 return NotFound();
@@ -39,7 +51,7 @@ namespace WahoAPI.Controllers.BillController
         }
 
         [HttpGet("getBills")]
-        public ActionResult<GetCustomerVM> Get(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string active, int wahoId)
+        public IActionResult Get(int pageIndex, int pageSize, string? textSearch, string? status, string? dateFrom, string? dateTo, string? active, int wahoId)
         {
             var bill = respository.GetBillsPagingAndFilter(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, active, wahoId);
 
@@ -50,7 +62,7 @@ namespace WahoAPI.Controllers.BillController
             return Ok(bill);
         }
         [HttpGet("count")]
-        public ActionResult<int> CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string active, int wahoId)
+        public ActionResult<int> CountPagingCustomer(int pageIndex, int pageSize, string? textSearch, string? status, string? dateFrom, string? dateTo, string? active, int wahoId)
         {
             var total = respository.CountPagingBill(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, active, wahoId);
             if (total == null)

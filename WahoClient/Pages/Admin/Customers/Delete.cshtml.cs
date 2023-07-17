@@ -22,7 +22,7 @@ namespace WahoClient.Pages.Admin.Customers
         private readonly HttpClient client = null;
         private string customerAPIUrl = "";
         private readonly Author _author;
-        private static readonly IMapper _mapper = customerMapper.ConfigureVMtoM();
+        private static readonly IMapper _mapper = customerMapper.ConfigureMtoVM();
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public DeleteModel(Author author, IHttpContextAccessor httpContextAccessor)
@@ -56,10 +56,9 @@ namespace WahoClient.Pages.Admin.Customers
             HttpResponseMessage responseCustomer = await client.GetAsync($"{customerAPIUrl}/detail?id={id}&wahoId={employeeVM.WahoId}");
             string strDataCustomer = await responseCustomer.Content.ReadAsStringAsync();
             Customer customer = JsonConvert.DeserializeObject<Customer>(strDataCustomer);
-            PostCustomerVM postCustomerVM = new PostCustomerVM();
-            postCustomerVM = _mapper.Map<PostCustomerVM>(customer);
             if (customer != null)
             {
+                PostCustomerVM postCustomerVM = _mapper.Map<PostCustomerVM>(customer);
                 postCustomerVM.Active = false;
                 //update to data
                 var json = JsonConvert.SerializeObject(postCustomerVM);

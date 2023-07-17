@@ -14,10 +14,8 @@ namespace DataAccess
     public class CustomerDAO
     {
         private static readonly IMapper _mapper = customerMapper.ConfigureVMtoM();
-        private static readonly IMapper _mapperGet = customerMapper.ConfigureLMtoLVM();
 
-
-        public static int CountPagingCustomer(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
+        public static int CountPagingCustomer(int pageIndex, int pageSize, string? textSearch, string? status, string? dateFrom, string? dateTo, string? typeCustomer, int wahoId)
         {
             try
             {
@@ -52,7 +50,7 @@ namespace DataAccess
                 throw new Exception(e.Message);
             }
         }
-        public static List<GetCustomerVM> GetCustomersPagingAndFilter(int pageIndex, int pageSize, string textSearch, string status, string dateFrom, string dateTo, string typeCustomer, int wahoId)
+        public static List<Customer> GetCustomersPagingAndFilter(int pageIndex, int pageSize, string? textSearch, string? status, string? dateFrom, string? dateTo, string? typeCustomer, int wahoId)
         {
 
             List<Customer> customers = new List<Customer>();
@@ -61,7 +59,7 @@ namespace DataAccess
                 //default 
                 var query = from c in context.Customers.Where(c => c.WahoId == wahoId) select c;
 
-                if (!string.IsNullOrEmpty(textSearch.Trim()))
+                if (!string.IsNullOrEmpty(textSearch))
                 {
                     query = query.Where(c => (c.CustomerName.Contains(textSearch)
                                      || c.Phone.Contains(textSearch)
@@ -89,7 +87,7 @@ namespace DataAccess
                         .Take(pageSize)
                         .ToList();
 
-                return _mapperGet.Map<List<GetCustomerVM>>(customers);
+                return customers;
             }
         }
 
@@ -111,14 +109,14 @@ namespace DataAccess
             }
         }
 
-        public static Customer FindCustomerById(int id, int wahoId)
+        public static Customer FindCustomerById(int id)
         {
             Customer customer = new Customer();
             try
             {
                 using (var context = new WahoS8Context())
                 {
-                    customer = context.Customers.FirstOrDefault(e => e.CustomerId == id && e.WahoId == wahoId);
+                    customer = context.Customers.FirstOrDefault(e => e.CustomerId == id);
                 }
             }
             catch (Exception e)

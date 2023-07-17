@@ -22,6 +22,11 @@ namespace Repositories.BillRepository
             return BillDAO.CountPagingBill(pageIndex, pageSize, textSearch, status, dateFrom, dateTo, active, wahoId);
         }
 
+        public Bill getBillById(int billId)
+        {
+            return BillDAO.getBillById(billId);
+        }
+
         public List<BillDetail> GetBillDetailById(int billId) => BillDAO.GetBillDetailById(billId);
 
         public BillDetail GetBillDetailByIdAndProID(int billId, int productId) => BillDAO.GetBillDetailByIdAndProID(billId,productId);

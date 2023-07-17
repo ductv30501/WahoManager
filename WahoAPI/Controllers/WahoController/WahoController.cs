@@ -19,7 +19,7 @@ namespace WahoAPI.Controllers.WahoController
             return Ok(list);
         }
         [HttpGet("byNameEmail")]
-        public ActionResult<WahoInformation> getWahoByNameAndEmail(string name, string email)
+        public ActionResult<WahoInformation> getWahoByNameAndEmail(string? name, string? email)
         {
             WahoInformation waho = new WahoInformation();
             waho = repository.GetWahoByNameEmail(name, email);

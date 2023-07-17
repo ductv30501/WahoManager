@@ -47,6 +47,7 @@ namespace DataAccess
                 using (var context = new WahoS8Context())
                 {
                     var query = context.Bills.Where(c => c.WahoId == wahoId).AsQueryable();
+
                     if (!string.IsNullOrEmpty(textSearch))
                     {
                         query = query.Where(b => (b.BillId.ToString().Contains(textSearch)
@@ -68,6 +69,23 @@ namespace DataAccess
                     }
 
                     return query.Count();
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+
+        public static Bill getBillById(int billId)
+        {
+            Bill bill = new Bill();
+            try
+            {
+                using (var _context = new WahoS8Context())
+                {
+                    bill = _context.Bills.Include(b => b.UserNameNavigation).Include(b => b.Customer).SingleOrDefault(b => b.BillId == billId);
+                    return bill;
                 }
             }
             catch (Exception e)
@@ -99,10 +117,7 @@ namespace DataAccess
             {
                 using (var _context = new WahoS8Context())
                 {
-                    if (productId != null || productId > 0)
-                    {
-                        billDetail = _context.BillDetails.FirstOrDefault(b => b.BillId == billId && b.ProductId == productId);
-                    }
+                    billDetail = _context.BillDetails.FirstOrDefault(b => b.BillId == billId && b.ProductId == productId);
                     return billDetail;
                 }
             }

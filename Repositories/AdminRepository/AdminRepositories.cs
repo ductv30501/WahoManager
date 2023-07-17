@@ -11,7 +11,7 @@ namespace Repositories.AdminRepository
 {
     public class AdminRepositories : IAdminRepositories
     {
-        public List<BillDetail> BillDetails(DateTime date, int wahoID) => AdminDAO.BillDetails(date, wahoID);
+        public List<BillDetail> BillDetails(string date, int wahoID) => AdminDAO.BillDetails(date, wahoID);
 
         public List<ReturnOrder> ReturnOrdersInDay(int wahoID)
             => AdminDAO.ReturnOrdersInDay(wahoID);
@@ -25,7 +25,7 @@ namespace Repositories.AdminRepository
         public List<DayInMonth> totalNumberBillDayInMs(int month, int year, int wahoID) => AdminDAO.totalNumberBillDayInMs(month, year, wahoID);
 
         public List<TotalMMVM> totalNumberBillMs(int month, int year, int wahoID)
-            => totalNumberBillMs(month, year, wahoID);
+            => AdminDAO.totalNumberBillMs(month, year, wahoID);
 
         public List<DayInMonth> totalNumberOrdersDayInMs(int month, int year, int wahoID) => AdminDAO.totalNumberOrdersDayInMs(month, year, wahoID);
 

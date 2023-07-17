@@ -94,7 +94,10 @@ namespace WahoClient.Pages.Cashier.Bills
             //api total count
             HttpResponseMessage response = await client.GetAsync(billAPIUrl + "/count?textSearch=" + textSearch + "&status=" + status + "&active=" + active + "&wahoId=" + employeeVM.WahoId);
             string strData = await response.Content.ReadAsStringAsync();
-            TotalCount = int.Parse(strData);
+            if (response.IsSuccessStatusCode)
+            {
+                TotalCount = int.Parse(strData);
+            }
 
             message = TempData["message"] as string;
             successMessage = TempData["successMessage"] as string;

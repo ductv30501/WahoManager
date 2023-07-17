@@ -572,8 +572,12 @@
                         }
                     });
                     // search product of bill
+                    var urlOder = "https://localhost:7019/waho/Orders/orderDetailsById?orderId=" + searchQuery;
+                    var urlBill = "https://localhost:7019/waho/Bills/detailById?billId=" + searchQuery;
+                    var urlQuey = "";
+                    urlQuey = typeBill == "1" ? urlBill : urlOder
                     $.ajax({
-                        url: "https://localhost:7019/waho/Orders/orderDetailsById?orderId=" + searchQuery,
+                        url: urlQuey,
                         type: 'GET',
                         contentType: "application/json; charset=utf-8",
                         success: function (result, status, xhr) {
@@ -678,8 +682,12 @@
                         }
                     });
                     // search product of bill
+                    var urlOder = "https://localhost:7019/waho/Orders/orderDetailsById?orderId=" + searchQuery;
+                    var urlBill = "https://localhost:7019/waho/Bills/detailById?billId=" + searchQuery;
+                    var urlQuey = "";
+                    urlQuey = typeBill == "1" ? urlBill : urlOder
                     $.ajax({
-                        url: "https://localhost:7019/waho/Orders/orderDetailsById?orderId=" + searchQuery,
+                        url: urlQuey,
                         type: 'GET',
                         contentType: "application/json; charset=utf-8",
                         success: function (result, status, xhr) {

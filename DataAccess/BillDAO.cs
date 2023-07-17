@@ -47,10 +47,6 @@ namespace DataAccess
                 using (var context = new WahoS8Context())
                 {
                     var query = context.Bills.Where(c => c.WahoId == wahoId).AsQueryable();
-                    else
-                    {
-                        textSearch = "";
-                    }
                     if (!string.IsNullOrEmpty(textSearch))
                     {
                         query = query.Where(b => (b.BillId.ToString().Contains(textSearch)
@@ -87,7 +83,7 @@ namespace DataAccess
             {
                 using (var _context = new WahoS8Context())
                 {
-                    billDetails = _context.BillDetails.Where(b => b.BillId == billId).ToList();
+                    billDetails = _context.BillDetails.Include(b => b.Product).Where(b => b.BillId == billId).ToList();
                     return billDetails;
                 }
             }
@@ -106,11 +102,6 @@ namespace DataAccess
                     if (productId != null || productId > 0)
                     {
                         billDetail = _context.BillDetails.FirstOrDefault(b => b.BillId == billId && b.ProductId == productId);
-                    }
-                    else
-                    {
-                        billDetail = _context.BillDetails.FirstOrDefault(b => b.BillId == billId);
-
                     }
                     return billDetail;
                 }

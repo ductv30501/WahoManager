@@ -17,6 +17,7 @@ using ViewModels.InventorySheetViewModels;
 using Newtonsoft.Json;
 using System.Text;
 using ViewModels.EmployeeViewModels;
+using System.Net;
 
 namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
 {
@@ -128,8 +129,8 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
                     var PostInventorySheet = JsonConvert.DeserializeObject<PostInventorySheetVM>(responseContent);
                     inventoryID = PostInventorySheet.InventorySheetId;
                 }
-                    //_context.InventorySheets.Add(InventorySheet);
-                    //await _context.SaveChangesAsync();
+                //_context.InventorySheets.Add(InventorySheet);
+                //await _context.SaveChangesAsync();
                 IFileInfo fileInfo = _fileProvider.GetFileInfo(req.Form["ExcelFile"]);
                 ExcelFile = fileInfo.PhysicalPath;
             }

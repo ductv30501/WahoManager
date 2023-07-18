@@ -35,13 +35,13 @@
         @*message*@
         @if (!string.IsNullOrWhiteSpace(Model.message))
         {
-            <div id="error-alert" class="d-flex justify-content-end position-absolute toast-mess">
+            <div id="error-alert" class="d-flex justify-content-end position-absolute toast-message">
                 <div class="alert alert-danger text-center"><h5>@Model.message</h5></div>
             </div>
         }
         @if (TempData["SuccessMessage"] != null)
         {
-            <div id="success-alert" class="d-flex justify-content-end position-absolute toast-mess">
+            <div id="success-alert" class="d-flex justify-content-end position-absolute toast-message">
                 <div class="alert alert-success text-center"><h5>@TempData["SuccessMessage"]</h5></div>
             </div>
         }

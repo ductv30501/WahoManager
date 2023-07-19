@@ -29,5 +29,8 @@ namespace Repositories
 
         public Employee GetEmployeesByEmail(string email)
             => EmployeeDAO.GetEmployeesByEmail(email);
+
+        public PostEmployeeVM GetPostEmployeeByUserAndPass(string userName, string password)
+            => EmployeeDAO.GetPostEmployeeByUserAndPass(userName, password);
     }
 }

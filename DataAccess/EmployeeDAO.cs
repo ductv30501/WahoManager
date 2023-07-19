@@ -15,6 +15,7 @@ namespace DataAccess
     public class EmployeeDAO
     {
         private static readonly IMapper _mapper = employeeMapper.Configure();
+        private static readonly IMapper _mapperEToEVM = employeeMapper.ConfigureEToEVM();
         public static EmployeeVM GetEmployeeByUserAndPass(string userName, string password)
         {
             try
@@ -34,6 +35,22 @@ namespace DataAccess
                                                  WahoId = e.WahoId
                                              }).FirstOrDefault();
                     return employeevm;
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception(e.Message);
+            }
+        }
+        public static PostEmployeeVM GetPostEmployeeByUserAndPass(string userName, string password)
+        {
+            try
+            {
+                using (var context = new WahoS8Context())
+                {
+                    Employee employee = context.Employees.FirstOrDefault(e => e.UserName == userName && e.Password == password);
+                    PostEmployeeVM postEmployeeVM = _mapperEToEVM.Map<PostEmployeeVM>(employee);
+                    return postEmployeeVM;
                 }
             }
             catch (Exception e)
@@ -134,7 +151,7 @@ namespace DataAccess
             {
                 using (var context = new WahoS8Context())
                 {
-                    employee = context.Employees.FirstOrDefault(e => e.UserName == username && e.WahoId == wahoId);
+                    employee = context.Employees.Include(e => e.Waho).FirstOrDefault(e => e.UserName == username && e.WahoId == wahoId);
                 }
             }
             catch (Exception e)

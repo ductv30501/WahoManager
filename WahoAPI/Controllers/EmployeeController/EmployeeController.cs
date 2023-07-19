@@ -109,5 +109,15 @@ namespace WahoAPI.Controllers.EmployeeController
             }
             return Ok(employee);
         }
+        [HttpGet("getPostEmployee")]
+        public ActionResult<Employee> getPostEmployee(string username, string password)
+        {
+            PostEmployeeVM employee = respository.GetPostEmployeeByUserAndPass(username, password);
+            if (employee == null)
+            {
+                return NotFound();
+            }
+            return Ok(employee);
+        }
     }
 }

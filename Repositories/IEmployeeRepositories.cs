@@ -22,5 +22,6 @@ namespace Repositories
         List<Employee> GetEmployeesInWahoByRole(int role,int wahoId);
         List<Employee> GetAllEmployeesInWaho(int wahoId);
         Employee GetEmployeesByEmail(string email);
+        PostEmployeeVM GetPostEmployeeByUserAndPass(string userName, string password);
     }
 }

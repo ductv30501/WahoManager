@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Net.Http.Headers;
 using AutoMapper.Execution;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Admin.Customers
 {
@@ -37,10 +38,11 @@ namespace WahoClient.Pages.Admin.Customers
         public async Task<IActionResult> OnGetAsync(string id)
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            
             return Page();
         }
         public string message { get; set; }
@@ -52,6 +54,9 @@ namespace WahoClient.Pages.Admin.Customers
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             // get data from session
             var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
@@ -84,6 +89,8 @@ namespace WahoClient.Pages.Admin.Customers
             var json = JsonConvert.SerializeObject(Customer);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(customerAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string messageResponse = await response.Content.ReadAsStringAsync();
 
             //message

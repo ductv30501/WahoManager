@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.WahoRepository;
@@ -8,10 +9,13 @@ namespace WahoAPI.Controllers.WahoController
 {
     [Route("waho")]
     [ApiController]
+
     public class WahoController : ControllerBase
     {
         private static readonly IWahoRepositories repository = new WahoRepositories();
         [HttpGet]
+        [AllowAnonymous]
+
         public ActionResult<List<WahoInformation>> getWaho()
         {
             List<WahoInformation> list = new List<WahoInformation>();
@@ -19,6 +23,8 @@ namespace WahoAPI.Controllers.WahoController
             return Ok(list);
         }
         [HttpGet("byNameEmail")]
+        [AllowAnonymous]
+
         public ActionResult<WahoInformation> getWahoByNameAndEmail(string? name, string? email)
         {
             WahoInformation waho = new WahoInformation();
@@ -29,6 +35,8 @@ namespace WahoAPI.Controllers.WahoController
             return Ok(waho);
         }
         [HttpPost]
+        [AllowAnonymous]
+
         public IActionResult saveWaho(WahoPostVM wahoPost)
         {
             if(wahoPost == null)

@@ -1,6 +1,7 @@
 using BusinessObjects.WahoModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using Newtonsoft.Json;
 using OfficeOpenXml;
 using Waho.DataService;
 using Waho.MailManager;
@@ -12,6 +13,19 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<WahoS8Context>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("WahoS8")
     ));
+JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+{
+    NullValueHandling = NullValueHandling.Ignore
+};
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("CookieAuthentication")
+    .AddCookie("CookieAuthentication", options =>
+    {
+        options.LoginPath = "/Index";
+        options.AccessDeniedPath = "/accessDenied";
+        options.LogoutPath = "/LogOut";
+        options.ExpireTimeSpan = TimeSpan.FromHours(23).Add(TimeSpan.FromMinutes(50));
+    });
 
 builder.Services.AddScoped<DataServiceManager>();
 builder.Services.AddScoped<Author>();
@@ -42,6 +56,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
 
 app.UseAuthorization();
 

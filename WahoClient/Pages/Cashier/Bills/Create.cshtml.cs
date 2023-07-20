@@ -20,9 +20,14 @@ using ViewModels.OrderViewModels;
 using ViewModels.BillViewModel;
 using ViewModels.BillDetailViewModels;
 using ViewModels.ProductViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.Bills
 {
+    [Authorize(Roles = "1,2")]
+
     public class CreateModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -67,16 +72,20 @@ namespace WahoClient.Pages.Cashier.Bills
         private Employee employee { get; set; }
         public IActionResult OnGet()
         {
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+
             return Page();
         }
 
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             string customerId = HttpContext.Request.Form["customerId"];
             string total = HttpContext.Request.Form["total"];
             string listBillDetail = HttpContext.Request.Form["listBillDetail"];
@@ -115,6 +124,8 @@ namespace WahoClient.Pages.Cashier.Bills
                 var json = JsonConvert.SerializeObject(Customer);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(CustomerAPIUrl, content);
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -134,6 +145,8 @@ namespace WahoClient.Pages.Cashier.Bills
             var jsonBill = JsonConvert.SerializeObject(Bill);
             var contentBill = new StringContent(jsonBill, Encoding.UTF8, "application/json");
             var responseBill = await client.PostAsync(billAPIUrl, contentBill);
+            if ((int)responseBill.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             List<BillDetailVM> billDetailsVM = new List<BillDetailVM>();
             if (responseBill.IsSuccessStatusCode)
             {
@@ -143,6 +156,8 @@ namespace WahoClient.Pages.Cashier.Bills
                 {
                     // get product to update quantity
                     HttpResponseMessage responsePro = await client.GetAsync($"{productAPIUrl}/productId?productId={billDetail.ProductId}");
+                    if ((int)responsePro.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                     string strDataPro = await responsePro.Content.ReadAsStringAsync();
                     Product product = new Product();
                     if (responsePro.IsSuccessStatusCode)
@@ -154,6 +169,8 @@ namespace WahoClient.Pages.Cashier.Bills
                         var jsonProUp = JsonConvert.SerializeObject(ProductVM);
                         var contentProUp = new StringContent(jsonProUp, Encoding.UTF8, "application/json");
                         HttpResponseMessage responseProUp = await client.PutAsync(productAPIUrl, contentProUp);
+                        if ((int)responseProUp.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                         if (responseProUp.IsSuccessStatusCode)
                         {
                             // Thiết lập giá trị BillId cho bản ghi BillDetail
@@ -166,6 +183,8 @@ namespace WahoClient.Pages.Cashier.Bills
                 var jsonBillDe = JsonConvert.SerializeObject(billDetailsVM);
                 var contentBillDe = new StringContent(jsonBillDe, Encoding.UTF8, "application/json");
                 var responseBillDe = await client.PostAsync($"{billAPIUrl}/details", contentBillDe);
+                if ((int)responseBillDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 if (responseBillDe.IsSuccessStatusCode)
                 {
                     TempData["SuccessMessage"] = "Tạo hoá đơn thành công!";

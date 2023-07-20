@@ -17,10 +17,15 @@ using ViewModels.InventorySheetViewModels;
 using Newtonsoft.Json;
 using System.Text;
 using ViewModels.EmployeeViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 using System.Net;
 
 namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
 {
+    [Authorize(Roles = "1,3")]
+
     public class CreateModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -51,11 +56,11 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
 
         public IActionResult OnGet()
         {
-            //author
-            if (!_author.IsAuthor(3))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+
             // Lấy thông tin file từ IFileProvider
             IFileInfo fileInfo = _fileProvider.GetFileInfo("Inventory.xlsx");
             if (fileInfo.Exists)
@@ -82,6 +87,9 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             // get data from session
             string employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
@@ -123,6 +131,8 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
                 var json = JsonConvert.SerializeObject(InventorySheet);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(inventoryAPIUrl, content);
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -161,6 +171,8 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
                         var jsonDetail = JsonConvert.SerializeObject(inventorySheetDetails);
                         var contentDetail = new StringContent(jsonDetail, Encoding.UTF8, "application/json");
                         var responseDetail = await client.PostAsync($"{inventoryAPIUrl}/detail", contentDetail);
+                        if ((int)responseDetail.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                         //await _context.BulkInsertAsync(inventorySheetDetails);
                         successMessage = $"{inventorySheetDetails.Count} sản phẩm được thêm vào phiếu kiểm thành công";
                         TempData["successMessage"] = successMessage;

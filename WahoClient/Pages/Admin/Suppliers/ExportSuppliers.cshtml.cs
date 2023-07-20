@@ -1,9 +1,12 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using System.Data;
 using System.Drawing.Printing;
 using System.Net.Http.Headers;
 using ViewModels.EmployeeViewModels;
@@ -11,6 +14,8 @@ using Waho.DataService;
 
 namespace WahoClient.Pages.Admin.Suppliers
 {
+    [Authorize(Roles = "1")]
+
     public class ExportSuppliersModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -34,15 +39,19 @@ namespace WahoClient.Pages.Admin.Suppliers
         public async Task<IActionResult> OnGetAsync(string _inventorySheetID)
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get data from session
             var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // get inventoryDetail list
             HttpResponseMessage responsepaging = await client.GetAsync($"{supplierAPIUrl}/getSuppliers?wahoId={employeeVM.WahoId}");
+            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
             List<Supplier> suppliers = new List<Supplier>();
             if (responsepaging.IsSuccessStatusCode)

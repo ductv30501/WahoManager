@@ -1,10 +1,13 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using System.Data;
 using System.Drawing.Printing;
 using System.Net.Http.Headers;
 using ViewModels.EmployeeViewModels;
@@ -12,6 +15,8 @@ using Waho.DataService;
 
 namespace WahoClient.Pages.WarehouseStaff.Products
 {
+    [Authorize(Roles = "1,3")]
+
     public class ExportProductsModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -19,6 +24,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
         private readonly Author _author;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWebHostEnvironment _hostingEnvironment;
+
 
         public ExportProductsModel(Author author, IHttpContextAccessor httpContextAccessor, IWebHostEnvironment hostingEnvironment)
         {
@@ -29,20 +35,31 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             _author = author;
             _httpContextAccessor = httpContextAccessor;
             _hostingEnvironment = hostingEnvironment;
+
         }
         public string successMessage { get; set; }
         public async Task<IActionResult> OnGetAsync()
         {
-            if (!_author.IsAuthor(3))
+            //if (!_author.IsAuthor(3))
+            //{
+            //    return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+            //}
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             // get data from session
             string employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // get product list by wahoId
             List<Product> productList = new List<Product>();
             HttpResponseMessage responseProduct = await client.GetAsync($"{productAPIUrl}/wahoId?wahoId={eSession.WahoId}");
+            if ((int)responseProduct.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataProduct = await responseProduct.Content.ReadAsStringAsync();
             if (responseProduct.IsSuccessStatusCode)
             {

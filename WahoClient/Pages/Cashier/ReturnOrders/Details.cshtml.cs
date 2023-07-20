@@ -13,9 +13,14 @@ using ViewModels.ReturnOrderViewModels;
 using ViewModels.EmployeeViewModels;
 using System.Text;
 using ViewModels.OrderViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.ReturnOrders
 {
+    [Authorize(Roles = "1,2")]
+
     public class DetailsModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -54,11 +59,12 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
 
         public async Task<IActionResult> OnGetAsync(int returnOrderID)
         {
-            //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get data from form
             raw_pageSize = HttpContext.Request.Query["pageSize"];
             if (returnOrderID != 0)
@@ -89,6 +95,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             // get return order 
             ReturnOrder returnorder = new ReturnOrder();
             HttpResponseMessage responseRO = await client.GetAsync($"{returnOrderAPIUrl}/ROByID?returnId={_returnOrderID}");
+            if ((int)responseRO.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataRO = await responseRO.Content.ReadAsStringAsync();
             if (responseRO.IsSuccessStatusCode)
             {
@@ -109,6 +117,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             // count return order product
             List<ReturnOrderProduct> _rops = new List<ReturnOrderProduct>();
             HttpResponseMessage responseROPs = await client.GetAsync($"{returnOrderAPIUrl}/ROPByReturnID?returnId={_returnOrderID}");
+            if ((int)responseROPs.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataROPs = await responseROPs.Content.ReadAsStringAsync();
             if (responseROPs.IsSuccessStatusCode)
             {
@@ -120,6 +130,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             if (_rops.Count != 0)
             {
                 HttpResponseMessage responseROPsPaging = await client.GetAsync($"{returnOrderAPIUrl}/ROPSPaging?pageIndex={pageIndex}&pageSize={pageSize}&id={_returnOrderID}");
+                if ((int)responseROPsPaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string strDataROPsPaging = await responseROPsPaging.Content.ReadAsStringAsync();
                 if (responseROPsPaging.IsSuccessStatusCode)
                 {
@@ -134,6 +146,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
         }
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get data from session
             string employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
@@ -191,6 +205,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             var json = JsonConvert.SerializeObject(_returnOrderUpdate);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(returnOrderAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             if (response.IsSuccessStatusCode)
             {
                 successMessage = "Chỉnh sửa thông tin phiếu thành công";

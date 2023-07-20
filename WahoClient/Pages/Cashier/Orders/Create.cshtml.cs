@@ -20,9 +20,14 @@ using ViewModels.OrderDetailViewModels;
 using AutoMapper;
 using DataAccess.AutoMapperConfig;
 using ViewModels.ProductViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.Orders
 {
+    [Authorize(Roles = "1,2")]
+
     public class CreateModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -64,10 +69,11 @@ namespace WahoClient.Pages.Cashier.Orders
         public async Task<IActionResult> OnGetAsync()
         {
             //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            
             return Page();
         }
 
@@ -79,11 +85,16 @@ namespace WahoClient.Pages.Cashier.Orders
             }
             else
             {
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
                 // get data from session
                 string employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
                 EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
                 // get list shipper
                 HttpResponseMessage responseShiper = await client.GetAsync($"{orderAPIUrl}/shipperList?textSearch={q}&wahoId={eSession.WahoId}");
+                if ((int)responseShiper.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string strDataShipper = await responseShiper.Content.ReadAsStringAsync();
                 if (responseShiper.IsSuccessStatusCode)
                 {
@@ -96,6 +107,8 @@ namespace WahoClient.Pages.Cashier.Orders
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
 
             string customerId = HttpContext.Request.Form["customerId"];
             string estDate = HttpContext.Request.Form["estDate"];
@@ -141,6 +154,8 @@ namespace WahoClient.Pages.Cashier.Orders
                 var json = JsonConvert.SerializeObject(Customer);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(CustomerAPIUrl, content);
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = await response.Content.ReadAsStringAsync();
@@ -168,6 +183,8 @@ namespace WahoClient.Pages.Cashier.Orders
             var jsonOrder = JsonConvert.SerializeObject(Order);
             var contentOrder = new StringContent(jsonOrder, Encoding.UTF8, "application/json");
             var responseOrder = await client.PostAsync(orderAPIUrl, contentOrder);
+            if ((int)responseOrder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             List<OrderDetailVM> orderDetailsVM = new List<OrderDetailVM>();
             if (responseOrder.IsSuccessStatusCode)
             {
@@ -177,6 +194,8 @@ namespace WahoClient.Pages.Cashier.Orders
                 {
                     // get product to update quantity
                     HttpResponseMessage responsePro = await client.GetAsync($"{productAPIUrl}/productId?productId={orderDetail.ProductId}");
+                    if ((int)responsePro.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                     string strDataPro = await responsePro.Content.ReadAsStringAsync();
                     Product product = new Product();
                     if (responsePro.IsSuccessStatusCode)
@@ -188,6 +207,8 @@ namespace WahoClient.Pages.Cashier.Orders
                         var jsonProUp = JsonConvert.SerializeObject(ProductVM);
                         var contentProUp = new StringContent(jsonProUp, Encoding.UTF8, "application/json");
                         var responseProUp = await client.PutAsync(productAPIUrl, contentProUp);
+                        if ((int)responseProUp.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                     }
                     // Thiết lập giá trị BillId cho bản ghi BillDetail
                     orderDetail.OderId = postOrderVM.OderId;
@@ -197,6 +218,8 @@ namespace WahoClient.Pages.Cashier.Orders
                 var jsonOrderDe = JsonConvert.SerializeObject(orderDetailsVM);
                 var contentOrderDe = new StringContent(jsonOrderDe, Encoding.UTF8, "application/json");
                 var responseOrderDe = await client.PostAsync($"{orderAPIUrl}/details", contentOrderDe);
+                if ((int)responseOrderDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 if (responseOrderDe.IsSuccessStatusCode)
                 {
                     TempData["SuccessMessage"] = "Tạo vận đơn thành công!";

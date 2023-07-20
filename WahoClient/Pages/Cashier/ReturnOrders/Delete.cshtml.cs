@@ -13,9 +13,14 @@ using System.Text;
 using AutoMapper;
 using DataAccess.AutoMapperConfig;
 using ViewModels.ReturnOrderViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication;
+using System.Data;
 
 namespace WahoClient.Pages.Cashier.ReturnOrders
 {
+    [Authorize(Roles = "1,2")]
+
     public class DeleteModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -40,13 +45,17 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
-            //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             ReturnOrder _returnOrder = new ReturnOrder();
             HttpResponseMessage responseRO = await client.GetAsync($"{returnOrderAPIUrl}/ROByID?returnId={id}");
+            if ((int)responseRO.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataRO = await responseRO.Content.ReadAsStringAsync();
             if (responseRO.IsSuccessStatusCode)
             {
@@ -62,6 +71,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                 var json = JsonConvert.SerializeObject(returnOrderVM);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PutAsync(returnOrderAPIUrl, content);
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 if (response.IsSuccessStatusCode)
                 {
                     successMessage = "Xóa thành công phiếu hoàn đơn ra khỏi danh sách";

@@ -13,9 +13,14 @@ using AutoMapper;
 using DataAccess.AutoMapperConfig;
 using ViewModels.EmployeeViewModels;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Admin.Employees
 {
+    [Authorize(Roles = "1")]
+
     public class DeleteModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -38,17 +43,22 @@ namespace WahoClient.Pages.Admin.Employees
         public async Task<IActionResult> OnGetAsync(string id)
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
 
             if (id == null )
             {
                 return NotFound();
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             // get employee by username
             HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={id}");
+            if ((int)responseEmployee.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             Employee employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
             PostEmployeeVM postEmployeeVM = new PostEmployeeVM();
@@ -60,6 +70,8 @@ namespace WahoClient.Pages.Admin.Employees
                 var json = JsonConvert.SerializeObject(postEmployeeVM);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PutAsync(employeeAPIUrl, content);
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string messageResponse = await response.Content.ReadAsStringAsync();
                 // message
                 successMessage = $"Vô hiệu hóa thành công tài khoản: {postEmployeeVM.UserName}";

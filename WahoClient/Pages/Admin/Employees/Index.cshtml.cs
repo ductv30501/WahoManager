@@ -13,9 +13,14 @@ using ViewModels.EmployeeViewModels;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Admin.Employees
 {
+    [Authorize(Roles = "1")]
+
     public class IndexModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -59,10 +64,12 @@ namespace WahoClient.Pages.Admin.Employees
         public async Task<IActionResult> OnGetAsync()
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             //get data from form
             raw_pageSize = HttpContext.Request.Query["pageSize"];
             if (!string.IsNullOrEmpty(raw_pageSize))
@@ -92,6 +99,8 @@ namespace WahoClient.Pages.Admin.Employees
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //api total count
             HttpResponseMessage response = await client.GetAsync(employeeAPIUrl + "/countPagingEmployee?textSearch=" + textSearch + "&status=" + status + "&title="+ title + "&wahoId=" + employeeVM.WahoId);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strData = await response.Content.ReadAsStringAsync();
             TotalCount = int.Parse(strData);
 
@@ -99,6 +108,8 @@ namespace WahoClient.Pages.Admin.Employees
             successMessage = TempData["successMessage"] as string;
             // api paging
             HttpResponseMessage responsepaging = await client.GetAsync(employeeAPIUrl + "/getEmployeePaging?pageIndex="+ pageIndex + "&pageSize="+ pageSize + "&textSearch=" + textSearch + "&status=" + status + "&title=" + title + "&wahoId=" + employeeVM.WahoId);
+            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
            
             if (responsepaging.IsSuccessStatusCode)

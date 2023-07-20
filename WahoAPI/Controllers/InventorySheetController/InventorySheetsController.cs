@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.InventorySheetRepository;
@@ -10,10 +11,13 @@ namespace WahoAPI.Controllers.InventorySheetController
 {
     [Route("waho/[controller]")]
     [ApiController]
+
     public class InventorySheetsController : ControllerBase
     {
         private IInventorySheetRepositories respository = new InventorySheetRepositories();
         [HttpGet("inventories")]
+        [Authorize]
+
         public ActionResult<List<InventorySheet>> getinventories(int wahoId)
         {
             List<InventorySheet> inventories = respository.GetInventorySheetsInWaho(wahoId);
@@ -24,6 +28,8 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(inventories);
         }
         [HttpGet("countInventories")]
+        [Authorize]
+
         public ActionResult<int> countInventories(string? textSearch, string employeeID, string? raw_dateFrom, string? raw_dateTo, int wahoId)
         {
             int total = respository.GetInventorySheetCount(textSearch, employeeID, raw_dateFrom, raw_dateTo, wahoId);
@@ -34,6 +40,8 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(total);
         }
         [HttpGet("getInventoryPaging")]
+        [Authorize]
+
         public ActionResult<List<InventorySheet>> getInventoryPaging(int pageIndex, int pageSize, string? textSearch, string employeeID, string? raw_dateFrom, string? raw_dateTo, int wahoId)
         {
             List<InventorySheet> InventoryPaging = respository.inventorySheetsPaging(pageIndex, pageSize, textSearch, employeeID, raw_dateFrom, raw_dateTo, wahoId);
@@ -44,6 +52,8 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(InventoryPaging);
         }
         [HttpGet("getInventorySheetById")]
+        [Authorize]
+
         public ActionResult<InventorySheet> getInventorySheetById(int inventorySheetId)
         {
             InventorySheet Inventory = respository.GetInventorySheetByID(inventorySheetId);
@@ -54,6 +64,8 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(Inventory);
         }
         [HttpGet("getInventoryDetails")]
+        [Authorize]
+
         public ActionResult<List<InventorySheetDetail>> getInventoryDetails(int inventorySheetId)
         {
             List<InventorySheetDetail> InventoryDetail = respository.GetInventorySheetDetailByID(inventorySheetId);
@@ -64,6 +76,8 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(InventoryDetail);
         }
         [HttpGet("getInventoryDetailsPaging")]
+        [Authorize]
+
         public ActionResult<List<InventorySheetDetail>> getInventoryDetailsPaging(int pageIndex, int pageSize, int InventoryId)
         {
             List<InventorySheetDetail> InventoryDetail = respository.getInventorySheetDetailPaging(pageIndex, pageSize, InventoryId);
@@ -74,6 +88,8 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(InventoryDetail);
         }
         [HttpGet("getInventoryDetails-ByProId-InvenId")]
+        [Authorize]
+
         public ActionResult<InventorySheetDetail> getInventoryDetailsByProIdInvenId(int productId, int inventorySheetId)
         {
             InventorySheetDetail InventoryDetail = respository.GetInventorySheetDetailByIDAndProId(productId, inventorySheetId);
@@ -84,12 +100,16 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(InventoryDetail);
         }
         [HttpPut]
+        [Authorize]
+
         public IActionResult PutInventory(InventorySheetVM Ivm)
         {
             respository.UpdateInventorySheet(Ivm);
             return Ok();
         }
         [HttpPost]
+        [Authorize]
+
         public IActionResult PosttInventory(InventorySheetVM Ivm)
         {
             int inventoryId = respository.SaveInventorySheet(Ivm);
@@ -98,12 +118,16 @@ namespace WahoAPI.Controllers.InventorySheetController
             return Ok(postInventorySheetVM);
         }
         [HttpPost("detail")]
+        [Authorize]
+
         public IActionResult PosttInventoryDetail([FromBody] List<InventorySheetDetailVM> IDevm)
         {
             respository.saveInventoryDetail(IDevm);
             return Ok();
         }
         [HttpPut("detail")]
+        [Authorize]
+
         public IActionResult PutInventoryDetail(InventorySheetDetailVM IDetailvm)
         {
             respository.UpdateInventorySheetDetail(IDetailvm);

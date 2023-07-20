@@ -1,15 +1,20 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using System.Data;
 using System.Net.Http.Headers;
 using ViewModels.ReturnOrderViewModels;
 using Waho.DataService;
 
 namespace WahoClient.Pages.Cashier.ReturnOrders
 {
+    [Authorize(Roles = "1,2")]
+
     public class ExportReturnOrderDetailModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -33,14 +38,17 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
         public string successMessage { get; set; }
         public async Task<IActionResult> OnGetAsync(int returnOrderID)
         {
-            //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get inventoryDetail list
             List<ReturnOrderProduct> inventoryDetailList = new List<ReturnOrderProduct>();
             HttpResponseMessage responseROPs = await client.GetAsync($"{returnOrderAPIUrl}/ROPByReturnID?returnId={returnOrderID}");
+            if ((int)responseROPs.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataROPs = await responseROPs.Content.ReadAsStringAsync();
             if (responseROPs.IsSuccessStatusCode)
             {
@@ -48,6 +56,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             }
             //var inventoryDetailList = _dataService.GetReturnOrderDetails(returnOrderID);
             HttpResponseMessage responseRO = await client.GetAsync($"{returnOrderAPIUrl}/ROByID?returnId={returnOrderID}");
+            if ((int)responseRO.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataRO = await responseRO.Content.ReadAsStringAsync();
             if (responseRO.IsSuccessStatusCode)
             {

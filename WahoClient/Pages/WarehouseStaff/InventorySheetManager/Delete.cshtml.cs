@@ -13,9 +13,14 @@ using Newtonsoft.Json;
 using AutoMapper;
 using DataAccess.AutoMapperConfig;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
 {
+    [Authorize(Roles = "1,3")]
+
     public class DeleteModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -40,14 +45,18 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
 
         public async Task<IActionResult> OnGetAsync(int inventorySheetID)
         {
-            //author
-            if (!_author.IsAuthor(3))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             InventorySheetVM sheetVM = new InventorySheetVM();
             // get inventory sheet by id
             HttpResponseMessage responseInventory = await client.GetAsync($"{inventoryAPIUrl}/getInventorySheetById?inventorySheetId={inventorySheetID}");
+            if ((int)responseInventory.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataInventory = await responseInventory.Content.ReadAsStringAsync();
             if (responseInventory.IsSuccessStatusCode)
             {
@@ -61,6 +70,8 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
                 var json = JsonConvert.SerializeObject(sheetVM);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PutAsync(inventoryAPIUrl, content);
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 // message
                 if (response.IsSuccessStatusCode)
                 {

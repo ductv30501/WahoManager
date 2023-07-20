@@ -10,9 +10,14 @@ using Waho.DataService;
 using System.Net.Http.Headers;
 using ViewModels.EmployeeViewModels;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Admin.Suppliers
 {
+    [Authorize(Roles = "1")]
+
     public class IndexModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -52,10 +57,12 @@ namespace WahoClient.Pages.Admin.Suppliers
         public async Task<IActionResult> OnGetAsync()
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
 
             //get data from form
             raw_pageSize = HttpContext.Request.Query["pageSize"];
@@ -78,6 +85,8 @@ namespace WahoClient.Pages.Admin.Suppliers
             // count total supplier
             
             HttpResponseMessage response = await client.GetAsync(supplierAPIUrl + "/countPagingSupplier?textSearch=" + textSearch + "&wahoId=" + employeeVM.WahoId);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strData = await response.Content.ReadAsStringAsync();
             TotalCount = int.Parse(strData);
             message = TempData["message"] as string;
@@ -85,6 +94,7 @@ namespace WahoClient.Pages.Admin.Suppliers
             // get supplier paging
             
             HttpResponseMessage responsepaging = await client.GetAsync(supplierAPIUrl + "/getSupplierPaging?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&wahoId=" + employeeVM.WahoId);
+            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
             if (responsepaging.IsSuccessStatusCode)

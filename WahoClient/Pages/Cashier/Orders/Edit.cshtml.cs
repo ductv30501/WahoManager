@@ -16,9 +16,14 @@ using Newtonsoft.Json;
 using ViewModels.OrderDetailViewModels;
 using System.Text;
 using ViewModels.OrderViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.Orders
 {
+    [Authorize(Roles = "1,2")]
+
     public class EditModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -45,12 +50,16 @@ namespace WahoClient.Pages.Cashier.Orders
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get order by order id 
             HttpResponseMessage responseOder = await client.GetAsync($"{orderAPIUrl}/orderById?orderId={id}");
+            if ((int)responseOder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataOder = await responseOder.Content.ReadAsStringAsync();
             if (responseOder.IsSuccessStatusCode)
             {
@@ -58,6 +67,8 @@ namespace WahoClient.Pages.Cashier.Orders
             }
             // get order details by order id
             HttpResponseMessage responseOderDe = await client.GetAsync($"{orderAPIUrl}/orderDetailsById?orderId={id}");
+            if ((int)responseOderDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataOderDe = await responseOderDe.Content.ReadAsStringAsync();
             if (responseOderDe.IsSuccessStatusCode)
             {
@@ -70,11 +81,15 @@ namespace WahoClient.Pages.Cashier.Orders
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // update order information
             OrderVM orderVM = _mapper.Map<OrderVM>(Order);
             var json = JsonConvert.SerializeObject(orderVM);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(orderAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             if (response.IsSuccessStatusCode)
             {
                 TempData["successMessage"] = "Đã sửa thành công thông tin đơn vận";

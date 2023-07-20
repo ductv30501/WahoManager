@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.CustomerRepository;
@@ -10,10 +11,13 @@ namespace WahoAPI.Controllers.CustomerController
 {
     [Route("waho/[controller]")]
     [ApiController]
+
     public class CustomersController : ControllerBase
     {
         private ICustomerRepository respository = new CustomerRepositories();
         [HttpPost]
+        [Authorize]
+
         public IActionResult PosttCustomer(CustomerVM Cvm)
         {
             int id = respository.SaveCustomer(Cvm);
@@ -22,6 +26,8 @@ namespace WahoAPI.Controllers.CustomerController
             return Ok(postCustomerVM);
         }
         [HttpGet("search")]
+        [Authorize]
+
         public ActionResult<List<Customer>> GetCustomersSearch(string? textSearch, int wahoId) {
             List<Customer> customers = respository.GetCustomersSearch(textSearch, wahoId);
             if (customers.Count == 0)
@@ -31,6 +37,8 @@ namespace WahoAPI.Controllers.CustomerController
             return Ok(customers);
         }
         [HttpGet("searchCustomerOfBill")]
+        [Authorize]
+
         public ActionResult<Customer> searchCustomerOfBill(int billlId, int billType, int wahoId)
         {
             Customer customers = respository.getCustomerByBillIdBillType(billlId, billType, wahoId);

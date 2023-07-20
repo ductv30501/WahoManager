@@ -16,9 +16,14 @@ using System.Text;
 using ViewModels.OrderDetailViewModels;
 using ViewModels.OrderViewModels;
 using ViewModels.BillViewModel;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.Bills
 {
+    [Authorize(Roles = "1,2")]
+
     public class EditModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -44,12 +49,16 @@ namespace WahoClient.Pages.Cashier.Bills
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get order by order id 
             HttpResponseMessage responseBill = await client.GetAsync($"{billAPIUrl}/detail?billId={id}");
+            if ((int)responseBill.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataBill = await responseBill.Content.ReadAsStringAsync();
             if (responseBill.IsSuccessStatusCode)
             {
@@ -57,6 +66,8 @@ namespace WahoClient.Pages.Cashier.Bills
             }
             // get order details by order id
             HttpResponseMessage responseOderDe = await client.GetAsync($"{billAPIUrl}/detailById?billId={id}");
+            if ((int)responseOderDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataOderDe = await responseOderDe.Content.ReadAsStringAsync();
             if (responseOderDe.IsSuccessStatusCode)
             {
@@ -69,11 +80,15 @@ namespace WahoClient.Pages.Cashier.Bills
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // update order information
             PostBill postBill = _mapper.Map<PostBill>(Bill);
             var json = JsonConvert.SerializeObject(postBill);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(billAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             if (response.IsSuccessStatusCode)
             {
                 TempData["successMessage"] = "Đã sửa thành công thông tin hoá đơn";

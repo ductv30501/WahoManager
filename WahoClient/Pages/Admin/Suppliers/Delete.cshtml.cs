@@ -15,9 +15,14 @@ using AutoMapper;
 using DataAccess.AutoMapperConfig;
 using ViewModels.SupplierViewModels;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Admin.Suppliers
 {
+    [Authorize(Roles = "1")]
+
     public class DeleteModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -42,11 +47,16 @@ namespace WahoClient.Pages.Admin.Suppliers
         public async Task<IActionResult> OnGetAsync(int supplierID)
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             HttpResponseMessage responsepaging = await client.GetAsync($"{supplierAPIUrl}/getByID?supId={supplierID}");
+            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
             if (responsepaging.IsSuccessStatusCode)
@@ -60,6 +70,8 @@ namespace WahoClient.Pages.Admin.Suppliers
                 var json = JsonConvert.SerializeObject(supplierVM);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PutAsync(supplierAPIUrl, content);
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 if (response.IsSuccessStatusCode)
                 {
                     // message

@@ -13,9 +13,13 @@ using System.Net.Http.Headers;
 using System.Text;
 using ViewModels.EmployeeViewModels;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WahoClient.Pages.Admin.Employees
 {
+    [Authorize(Roles = "1")]
+
     public class EditModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -39,15 +43,17 @@ namespace WahoClient.Pages.Admin.Employees
         public async Task<IActionResult> OnGetAsync(string id)
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             var req = HttpContext.Request;
             //get data form form submit 
             string raw_userName = req.Form["userName"];
@@ -66,6 +72,8 @@ namespace WahoClient.Pages.Admin.Employees
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // find employee by username
             HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={raw_userName}&wahoId={eSession.WahoId}");
+            if ((int)responseEmployee.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             Employee _employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
             PostEmployeeVM _Employee = new PostEmployeeVM();
@@ -110,6 +118,8 @@ namespace WahoClient.Pages.Admin.Employees
             var json = JsonConvert.SerializeObject(_Employee);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(employeeAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string messageResponse = await response.Content.ReadAsStringAsync();
 
             TempData["successMessage"] = messageResponse;

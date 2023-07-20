@@ -58,7 +58,7 @@ namespace WahoClient.Pages.Cashier.Orders
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get order by order id 
             HttpResponseMessage responseOder = await client.GetAsync($"{orderAPIUrl}/orderById?orderId={id}");
-            if ((int)responseOder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseOder.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataOder = await responseOder.Content.ReadAsStringAsync();
             if (responseOder.IsSuccessStatusCode)
@@ -67,7 +67,7 @@ namespace WahoClient.Pages.Cashier.Orders
             }
             // get order details by order id
             HttpResponseMessage responseOderDe = await client.GetAsync($"{orderAPIUrl}/orderDetailsById?orderId={id}");
-            if ((int)responseOderDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseOderDe.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataOderDe = await responseOderDe.Content.ReadAsStringAsync();
             if (responseOderDe.IsSuccessStatusCode)
@@ -88,7 +88,7 @@ namespace WahoClient.Pages.Cashier.Orders
             var json = JsonConvert.SerializeObject(orderVM);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(orderAPIUrl, content);
-            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             if (response.IsSuccessStatusCode)
             {

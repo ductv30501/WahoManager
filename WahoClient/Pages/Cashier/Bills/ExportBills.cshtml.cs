@@ -53,7 +53,7 @@ namespace Waho.Pages.Cashier.Bills
 
             // get order by order id 
             HttpResponseMessage responseBill = await client.GetAsync($"{billAPIUrl}/detail?billId={billId}");
-            if ((int)responseBill.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseBill.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataBill = await responseBill.Content.ReadAsStringAsync();
             if (responseBill.IsSuccessStatusCode)
@@ -62,7 +62,7 @@ namespace Waho.Pages.Cashier.Bills
             }
             // get order details by order id
             HttpResponseMessage responseOderDe = await client.GetAsync($"{billAPIUrl}/detailById?billId={billId}");
-            if ((int)responseOderDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseOderDe.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataOderDe = await responseOderDe.Content.ReadAsStringAsync();
             if (responseOderDe.IsSuccessStatusCode)

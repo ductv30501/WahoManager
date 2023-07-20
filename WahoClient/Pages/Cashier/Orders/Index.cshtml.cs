@@ -106,7 +106,7 @@ namespace WahoClient.Pages.Cashier.Orders
             // count order list
             HttpResponseMessage responseCount = await client.GetAsync($"{orderAPIUrl}/count?textSearch={textSearch}" +
                 $"&active={active}&status={status}&dateTo={dateTo}&dateFrom={dateFrom}&estDateTo={estDateTo}&estDateFrom={estDateFrom}&wahoId={eSession.WahoId}");
-            if ((int)responseCount.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseCount.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataCount = await responseCount.Content.ReadAsStringAsync();
             if (responseCount.IsSuccessStatusCode)
@@ -129,7 +129,7 @@ namespace WahoClient.Pages.Cashier.Orders
             {
                 HttpResponseMessage responseOrder = await client.GetAsync($"{orderAPIUrl}/paging?pageIndex={pageIndex}" +
                     $"&pageSize={pageSize}&textSearch={textSearch}&status={status}&dateFrom={dateFrom}&estDateFrom={estDateFrom}&estDateTo={estDateTo}&dateTo={dateTo}&active={active}&wahoId={eSession.WahoId}");
-            if ((int)responseOrder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseOrder.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 string strDataOrder = await responseOrder.Content.ReadAsStringAsync();
                 if (responseOrder.IsSuccessStatusCode)

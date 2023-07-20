@@ -58,7 +58,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             // get product list by wahoId
             List<Product> productList = new List<Product>();
             HttpResponseMessage responseProduct = await client.GetAsync($"{productAPIUrl}/wahoId?wahoId={eSession.WahoId}");
-            if ((int)responseProduct.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseProduct.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataProduct = await responseProduct.Content.ReadAsStringAsync();
             if (responseProduct.IsSuccessStatusCode)

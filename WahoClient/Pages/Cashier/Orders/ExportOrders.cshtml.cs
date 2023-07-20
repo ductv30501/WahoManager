@@ -48,7 +48,7 @@ namespace WahoClient.Pages.Cashier.Orders
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get order by order id 
             HttpResponseMessage responseOder = await client.GetAsync($"{orderAPIUrl}/orderById?orderId={orderId}");
-            if ((int)responseOder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseOder.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataOder = await responseOder.Content.ReadAsStringAsync();
             if (responseOder.IsSuccessStatusCode)
@@ -57,7 +57,7 @@ namespace WahoClient.Pages.Cashier.Orders
             }
             // get order details by order id
             HttpResponseMessage responseOderDe = await client.GetAsync($"{orderAPIUrl}/orderDetailsById?orderId={orderId}");
-            if ((int)responseOderDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseOderDe.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataOderDe = await responseOderDe.Content.ReadAsStringAsync();
             if (responseOderDe.IsSuccessStatusCode)

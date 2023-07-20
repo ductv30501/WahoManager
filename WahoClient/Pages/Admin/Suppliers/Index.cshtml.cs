@@ -85,7 +85,7 @@ namespace WahoClient.Pages.Admin.Suppliers
             // count total supplier
             
             HttpResponseMessage response = await client.GetAsync(supplierAPIUrl + "/countPagingSupplier?textSearch=" + textSearch + "&wahoId=" + employeeVM.WahoId);
-            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strData = await response.Content.ReadAsStringAsync();
             TotalCount = int.Parse(strData);
@@ -94,7 +94,7 @@ namespace WahoClient.Pages.Admin.Suppliers
             // get supplier paging
             
             HttpResponseMessage responsepaging = await client.GetAsync(supplierAPIUrl + "/getSupplierPaging?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&wahoId=" + employeeVM.WahoId);
-            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responsepaging.StatusCode == 401) return RedirectToPage("/accessDenied");
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
             if (responsepaging.IsSuccessStatusCode)

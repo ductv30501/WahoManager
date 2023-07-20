@@ -133,7 +133,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
                         var json = JsonConvert.SerializeObject(products);
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
                         var response = await client.PostAsync($"{productAPIUrl}/addproducts", content);
-                        if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                        if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
                         if (response.IsSuccessStatusCode)
                         {
                             successMessage = $"{products.Count} sản phẩm được thêm vào thành công";

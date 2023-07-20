@@ -50,13 +50,11 @@ namespace WahoClient.Pages.UserProfile
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // find employee by username
             HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={eSession.UserName}&wahoId={eSession.WahoId}");
-            if ((int)responseEmployee.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
 
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
 
             HttpResponseMessage responsepaging = await client.GetAsync(wahoAPIUrl + "/byNameEmail?email=" + eSession.Email);
-            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
 
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 

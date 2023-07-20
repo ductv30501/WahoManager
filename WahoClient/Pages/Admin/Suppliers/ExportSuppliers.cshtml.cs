@@ -50,7 +50,7 @@ namespace WahoClient.Pages.Admin.Suppliers
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // get inventoryDetail list
             HttpResponseMessage responsepaging = await client.GetAsync($"{supplierAPIUrl}/getSuppliers?wahoId={employeeVM.WahoId}");
-            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responsepaging.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
             List<Supplier> suppliers = new List<Supplier>();

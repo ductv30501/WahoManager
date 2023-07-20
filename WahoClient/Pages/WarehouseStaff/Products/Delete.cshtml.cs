@@ -63,7 +63,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
 
             // get product by id
             HttpResponseMessage responseProduct = await client.GetAsync($"{productAPIUrl}/productId?productId={productID}");
-            if ((int)responseProduct.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseProduct.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataProduct = await responseProduct.Content.ReadAsStringAsync();
             Product = JsonConvert.DeserializeObject<Product>(strDataProduct);
@@ -76,7 +76,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
                 var json = JsonConvert.SerializeObject(productVM);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PutAsync(productAPIUrl, content);
-                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 // message
                 if (response.IsSuccessStatusCode)

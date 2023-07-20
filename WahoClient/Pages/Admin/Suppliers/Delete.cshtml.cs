@@ -55,7 +55,7 @@ namespace WahoClient.Pages.Admin.Suppliers
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
 
             HttpResponseMessage responsepaging = await client.GetAsync($"{supplierAPIUrl}/getByID?supId={supplierID}");
-            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responsepaging.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
@@ -70,7 +70,7 @@ namespace WahoClient.Pages.Admin.Suppliers
                 var json = JsonConvert.SerializeObject(supplierVM);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PutAsync(supplierAPIUrl, content);
-                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 if (response.IsSuccessStatusCode)
                 {

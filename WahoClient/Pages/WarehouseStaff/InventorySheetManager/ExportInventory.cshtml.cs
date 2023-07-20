@@ -52,7 +52,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             List<InventorySheetDetail> inventoryDetailList = new List<InventorySheetDetail>();
             // get inventory sheet by id
             HttpResponseMessage responseInventory = await client.GetAsync($"{inventoryAPIUrl}/getInventorySheetById?inventorySheetId={inventorySheetID}");
-            if ((int)responseInventory.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseInventory.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataInventory = await responseInventory.Content.ReadAsStringAsync();
             if (responseInventory.IsSuccessStatusCode)
@@ -61,7 +61,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             }
             // get all inventory details of inventory
             HttpResponseMessage responseInventoryDetailAll = await client.GetAsync($"{inventoryAPIUrl}/getInventoryDetails?inventorySheetId={inventorySheetID}");
-            if ((int)responseInventoryDetailAll.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseInventoryDetailAll.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataInventoryDetailAl = await responseInventoryDetailAll.Content.ReadAsStringAsync();
             if (responseInventoryDetailAll.IsSuccessStatusCode)

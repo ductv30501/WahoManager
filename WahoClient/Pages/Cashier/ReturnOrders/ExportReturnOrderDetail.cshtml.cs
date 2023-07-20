@@ -47,7 +47,7 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             // get inventoryDetail list
             List<ReturnOrderProduct> inventoryDetailList = new List<ReturnOrderProduct>();
             HttpResponseMessage responseROPs = await client.GetAsync($"{returnOrderAPIUrl}/ROPByReturnID?returnId={returnOrderID}");
-            if ((int)responseROPs.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseROPs.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataROPs = await responseROPs.Content.ReadAsStringAsync();
             if (responseROPs.IsSuccessStatusCode)
@@ -56,7 +56,7 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             }
             //var inventoryDetailList = _dataService.GetReturnOrderDetails(returnOrderID);
             HttpResponseMessage responseRO = await client.GetAsync($"{returnOrderAPIUrl}/ROByID?returnId={returnOrderID}");
-            if ((int)responseRO.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseRO.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataRO = await responseRO.Content.ReadAsStringAsync();
             if (responseRO.IsSuccessStatusCode)

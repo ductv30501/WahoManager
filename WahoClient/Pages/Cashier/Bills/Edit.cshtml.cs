@@ -57,7 +57,7 @@ namespace WahoClient.Pages.Cashier.Bills
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get order by order id 
             HttpResponseMessage responseBill = await client.GetAsync($"{billAPIUrl}/detail?billId={id}");
-            if ((int)responseBill.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseBill.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataBill = await responseBill.Content.ReadAsStringAsync();
             if (responseBill.IsSuccessStatusCode)
@@ -66,7 +66,7 @@ namespace WahoClient.Pages.Cashier.Bills
             }
             // get order details by order id
             HttpResponseMessage responseOderDe = await client.GetAsync($"{billAPIUrl}/detailById?billId={id}");
-            if ((int)responseOderDe.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseOderDe.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataOderDe = await responseOderDe.Content.ReadAsStringAsync();
             if (responseOderDe.IsSuccessStatusCode)
@@ -87,7 +87,7 @@ namespace WahoClient.Pages.Cashier.Bills
             var json = JsonConvert.SerializeObject(postBill);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(billAPIUrl, content);
-            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             if (response.IsSuccessStatusCode)
             {

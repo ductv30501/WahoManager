@@ -134,7 +134,7 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // get list WareHouse Employee
             HttpResponseMessage responseEm = await client.GetAsync($"{employeeAPIUrl}/EmployeesInWahoByRole?role={3}&wahoId={eSession.WahoId}");
-            if ((int)responseEm.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseEm.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataEm = await responseEm.Content.ReadAsStringAsync();
             if (responseEm.IsSuccessStatusCode)
@@ -143,7 +143,7 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             }
             // count return order
             HttpResponseMessage responseCount = await client.GetAsync($"{returnOrderAPIUrl}/count?textSearch={textSearch}&employeeID={employeeID}&status={status}&dateFrom={dateFrom}&dateTo={dateTo}&wahoId={eSession.WahoId}");
-            if ((int)responseCount.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseCount.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataCount = await responseCount.Content.ReadAsStringAsync();
             if (responseCount.IsSuccessStatusCode)
@@ -166,7 +166,7 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             {
                 HttpResponseMessage response = await client.GetAsync($"{returnOrderAPIUrl}/paging?pageIndex={pageIndex}" +
                     $"&pageSize={pageSize}&textSearch={textSearch}&userName={employeeID}&status={status}&raw_dateFrom={dateFrom}&raw_dateTo={dateTo}&wahoId={eSession.WahoId}");
-                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 string strData = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)

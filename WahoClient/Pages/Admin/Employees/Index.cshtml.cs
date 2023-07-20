@@ -99,7 +99,7 @@ namespace WahoClient.Pages.Admin.Employees
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //api total count
             HttpResponseMessage response = await client.GetAsync(employeeAPIUrl + "/countPagingEmployee?textSearch=" + textSearch + "&status=" + status + "&title="+ title + "&wahoId=" + employeeVM.WahoId);
-            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strData = await response.Content.ReadAsStringAsync();
             TotalCount = int.Parse(strData);
@@ -108,7 +108,7 @@ namespace WahoClient.Pages.Admin.Employees
             successMessage = TempData["successMessage"] as string;
             // api paging
             HttpResponseMessage responsepaging = await client.GetAsync(employeeAPIUrl + "/getEmployeePaging?pageIndex="+ pageIndex + "&pageSize="+ pageSize + "&textSearch=" + textSearch + "&status=" + status + "&title=" + title + "&wahoId=" + employeeVM.WahoId);
-            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responsepaging.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
            

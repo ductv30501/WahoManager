@@ -144,7 +144,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //get subCategoris list by category
             HttpResponseMessage response = await client.GetAsync($"{productAPIUrl}/subcategories?wahoId={eSession.WahoId}");
-            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
             string strData = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
@@ -152,7 +152,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             }
             //get location list 
             HttpResponseMessage responseLocation = await client.GetAsync($"{productAPIUrl}/location");
-            if ((int)responseLocation.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseLocation.StatusCode == 401) return RedirectToPage("/accessDenied");
             string strDataLocation = await responseLocation.Content.ReadAsStringAsync();
             if (responseLocation.IsSuccessStatusCode)
             {
@@ -162,7 +162,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             HttpResponseMessage responseCount = await client.GetAsync($"{productAPIUrl}/countProduct?textSearch={textSearch}&location={locationId}&priceTo={priceTo}&priceFrom={priceFrom}" +
                 $"&inventoryLevel={inventoryLevel}&supplierName={supplierName}&subCategoryID={subCategoryID}&wahoId={eSession.WahoId}");
             string strDataCount = await responseCount.Content.ReadAsStringAsync();
-            if ((int)responseCount.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseCount.StatusCode == 401) return RedirectToPage("/accessDenied");
             if (responseCount.IsSuccessStatusCode)
             {
                 TotalCount = int.Parse(strDataCount);
@@ -184,7 +184,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
                 HttpResponseMessage responseProduct = await client.GetAsync($"{productAPIUrl}/getProductPaging?pageIndex={pageIndex}&pageSize={pageSize}&textSearch={textSearch}" +
                     $"&subCategoryID={subCategoryID}&location={locationId}&priceFrom={priceFrom}&priceTo={priceTo}&inventoryLevel={inventoryLevel}&wahoId={eSession.WahoId}&supplierId={supplierName}");
                 string strDataProduct = await responseProduct.Content.ReadAsStringAsync();
-                if ((int)responseProduct.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)responseProduct.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 if (responseProduct.IsSuccessStatusCode)
                 {
@@ -193,7 +193,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             }
             //get suppliers
             HttpResponseMessage responsesuppliers = await client.GetAsync($"{productAPIUrl}/suppliers?wahoId={eSession.WahoId}");
-            if ((int)responsesuppliers.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responsesuppliers.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDatasuppliers = await responsesuppliers.Content.ReadAsStringAsync();
 

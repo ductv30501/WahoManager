@@ -109,7 +109,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // get list WareHouse Employee
             HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/EmployeesInWaho?wahoId={eSession.WahoId}");
-            if ((int)responseEmployee.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseEmployee.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             if (responseEmployee.IsSuccessStatusCode)
@@ -118,7 +118,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             }
             //count inventory sheet in list 
             HttpResponseMessage responseCount = await client.GetAsync($"{inventoryAPIUrl}/countInventories?textSearch={textSearch}&employeeID={employeeID}&raw_dateFrom={dateFrom}&raw_dateTo={dateTo}&wahoId={eSession.WahoId}");
-            if ((int)responseCount.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseCount.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataCount = await responseCount.Content.ReadAsStringAsync();
             if (responseCount.IsSuccessStatusCode)
@@ -139,7 +139,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             if (TotalCount != 0)
             {
                 HttpResponseMessage responseInventory = await client.GetAsync($"{inventoryAPIUrl}/getInventoryPaging?pageIndex={pageIndex}&pageSize={pageSize}&textSearch={textSearch}&employeeID={employeeID}&raw_dateFrom={dateFrom}&raw_dateTo={dateTo}&wahoId={eSession.WahoId}");
-                if ((int)responseInventory.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)responseInventory.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 string strDataInventory = await responseInventory.Content.ReadAsStringAsync();
                 if (responseInventory.IsSuccessStatusCode)

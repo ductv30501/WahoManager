@@ -131,7 +131,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
                 var json = JsonConvert.SerializeObject(InventorySheet);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(inventoryAPIUrl, content);
-                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -171,7 +171,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
                         var jsonDetail = JsonConvert.SerializeObject(inventorySheetDetails);
                         var contentDetail = new StringContent(jsonDetail, Encoding.UTF8, "application/json");
                         var responseDetail = await client.PostAsync($"{inventoryAPIUrl}/detail", contentDetail);
-                        if ((int)responseDetail.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                        if ((int)responseDetail.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                         //await _context.BulkInsertAsync(inventorySheetDetails);
                         successMessage = $"{inventorySheetDetails.Count} sản phẩm được thêm vào phiếu kiểm thành công";

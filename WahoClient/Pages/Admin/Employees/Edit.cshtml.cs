@@ -72,7 +72,7 @@ namespace WahoClient.Pages.Admin.Employees
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // find employee by username
             HttpResponseMessage responseEmployee = await client.GetAsync($"{employeeAPIUrl}/username?username={raw_userName}&wahoId={eSession.WahoId}");
-            if ((int)responseEmployee.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseEmployee.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataEmployee = await responseEmployee.Content.ReadAsStringAsync();
             Employee _employee = JsonConvert.DeserializeObject<Employee>(strDataEmployee);
@@ -118,7 +118,7 @@ namespace WahoClient.Pages.Admin.Employees
             var json = JsonConvert.SerializeObject(_Employee);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(employeeAPIUrl, content);
-            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string messageResponse = await response.Content.ReadAsStringAsync();
 

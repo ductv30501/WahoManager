@@ -81,7 +81,7 @@ namespace WahoClient.Pages.Admin
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //hóa đơn trong ngày
             HttpResponseMessage responseNB = await client.GetAsync($"{adminAPIUrl}/TotalBillInDay?wahoID={employeeVM.WahoId}");
-            if ((int)responseNB.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseNB.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataNB = await responseNB.Content.ReadAsStringAsync();
             if (responseNB.IsSuccessStatusCode)
@@ -91,7 +91,7 @@ namespace WahoClient.Pages.Admin
             //numberBill = _context.Bills.Where(b => b.Date == now).Count();
             //get billdetail in day
             HttpResponseMessage rBINDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.ToString()}&wahoID={employeeVM.WahoId}");
-            if ((int)rBINDay.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)rBINDay.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string DataRBDINDay = await rBINDay.Content.ReadAsStringAsync();
             if (rBINDay.IsSuccessStatusCode)
@@ -103,7 +103,7 @@ namespace WahoClient.Pages.Admin
             totalMoney = total(billDetailInday);
             //hoàn đơn trong ngày
             HttpResponseMessage responseNO = await client.GetAsync($"{adminAPIUrl}/TotalReturnInDay?wahoID={employeeVM.WahoId}");
-            if ((int)responseNO.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)responseNO.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataNO = await responseNO.Content.ReadAsStringAsync();
             if(responseNO.IsSuccessStatusCode)
@@ -115,7 +115,7 @@ namespace WahoClient.Pages.Admin
 
             //hoàn đơn
             HttpResponseMessage rROD = await client.GetAsync($"{adminAPIUrl}/ReturnOrdersInDay?wahoID={employeeVM.WahoId}");
-            if ((int)rROD.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)rROD.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string DataROD = await rROD.Content.ReadAsStringAsync();
             if (rROD.IsSuccessStatusCode)
@@ -130,7 +130,7 @@ namespace WahoClient.Pages.Admin
             }
             //get bill detail yesterday
             HttpResponseMessage rBINYesDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddDays(-1)}&wahoID={employeeVM.WahoId}");
-            if ((int)rBINYesDay.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)rBINYesDay.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string DataRBDINYesDay = await rBINYesDay.Content.ReadAsStringAsync();
             if (rBINYesDay.IsSuccessStatusCode)
@@ -149,7 +149,7 @@ namespace WahoClient.Pages.Admin
                 percentYes = numberBill * 100;
             }
             HttpResponseMessage rBINMonth = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddMonths(-1)}&wahoID={employeeVM.WahoId}");
-            if ((int)rBINMonth.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)rBINMonth.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string DataRBDINMonth = await rBINMonth.Content.ReadAsStringAsync();
             if (rBINMonth.IsSuccessStatusCode)
@@ -175,7 +175,7 @@ namespace WahoClient.Pages.Admin
                 int yearQueryT = dateQuery.Year;
                 //theo doanh số bill
                 HttpResponseMessage rTotalBINMonth = await client.GetAsync($"{adminAPIUrl}/totalBillMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
-                if ((int)rTotalBINMonth.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)rTotalBINMonth.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 string DataRTotalBDINMonth = await rTotalBINMonth.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
@@ -186,7 +186,7 @@ namespace WahoClient.Pages.Admin
                 // order
 
                 HttpResponseMessage rTotalODINMonth = await client.GetAsync($"{adminAPIUrl}/totalOrdersMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
-                if ((int)rTotalODINMonth.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)rTotalODINMonth.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 string DataRTotalODINMonth = await rTotalODINMonth.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
@@ -229,7 +229,7 @@ namespace WahoClient.Pages.Admin
                 int yearQueryN = dateQuery.Year;
                 //theo số lượng
                 HttpResponseMessage RNUMBIll = await client.GetAsync($"{adminAPIUrl}/totalNumberBillMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
-                if ((int)RNUMBIll.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)RNUMBIll.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 string DataRNumbill = await RNUMBIll.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
@@ -240,7 +240,7 @@ namespace WahoClient.Pages.Admin
 
                 // order
                 HttpResponseMessage RNUMOrder = await client.GetAsync($"{adminAPIUrl}/totalNummberOrdersMMVMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
-                if ((int)RNUMOrder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+                if ((int)RNUMOrder.StatusCode == 401) return RedirectToPage("/accessDenied");
 
                 string DataRNumOrder = await RNUMOrder.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
@@ -281,7 +281,7 @@ namespace WahoClient.Pages.Admin
             int monthQuery = dateQueryDay.Month;
             int yearQuery = dateQueryDay.Year;
             HttpResponseMessage RNUMBIllDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberBillDayInMs?month={monthQuery}&year={yearQuery}&wahoID={employeeVM.WahoId}");
-            if ((int)RNUMBIllDayINM.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)RNUMBIllDayINM.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string DataRNumbillDayINM = await RNUMBIllDayINM.Content.ReadAsStringAsync();
             var resultsDay = new List<DayInMonth>();
@@ -293,7 +293,7 @@ namespace WahoClient.Pages.Admin
             // order
 
             HttpResponseMessage RNUMOrderDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberOrdersDayInMs?month={monthQuery}&year={yearQuery}&wahoID={employeeVM.WahoId}");
-            if ((int)RNUMOrderDayINM.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)RNUMOrderDayINM.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string DataRNumOrderDayINM = await RNUMOrderDayINM.Content.ReadAsStringAsync();
             var resultsOrderDay = new List<DayInMonth>();

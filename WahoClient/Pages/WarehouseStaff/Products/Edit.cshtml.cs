@@ -218,7 +218,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             var json = JsonConvert.SerializeObject(Product);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(productAPIUrl, content);
-            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+            if ((int)response.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             if (response.IsSuccessStatusCode)
             {

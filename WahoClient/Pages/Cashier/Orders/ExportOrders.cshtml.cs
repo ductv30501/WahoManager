@@ -161,7 +161,7 @@ namespace WahoClient.Pages.Cashier.Orders
             var fileProvider = new PhysicalFileProvider(webRootPath);
             var fileInfo = fileProvider.GetFileInfo(fileName);
             var fileStream = fileInfo.CreateReadStream();
-            TempData["SuccessMessage-export"] = "in ra file excel thành công";
+            //TempData["SuccessMessage-export"] = "in ra file excel thành công";
 
             return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }

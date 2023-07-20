@@ -127,8 +127,8 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             var fileProvider = new PhysicalFileProvider(webRootPath);
             var fileInfo = fileProvider.GetFileInfo(fileName);
             var fileStream = fileInfo.CreateReadStream();
-            successMessage = "in ra file excel thành công";
-            TempData["successMessage"] = successMessage;
+            //successMessage = "in ra file excel thành công";
+            //TempData["successMessage"] = successMessage;
             return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
     }

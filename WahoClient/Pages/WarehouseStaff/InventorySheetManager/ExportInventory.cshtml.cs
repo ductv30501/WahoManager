@@ -93,7 +93,7 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             foreach (var item in inventoryDetailList)
             {
                 var difference = item.CurNwareHouse - item.Product.Quantity;
-                var totalDiffEach = difference * item.Product.Quantity;
+                var totalDiffEach = difference * item.Product.UnitPrice;
                 totalDifference += totalDiffEach;
                 worksheet.Cells[rowIndex, 1].Value = item.Product.ProductName;
                 worksheet.Cells[rowIndex, 2].Value = item.CurNwareHouse;
@@ -116,8 +116,8 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             var fileProvider = new PhysicalFileProvider(webRootPath);
             var fileInfo = fileProvider.GetFileInfo(fileName);
             var fileStream = fileInfo.CreateReadStream();
-            successMessage = "in ra file excel thành công";
-            TempData["successMessage"] = successMessage;
+            //successMessage = "in ra file excel thành công";
+            //TempData["successMessage"] = successMessage;
             return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
     }

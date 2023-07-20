@@ -20,8 +20,14 @@
             <div class="d-flex flex-column">
                 <div class="m-auto"><h5>Bạn không có quyền để truy cập vào trang này</h5></div><h5 class="primary-color m-auto">@Model.ReturnUrl</h5>
                 <a class="btn btn-primary mx-auto mt-4" asp-page="./Index"><i class="bi bi-box-arrow-in-left"></i> Về màn hình đăng nhập </a>
-                <a class="btn btn-primary mx-auto mt-4" onclick="()=>history.back()"><i class="bi bi-box-arrow-in-left"></i> Về trang trước </a>
+                <a class="btn btn-primary mx-auto mt-4" onclick="goBack()"><i class="bi bi-box-arrow-in-left"></i> Về trang trước</a>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function goBack() {
+        history.back();
+    }
+</script>
+

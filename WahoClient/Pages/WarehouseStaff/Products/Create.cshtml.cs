@@ -12,9 +12,14 @@ using ViewModels.ProductViewModels;
 using Newtonsoft.Json;
 using System.Text;
 using ViewModels.EmployeeViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.WarehouseStaff.Products
 {
+    [Authorize(Roles = "1,3")]
+
     public class CreateModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -34,9 +39,13 @@ namespace WahoClient.Pages.WarehouseStaff.Products
 
         public IActionResult OnGet()
         {
-            if (!_author.IsAuthor(3))
+            //if (!_author.IsAuthor(3))
+            //{
+            //    return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+            //}
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
             return Page();
         }
@@ -49,6 +58,9 @@ namespace WahoClient.Pages.WarehouseStaff.Products
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             var req = HttpContext.Request;
             //get data form form submit 
             string raw_productName = req.Form["productName"];
@@ -200,6 +212,8 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             var json = JsonConvert.SerializeObject(Product);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PostAsync(productAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             if (response.IsSuccessStatusCode)
             {
                 successMessage = "Đã thêm thành công 1 sản phẩm";

@@ -9,6 +9,8 @@
 @{
     var employeeJson = HttpContextAccessor.HttpContext.Session.GetString("Employee");
     var employee = JsonSerializer.Deserialize<EmployeeVM>(employeeJson);
+    var token = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
 }
 @{
     ViewData["Title"] = "Create";
@@ -291,6 +293,10 @@
                         url: "https://localhost:7019/waho/Products/searchProducts?textSearch=" + searchQuery + "&wahoId=" + @employee.WahoId ,
                         type: 'GET',
                         contentType: "application/json; charset=utf-8",
+                        headers: {
+                            //thêm header chứa token
+                            "Authorization": "@token"
+                        },
                         success: function (result, status, xhr) {
                             // Xử lý dữ liệu trả về từ server
                             let product = "";
@@ -379,6 +385,10 @@
                         url: "https://localhost:7019/waho/Customers/search?textSearch=" + searchQuery + "&wahoId=" + @employee.WahoId,
                         type: 'GET',
                         contentType: "application/json; charset=utf-8",
+                        headers: {
+                            //thêm header chứa token
+                            "Authorization": "@token"
+                        },
                         success: function (result, status, xhr) {
                             // Xử lý dữ liệu trả về từ server
                             let customer = "";
@@ -438,6 +448,10 @@
                     url: '/Cashier/Orders/Create/?handler=Shippers',
                     type: 'GET',
                     data: { q: searchQuery },
+                    headers: {
+                        //thêm header chứa token
+                        "Authorization": "@token"
+                    },
                     success: function (data) {
                         // Xử lý dữ liệu trả về từ server
                         let shipper = "";

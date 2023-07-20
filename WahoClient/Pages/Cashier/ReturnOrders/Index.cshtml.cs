@@ -11,9 +11,14 @@ using Waho.DataService;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using ViewModels.EmployeeViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.ReturnOrders
 {
+    [Authorize(Roles = "1,2")]
+
     public class IndexModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -63,11 +68,13 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
 
         public async Task<IActionResult> OnGetAsync()
         {
-            //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             //get data from form
             raw_pageSize = HttpContext.Request.Query["pageSize"];
             if (!string.IsNullOrEmpty(raw_pageSize))
@@ -127,6 +134,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             // get list WareHouse Employee
             HttpResponseMessage responseEm = await client.GetAsync($"{employeeAPIUrl}/EmployeesInWahoByRole?role={3}&wahoId={eSession.WahoId}");
+            if ((int)responseEm.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataEm = await responseEm.Content.ReadAsStringAsync();
             if (responseEm.IsSuccessStatusCode)
             {
@@ -134,6 +143,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             }
             // count return order
             HttpResponseMessage responseCount = await client.GetAsync($"{returnOrderAPIUrl}/count?textSearch={textSearch}&employeeID={employeeID}&status={status}&dateFrom={dateFrom}&dateTo={dateTo}&wahoId={eSession.WahoId}");
+            if ((int)responseCount.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataCount = await responseCount.Content.ReadAsStringAsync();
             if (responseCount.IsSuccessStatusCode)
             {
@@ -155,6 +166,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             {
                 HttpResponseMessage response = await client.GetAsync($"{returnOrderAPIUrl}/paging?pageIndex={pageIndex}" +
                     $"&pageSize={pageSize}&textSearch={textSearch}&userName={employeeID}&status={status}&raw_dateFrom={dateFrom}&raw_dateTo={dateTo}&wahoId={eSession.WahoId}");
+                if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string strData = await response.Content.ReadAsStringAsync();
                 if (response.IsSuccessStatusCode)
                 {

@@ -1,16 +1,21 @@
 ﻿using AutoMapper;
 using BusinessObjects.WahoModels;
 using DataAccess.AutoMapperConfig;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using System.Data;
 using System.Net.Http.Headers;
 using Waho.DataService;
 
 namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
 {
+    [Authorize(Roles = "1,3")]
+
     public class ExportInventoryModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -35,16 +40,20 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
         }
         public async Task<IActionResult> OnGetAsync(string _inventorySheetID)
         {
-            //author
-            if (!_author.IsAuthor(3))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             // get inventoryDetail list
             Int32 inventorySheetID = Int32.Parse(HttpContext.Request.Query["inventorySheetID"]);
             List<InventorySheetDetail> inventoryDetailList = new List<InventorySheetDetail>();
             // get inventory sheet by id
             HttpResponseMessage responseInventory = await client.GetAsync($"{inventoryAPIUrl}/getInventorySheetById?inventorySheetId={inventorySheetID}");
+            if ((int)responseInventory.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataInventory = await responseInventory.Content.ReadAsStringAsync();
             if (responseInventory.IsSuccessStatusCode)
             {
@@ -52,6 +61,8 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
             }
             // get all inventory details of inventory
             HttpResponseMessage responseInventoryDetailAll = await client.GetAsync($"{inventoryAPIUrl}/getInventoryDetails?inventorySheetId={inventorySheetID}");
+            if ((int)responseInventoryDetailAll.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataInventoryDetailAl = await responseInventoryDetailAll.Content.ReadAsStringAsync();
             if (responseInventoryDetailAll.IsSuccessStatusCode)
             {

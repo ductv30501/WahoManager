@@ -1,4 +1,6 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -12,6 +14,8 @@ using Waho.DataService;
 
 namespace WahoClient.Pages.Admin
 {
+    [Authorize(Roles = "1")]
+
     public class IndexModel : PageModel
     {
         private readonly Author _author;
@@ -66,20 +70,29 @@ namespace WahoClient.Pages.Admin
         public async Task<IActionResult> OnGetAsync()
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             // get data from session
             var employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //hóa đơn trong ngày
             HttpResponseMessage responseNB = await client.GetAsync($"{adminAPIUrl}/TotalBillInDay?wahoID={employeeVM.WahoId}");
+            if ((int)responseNB.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataNB = await responseNB.Content.ReadAsStringAsync();
-            numberBill = int.Parse(strDataNB);
+            if (responseNB.IsSuccessStatusCode)
+            {
+                numberBill = int.Parse(strDataNB);
+            }
             //numberBill = _context.Bills.Where(b => b.Date == now).Count();
             //get billdetail in day
             HttpResponseMessage rBINDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.ToString()}&wahoID={employeeVM.WahoId}");
+            if ((int)rBINDay.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string DataRBDINDay = await rBINDay.Content.ReadAsStringAsync();
             if (rBINDay.IsSuccessStatusCode)
             {
@@ -90,13 +103,21 @@ namespace WahoClient.Pages.Admin
             totalMoney = total(billDetailInday);
             //hoàn đơn trong ngày
             HttpResponseMessage responseNO = await client.GetAsync($"{adminAPIUrl}/TotalReturnInDay?wahoID={employeeVM.WahoId}");
+            if ((int)responseNO.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataNO = await responseNO.Content.ReadAsStringAsync();
-            numberReturn = int.Parse(strDataNO);
+            if(responseNO.IsSuccessStatusCode)
+            {
+                numberReturn = int.Parse(strDataNO);
+
+            }
             //numberReturn = _context.ReturnOrders.Where(b => b.Date == now).Count();
 
             //hoàn đơn
             HttpResponseMessage rROD = await client.GetAsync($"{adminAPIUrl}/ReturnOrdersInDay?wahoID={employeeVM.WahoId}");
-            string DataROD= await rROD.Content.ReadAsStringAsync();
+            if ((int)rROD.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
+            string DataROD = await rROD.Content.ReadAsStringAsync();
             if (rROD.IsSuccessStatusCode)
             {
                 returnOrders = JsonConvert.DeserializeObject<List<ReturnOrder>>(DataROD);
@@ -109,6 +130,8 @@ namespace WahoClient.Pages.Admin
             }
             //get bill detail yesterday
             HttpResponseMessage rBINYesDay = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddDays(-1)}&wahoID={employeeVM.WahoId}");
+            if ((int)rBINYesDay.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string DataRBDINYesDay = await rBINYesDay.Content.ReadAsStringAsync();
             if (rBINYesDay.IsSuccessStatusCode)
             {
@@ -126,6 +149,8 @@ namespace WahoClient.Pages.Admin
                 percentYes = numberBill * 100;
             }
             HttpResponseMessage rBINMonth = await client.GetAsync($"{adminAPIUrl}/BillDetails?date={now.AddMonths(-1)}&wahoID={employeeVM.WahoId}");
+            if ((int)rBINMonth.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string DataRBDINMonth = await rBINMonth.Content.ReadAsStringAsync();
             if (rBINMonth.IsSuccessStatusCode)
             {
@@ -150,6 +175,8 @@ namespace WahoClient.Pages.Admin
                 int yearQueryT = dateQuery.Year;
                 //theo doanh số bill
                 HttpResponseMessage rTotalBINMonth = await client.GetAsync($"{adminAPIUrl}/totalBillMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
+                if ((int)rTotalBINMonth.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string DataRTotalBDINMonth = await rTotalBINMonth.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
                 if (rTotalBINMonth.IsSuccessStatusCode)
@@ -159,6 +186,8 @@ namespace WahoClient.Pages.Admin
                 // order
 
                 HttpResponseMessage rTotalODINMonth = await client.GetAsync($"{adminAPIUrl}/totalOrdersMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
+                if ((int)rTotalODINMonth.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string DataRTotalODINMonth = await rTotalODINMonth.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
                 if (rTotalODINMonth.IsSuccessStatusCode)
@@ -200,6 +229,8 @@ namespace WahoClient.Pages.Admin
                 int yearQueryN = dateQuery.Year;
                 //theo số lượng
                 HttpResponseMessage RNUMBIll = await client.GetAsync($"{adminAPIUrl}/totalNumberBillMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
+                if ((int)RNUMBIll.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string DataRNumbill = await RNUMBIll.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
                 if (RNUMBIll.IsSuccessStatusCode)
@@ -209,6 +240,8 @@ namespace WahoClient.Pages.Admin
 
                 // order
                 HttpResponseMessage RNUMOrder = await client.GetAsync($"{adminAPIUrl}/totalNummberOrdersMMVMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
+                if ((int)RNUMOrder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string DataRNumOrder = await RNUMOrder.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
                 if (RNUMOrder.IsSuccessStatusCode)
@@ -248,6 +281,8 @@ namespace WahoClient.Pages.Admin
             int monthQuery = dateQueryDay.Month;
             int yearQuery = dateQueryDay.Year;
             HttpResponseMessage RNUMBIllDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberBillDayInMs?month={monthQuery}&year={yearQuery}&wahoID={employeeVM.WahoId}");
+            if ((int)RNUMBIllDayINM.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string DataRNumbillDayINM = await RNUMBIllDayINM.Content.ReadAsStringAsync();
             var resultsDay = new List<DayInMonth>();
             if (RNUMBIllDayINM.IsSuccessStatusCode)
@@ -258,6 +293,8 @@ namespace WahoClient.Pages.Admin
             // order
 
             HttpResponseMessage RNUMOrderDayINM = await client.GetAsync($"{adminAPIUrl}/totalNumberOrdersDayInMs?month={monthQuery}&year={yearQuery}&wahoID={employeeVM.WahoId}");
+            if ((int)RNUMOrderDayINM.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string DataRNumOrderDayINM = await RNUMOrderDayINM.Content.ReadAsStringAsync();
             var resultsOrderDay = new List<DayInMonth>();
             if (RNUMOrderDayINM.IsSuccessStatusCode)

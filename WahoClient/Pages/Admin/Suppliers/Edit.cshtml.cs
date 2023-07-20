@@ -13,9 +13,14 @@ using ViewModels.SupplierViewModels;
 using Newtonsoft.Json;
 using ViewModels.EmployeeViewModels;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Admin.Suppliers
 {
+    [Authorize(Roles = "1")]
+
     public class EditModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -40,9 +45,9 @@ namespace WahoClient.Pages.Admin.Suppliers
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             //author
-            if (!_author.IsAuthor(1))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Trình quản lý của Admin" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
             return Page();
         }
@@ -51,6 +56,9 @@ namespace WahoClient.Pages.Admin.Suppliers
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             var req = HttpContext.Request;
             //get data form form submit 
             string raw_supplierID = req.Form["supplierIDUpdate"];
@@ -106,6 +114,8 @@ namespace WahoClient.Pages.Admin.Suppliers
             var json = JsonConvert.SerializeObject(Supplier);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(supplierAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             if (response.IsSuccessStatusCode)
             {
                 successMessage = "Chỉnh sửa thông tin nhà cung cấp thành công";

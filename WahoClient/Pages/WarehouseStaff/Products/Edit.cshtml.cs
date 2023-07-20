@@ -13,9 +13,15 @@ using Newtonsoft.Json;
 using ViewModels.EmployeeViewModels;
 using ViewModels.ProductViewModels;
 using System.Text;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.WarehouseStaff.Products
 {
+    [Authorize(Roles = "1,3")]
+
     public class EditModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -33,7 +39,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             _httpContextAccessor = httpContextAccessor;
         }
 
-        [BindProperty]
+    [BindProperty]
         public ProductViewModel Product { get; set; } = default!;
         public string message { get; set; }
         public string successMessage { get; set; }
@@ -41,10 +47,14 @@ namespace WahoClient.Pages.WarehouseStaff.Products
         public async Task<IActionResult> OnGetAsync(int? id)
         {
             //author
-            if (!_author.IsAuthor(3))
+            //if (!_author.IsAuthor(3))
+            //{
+            //    return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+            //}
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
-            } 
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
+            }
             return Page();
         }
 
@@ -52,6 +62,9 @@ namespace WahoClient.Pages.WarehouseStaff.Products
         // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             var req = HttpContext.Request;
             //get data form form submit 
             string raw_productID = req.Form["productIDUpdate"];
@@ -205,6 +218,8 @@ namespace WahoClient.Pages.WarehouseStaff.Products
             var json = JsonConvert.SerializeObject(Product);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await client.PutAsync(productAPIUrl, content);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             if (response.IsSuccessStatusCode)
             {
                 successMessage = "Đã sửa thành công thông tin sản phẩm";

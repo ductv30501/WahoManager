@@ -1,5 +1,6 @@
 ﻿using BusinessObjects.WahoModels;
 using DataAccess;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.ProductRepository;
@@ -10,10 +11,13 @@ namespace WahoAPI.Controllers.ProductController
 {
     [Route("waho/[controller]")]
     [ApiController]
+
     public class ProductsController : ControllerBase
     {
         private IProductRepositories respository = new ProductRepositories();
         [HttpGet("subcategories")]
+        [Authorize]
+
         public ActionResult<List<SubCategory>> getsubcategories(int wahoId)
         {
             List<SubCategory> subCategories = respository.GetSubCategories(wahoId);
@@ -24,6 +28,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(subCategories);
         }
         [HttpGet("categories")]
+        [AllowAnonymous]
+
         public ActionResult<List<Category>> getcategories()
         {
             List<Category> Categories = respository.GetCategories();
@@ -34,6 +40,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(Categories);
         }
         [HttpGet("suppliers")]
+        [Authorize]
+
         public ActionResult<List<Supplier>> getsuppliers(int wahoId)
         {
             List<Supplier> suppliers = respository.GetSuppliers(wahoId);
@@ -44,6 +52,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(suppliers);
         }
         [HttpGet("location")]
+        [Authorize]
+
         public ActionResult<List<Location>> GetLocation()
         {
             List<Location> Locations = respository.GetLocations();
@@ -54,6 +64,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(Locations);
         }
         [HttpGet("countProduct")]
+        [Authorize]
+
         public ActionResult<int> countProductPaging(string? textSearch, int location, int priceTo, int priceFrom, string inventoryLevel, string supplierName, int subCategoryID, int wahoId)
         {
             int total = respository.CountProducts(textSearch, location, priceTo, priceFrom, inventoryLevel, supplierName, subCategoryID, wahoId);
@@ -64,6 +76,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(total);
         }
         [HttpGet("getProductPaging")]
+        [Authorize]
+
         public ActionResult<List<Product>> GetProductPaging(int pageIndex, int pageSize, string? textSearch, int subCategoryID, int location, int priceFrom, int priceTo, string inventoryLevel, int wahoId, string supplierId)
         {
             List<Product> products = respository.GetAllProduct(pageIndex, pageSize, textSearch, subCategoryID, location, priceFrom, priceTo, inventoryLevel, wahoId, supplierId);
@@ -74,18 +88,24 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(products);
         }
         [HttpPost]
+        [Authorize]
+
         public IActionResult PostProduct(ProductViewModel pvm)
         {
             respository.SaveProduct(pvm);
             return Ok();
         }
         [HttpPut]
+        [Authorize]
+
         public IActionResult PutProduct(ProductViewModel pvm)
         {
             respository.UpdateProduct(pvm);
             return Ok();
         }
         [HttpGet("productId")]
+        [Authorize]
+
         public ActionResult<Product> GetProductById(int productId)
         {
             Product product = respository.GetProductById(productId);
@@ -96,6 +116,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(product);
         }
         [HttpGet("searchProducts")]
+        [Authorize]
+
         public ActionResult<List<Product>> searchProducts(string? textSearch,int wahoId)
         {
             List<Product> products = respository.SearchProducts(textSearch,wahoId);
@@ -106,6 +128,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(products);
         }
         [HttpGet("wahoId")]
+        [Authorize]
+
         public ActionResult<List<Product>> GetProductsByWahoId(int wahoId)
         {
             List<Product> products = respository.GetProductsByWahoId(wahoId);
@@ -116,6 +140,8 @@ namespace WahoAPI.Controllers.ProductController
             return Ok(products);
         }
         [HttpPost("addproducts")]
+        [Authorize]
+
         public IActionResult AddProducts([FromBody] List<ProductViewModel> products)
         {
             try

@@ -1,4 +1,6 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -6,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Newtonsoft.Json;
 using OfficeOpenXml;
+using System.Data;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using ViewModels.EmployeeViewModels;
@@ -14,6 +18,8 @@ using Waho.DataService;
 
 namespace WahoClient.Pages.WarehouseStaff.Products
 {
+    [Authorize(Roles = "1,3")]
+
     public class UploadFileExcelModel : PageModel
     {
         private readonly IFileProvider _fileProvider;
@@ -21,6 +27,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
         private string productAPIUrl = "";
         private readonly Author _author;
         private readonly IHttpContextAccessor _httpContextAccessor;
+
         public string message { get; set; }
         public string successMessage { get; set; }
         public UploadFileExcelModel(IFileProvider fileProvider, Author author, IHttpContextAccessor httpContextAccessor)
@@ -41,10 +48,18 @@ namespace WahoClient.Pages.WarehouseStaff.Products
         public IActionResult OnGetAsync()
         {
             //author
-            if (!_author.IsAuthor(3))
+            //if (!_author.IsAuthor(3))
+            //{
+            //    return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+            //}
+
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Quản lý sản phẩm" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             // Lấy thông tin file từ IFileProvider
             IFileInfo fileInfo = _fileProvider.GetFileInfo("Products.xlsx");
             if (fileInfo.Exists)
@@ -68,6 +83,9 @@ namespace WahoClient.Pages.WarehouseStaff.Products
         }
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             var req = HttpContext.Request;
             if (string.IsNullOrEmpty(req.Form["ExcelFile"]))
             {
@@ -107,7 +125,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
                         // get data from session
                         string employeeJson = _httpContextAccessor.HttpContext.Session.GetString("Employee");
                         EmployeeVM eSession = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
-                        foreach(var p in products)
+                        foreach (var p in products)
                         {
                             p.WahoId = eSession.WahoId;
                         }
@@ -115,6 +133,7 @@ namespace WahoClient.Pages.WarehouseStaff.Products
                         var json = JsonConvert.SerializeObject(products);
                         var content = new StringContent(json, Encoding.UTF8, "application/json");
                         var response = await client.PostAsync($"{productAPIUrl}/addproducts", content);
+                        if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
                         if (response.IsSuccessStatusCode)
                         {
                             successMessage = $"{products.Count} sản phẩm được thêm vào thành công";

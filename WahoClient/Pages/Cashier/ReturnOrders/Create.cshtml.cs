@@ -14,9 +14,14 @@ using ViewModels.EmployeeViewModels;
 using System.Text;
 using ViewModels.OrderViewModels;
 using ViewModels.ReturnOrderViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.ReturnOrders
 {
+    [Authorize(Roles = "1,2")]
+
     public class CreateModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -40,10 +45,9 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
 
         public IActionResult OnGet()
         {
-            //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
             return Page();
         }
@@ -64,6 +68,9 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             string customerId = HttpContext.Request.Form["customerId"];
             string total = HttpContext.Request.Form["total"];
             string idBill = HttpContext.Request.Form["idBill"];
@@ -83,6 +90,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                 List<BillDetail> _billDetails = new List<BillDetail>();
 
                 HttpResponseMessage responseBDetail = await client.GetAsync($"{billAPIUrl}/detailById?billId={bill_id}");
+                if ((int)responseBDetail.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string strDataBDetail = await responseBDetail.Content.ReadAsStringAsync();
                 if (responseBDetail.IsSuccessStatusCode)
                 {
@@ -125,6 +134,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                 // get list order detail by order id (bill id) 
                 List<OderDetail> _OderDetail = new List<OderDetail>();
                 HttpResponseMessage responseODetail = await client.GetAsync($"{oderAPIUrl}/orderDetailsById?orderId={bill_id}");
+                if ((int)responseODetail.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string strDataODetail = await responseODetail.Content.ReadAsStringAsync();
                 if (responseODetail.IsSuccessStatusCode)
                 {
@@ -165,6 +176,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             // return order have billID = idBill 
             List<ReturnOrder> _returnorderCheck = new List<ReturnOrder>();
             HttpResponseMessage responseRO = await client.GetAsync($"{returnOrderAPIUrl}/returnOrdersByBillId?billId={bill_id}&wahoId={eSession.WahoId}");
+            if ((int)responseRO.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataRO = await responseRO.Content.ReadAsStringAsync();
             if (responseRO.IsSuccessStatusCode)
             {
@@ -179,6 +192,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                 {
                     List<ReturnOrderProduct> _rops = new List<ReturnOrderProduct>();
                     HttpResponseMessage responseROPs = await client.GetAsync($"{returnOrderAPIUrl}/ROPByReturnID?returnId={rtc.ReturnOrderId}");
+                    if ((int)responseROPs.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                     string strDataROPs = await responseROPs.Content.ReadAsStringAsync();
                     if (responseROPs.IsSuccessStatusCode)
                     {
@@ -213,6 +228,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                                 // detail of the product of the bill bought
                                 BillDetail detailBill = new BillDetail();
                                 HttpResponseMessage responseBDs = await client.GetAsync($"{billAPIUrl}/detailByIdAndProId?billId={bill_id}&productId={rOP.ProductId}");
+                                if ((int)responseBDs.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                                 string strDataBDs = await responseBDs.Content.ReadAsStringAsync();
                                 if (responseBDs.IsSuccessStatusCode)
                                 {
@@ -234,6 +251,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
                                 // detail of the product of the ordered
                                 OderDetail detailBill = new OderDetail();
                                 HttpResponseMessage responseODs = await client.GetAsync($"{oderAPIUrl}/OrderDetailByIDProID?orderId={bill_id}&productId={rOP.ProductId}");
+                                if ((int)responseODs.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                                 string strDataODs = await responseODs.Content.ReadAsStringAsync();
                                 if (responseODs.IsSuccessStatusCode)
                                 {
@@ -273,6 +292,8 @@ namespace WahoClient.Pages.Cashier.ReturnOrders
             var jsonOrder = JsonConvert.SerializeObject(_ReturnOrder);
             var contentOrder = new StringContent(jsonOrder, Encoding.UTF8, "application/json");
             var responseOrder = await client.PostAsync(returnOrderAPIUrl, contentOrder);
+            if ((int)responseOrder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             if (responseOrder.IsSuccessStatusCode)
             {
                 var responseContent = await responseOrder.Content.ReadAsStringAsync();

@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.WahoModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Repositories.ProductRepository;
@@ -10,10 +11,13 @@ namespace WahoAPI.Controllers.ReturnOrderController
 {
     [Route("waho/[controller]")]
     [ApiController]
+
     public class ReturnOrdersController : ControllerBase
     {
         private IReturnOrderRepositories respository = new ReturnOrderRepositories();
         [HttpGet("count")]
+        [Authorize]
+
         public ActionResult<int> countReturnOrder(string? textSearch, string employeeID, string status, string? dateFrom, string? dateTo, int wahoId)
         {
             int count = respository.countReturnOrder(textSearch, employeeID, status, dateFrom, dateTo, wahoId);
@@ -24,6 +28,8 @@ namespace WahoAPI.Controllers.ReturnOrderController
             return Ok(count);
         }
         [HttpGet("paging")]
+        [Authorize]
+
         public ActionResult<List<ReturnOrder>> ReturnOrderPaging(int pageIndex, int pageSize, string? textSearch, string userName, string status, string? raw_dateFrom, string? raw_dateTo, int wahoId)
         {
             List<ReturnOrder> returnOrders = respository.returnOrdersPaging(pageIndex, pageSize, textSearch, userName, status, raw_dateFrom, raw_dateTo, wahoId);
@@ -34,6 +40,8 @@ namespace WahoAPI.Controllers.ReturnOrderController
             return Ok(returnOrders);
         }
         [HttpGet("returnOrdersByBillId")]
+        [Authorize]
+
         public ActionResult<List<ReturnOrder>> returnOrdersByBillId(int billId, int wahoId)
         {
             List<ReturnOrder> returnOrders = respository.returnOrdersByBillId(billId, wahoId);
@@ -44,6 +52,8 @@ namespace WahoAPI.Controllers.ReturnOrderController
             return Ok(returnOrders);
         }
         [HttpGet("ROPByReturnID")]
+        [Authorize]
+
         public ActionResult<List<ReturnOrderProduct>> ReturnOrderProductsByReturnID(int returnId)
         {
             List<ReturnOrderProduct> rOPs = respository.ReturnOrderProductsByReturnID(returnId);
@@ -54,6 +64,8 @@ namespace WahoAPI.Controllers.ReturnOrderController
             return Ok(rOPs);
         }
         [HttpPost]
+        [Authorize]
+
         public IActionResult saveReturnOrder(ReturnOrderVM returnOrderVM)
         {
             int new_return_orderID = respository.saveReturnOrder(returnOrderVM);
@@ -62,12 +74,16 @@ namespace WahoAPI.Controllers.ReturnOrderController
             return Ok(postROVM);
         }
         [HttpPost("detail")]
+        [Authorize]
+
         public IActionResult saveListReturnOrderProduct([FromBody] List<ReturnOrderProductVM> ROPs)
         {
             respository.saveListReturnOrderProduct(ROPs);
             return Ok();
         }
         [HttpGet("ROByID")]
+        [Authorize]
+
         public ActionResult<ReturnOrder> GetReturnOrderByID(int returnId)
         {
             ReturnOrder ROder = respository.GetReturnOrderByID(returnId);
@@ -78,6 +94,8 @@ namespace WahoAPI.Controllers.ReturnOrderController
             return Ok(ROder);
         }
         [HttpGet("ROPSPaging")]
+        [Authorize]
+
         public ActionResult<List<ReturnOrderProduct>> ReturnOrderProductsPaging(int pageIndex, int pageSize, int id)
         {
             List<ReturnOrderProduct> rOPs = respository.RTOProductsPaging(pageIndex, pageSize, id);
@@ -88,6 +106,8 @@ namespace WahoAPI.Controllers.ReturnOrderController
             return Ok(rOPs);
         }
         [HttpPut]
+        [Authorize]
+
         public IActionResult putReturnOrder(ReturnOrderVM returnOrderVM)
         {
             respository.UpdateReturnOrder(returnOrderVM);

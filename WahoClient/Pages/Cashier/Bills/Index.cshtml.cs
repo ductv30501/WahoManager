@@ -11,9 +11,14 @@ using Waho.DataService;
 using Newtonsoft.Json;
 using ViewModels.CustomerViewModels;
 using ViewModels.EmployeeViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.Bills
 {
+    [Authorize(Roles = "1,2")]
+
     public class IndexModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -64,10 +69,12 @@ namespace WahoClient.Pages.Cashier.Bills
         public async Task<IActionResult> OnGetAsync()
         {
             //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
             //get data from form
             raw_number = HttpContext.Request.Query["pageSize"];
             if (!string.IsNullOrEmpty(raw_number))
@@ -93,16 +100,23 @@ namespace WahoClient.Pages.Cashier.Bills
             EmployeeVM employeeVM = JsonConvert.DeserializeObject<EmployeeVM>(employeeJson);
             //api total count
             HttpResponseMessage response = await client.GetAsync(billAPIUrl + "/count?textSearch=" + textSearch + "&status=" + status + "&active=" + active + "&dateFrom=" + dateFrom + "&dateTo=" + dateTo + "&wahoId=" + employeeVM.WahoId);
+            if ((int)response.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
             string strData = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
                 TotalCount = int.Parse(strData);
             }
-
+            //gán lại giá trị pageIndex khi page index vợt quá pageSize khi filter
+            if ((pageIndex - 1) > (TotalCount / pageSize))
+            {
+                pageIndex = 1;
+            }
             message = TempData["message"] as string;
             successMessage = TempData["successMessage"] as string;
             // api paging
             HttpResponseMessage responsepaging = await client.GetAsync(billAPIUrl + "/getBills?pageIndex=" + pageIndex + "&pageSize=" + pageSize + "&textSearch=" + textSearch + "&status=" + status + "&active=" + active + "&dateFrom=" + dateFrom + "&dateTo=" + dateTo + "&wahoId=" + employeeVM.WahoId);
+            if ((int)responsepaging.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDatapaging = await responsepaging.Content.ReadAsStringAsync();
 
             if (responsepaging.IsSuccessStatusCode)

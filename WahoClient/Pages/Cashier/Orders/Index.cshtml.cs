@@ -11,9 +11,14 @@ using Waho.DataService;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using ViewModels.EmployeeViewModels;
+using Microsoft.AspNetCore.Authorization;
+using System.Data;
+using Microsoft.AspNetCore.Authentication;
 
 namespace WahoClient.Pages.Cashier.Orders
 {
+    [Authorize(Roles = "1,2")]
+
     public class IndexModel : PageModel
     {
         private readonly HttpClient client = null;
@@ -67,10 +72,13 @@ namespace WahoClient.Pages.Cashier.Orders
         public async Task<IActionResult> OnGetAsync()
         {
             //author
-            if (!_author.IsAuthor(2))
+            if (User.Identity?.IsAuthenticated == false)
             {
-                return RedirectToPage("/accessDenied", new { message = "Thu Ngân" });
+                return RedirectToPage("/accessDenied", new { message = "do bạn chưa đăng nhập" });
             }
+            client.DefaultRequestHeaders.Clear();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
             //get data from form
             raw_number = HttpContext.Request.Query["pageSize"];
             if (!string.IsNullOrEmpty(raw_number))
@@ -98,6 +106,8 @@ namespace WahoClient.Pages.Cashier.Orders
             // count order list
             HttpResponseMessage responseCount = await client.GetAsync($"{orderAPIUrl}/count?textSearch={textSearch}" +
                 $"&active={active}&status={status}&dateTo={dateTo}&dateFrom={dateFrom}&estDateTo={estDateTo}&estDateFrom={estDateFrom}&wahoId={eSession.WahoId}");
+            if ((int)responseCount.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
             string strDataCount = await responseCount.Content.ReadAsStringAsync();
             if (responseCount.IsSuccessStatusCode)
             {
@@ -119,6 +129,8 @@ namespace WahoClient.Pages.Cashier.Orders
             {
                 HttpResponseMessage responseOrder = await client.GetAsync($"{orderAPIUrl}/paging?pageIndex={pageIndex}" +
                     $"&pageSize={pageSize}&textSearch={textSearch}&status={status}&dateFrom={dateFrom}&estDateFrom={estDateFrom}&estDateTo={estDateTo}&dateTo={dateTo}&active={active}&wahoId={eSession.WahoId}");
+            if ((int)responseOrder.StatusCode == 401) await HttpContext.SignOutAsync("CookieAuthentication");
+
                 string strDataOrder = await responseOrder.Content.ReadAsStringAsync();
                 if (responseOrder.IsSuccessStatusCode)
                 {

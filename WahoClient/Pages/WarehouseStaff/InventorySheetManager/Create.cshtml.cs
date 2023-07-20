@@ -20,6 +20,7 @@ using ViewModels.EmployeeViewModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Data;
 using Microsoft.AspNetCore.Authentication;
+using System.Net;
 
 namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
 {
@@ -138,8 +139,8 @@ namespace WahoClient.Pages.WarehouseStaff.InventorySheetManager
                     var PostInventorySheet = JsonConvert.DeserializeObject<PostInventorySheetVM>(responseContent);
                     inventoryID = PostInventorySheet.InventorySheetId;
                 }
-                    //_context.InventorySheets.Add(InventorySheet);
-                    //await _context.SaveChangesAsync();
+                //_context.InventorySheets.Add(InventorySheet);
+                //await _context.SaveChangesAsync();
                 IFileInfo fileInfo = _fileProvider.GetFileInfo(req.Form["ExcelFile"]);
                 ExcelFile = fileInfo.PhysicalPath;
             }

@@ -35,7 +35,7 @@ namespace DataAccess
                 {
                     billDetails = _context.BillDetails.Include(b => b.Bill)
                                                      .Include(b => b.Product)
-                                                     .Where(b => b.Bill.Date.Year == _date.Year && b.Bill.Date.Month == _date.Month).ToList();
+                                                     .Where(b => b.Bill.Date.Year == _date.Year && b.Bill.Date.Month == _date.Month && b.Bill.Date.Day == _date.Day).ToList();
                     return billDetails;
                 }
             }

@@ -35,8 +35,7 @@ namespace WahoClient.Pages
         }
         public async Task<IActionResult> OnPostAsync()
         {
-
-            HttpResponseMessage response = await client.GetAsync(employeeAPIUrl + "/username?username=" + Employee.UserName + "&wahoId=" + Employee.WahoId);
+            HttpResponseMessage response = await client.GetAsync(employeeAPIUrl + "/usernameAllWaho?username=" + Employee.UserName);
             string strData = await response.Content.ReadAsStringAsync();
             Employee _employee = new Employee();
             if (response.IsSuccessStatusCode)

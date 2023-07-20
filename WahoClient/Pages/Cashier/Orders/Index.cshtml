@@ -247,27 +247,27 @@
                                                 </td>
                                                 break;
                                             case "pending":
-                                                <td class="tbImportPrice">
+                                                <td class="tbImportPrice text-info">
                                                     Đang giao
                                                 </td>
                                                 break;
                                             case "done":
-                                                <td class="tbImportPrice">
+                                                <td class="tbImportPrice text-success">
                                                     Đã giao
                                                 </td>
                                                 break;
                                             case "cantDelivery":
-                                                <td class="tbImportPrice">
+                                                <td class="tbImportPrice text-warning">
                                                     Không giao được
                                                 </td>
                                                 break;
                                             case "cancel":
-                                                <td class="tbImportPrice">
+                                                <td class="tbImportPrice text-danger">
                                                     Đã huỷ
                                                 </td>
                                                 break;
                                         }
-                                        <td class="tbImportPrice">
+                                        <td class="tbImportPrice @(item.Active == true ? "text-success" : "text-danger")">
                                             @(item.Active == true ? "Chưa xoá" : "Đã xoá")
                                         </td>
                                         <td class="d-flex align-items-center justify-content-between">

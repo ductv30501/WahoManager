@@ -1,9 +1,12 @@
 ﻿@page
+@using System.Net.Http.Headers;
 @model WahoClient.Pages.WarehouseStaff.Products.IndexModel
 @{
     ViewData["Title"] = "Index";
     var successMessage = TempData["successMessage"] as string;
     var message = TempData["message"] as string;
+    var token = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
 }
 
 
@@ -711,6 +714,10 @@
                 url: "https://localhost:7019/waho/Products/productId?productId=" + productID,
                 type: "GET",
                 data: { productId: productID },
+                headers: {
+                    //thêm header chứa token
+                    "Authorization": "@token"
+                },
                 success: function (data) {
                     // Gán dữ liệu vào các trường của form
                     $("#productIDUpdate").val(productID)

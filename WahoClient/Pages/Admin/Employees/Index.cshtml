@@ -2,12 +2,15 @@
 @model WahoClient.Pages.Admin.Employees.IndexModel
 @using System.Text.Json
 @using BusinessObjects.WahoModels;
+@using System.Net.Http.Headers;
 
 @inject IHttpContextAccessor HttpContextAccessor
 
 @{
     var employeeJson = HttpContextAccessor.HttpContext.Session.GetString("Employee");
     var employee = JsonSerializer.Deserialize<Employee>(employeeJson);
+    var token = new AuthenticationHeaderValue("Bearer", HttpContext.Request.Cookies["AccessToken"]);
+
 }
 @{
     ViewData["Title"] = "Index";
@@ -86,7 +89,7 @@
                 </div>
                 <div class="text-center mt-5">
                     <button id="btnSubmit" class="btn btn-primary" type="submit">Lưu</button>
-                    <button class="btn btn-primary" type="button" onclick="modal('update-modal', 0, 'scale(0)')">Đóng</button>
+                    <button class="btn btn-outline-primary" type="button" onclick="modal('update-modal', 0, 'scale(0)')">Đóng</button>
                 </div>
             </form>
         </div>
@@ -286,13 +289,7 @@
                                             Ngày sinh
                                         </th>
                                         <th>
-                                            Địa chỉ
-                                        </th>
-                                        <th>
                                             Số điện thoại
-                                        </th>
-                                        <th>
-                                            Ghi chú
                                         </th>
                                         <th>
                                             Phân quyền
@@ -324,15 +321,8 @@
                                                 @date
                                             </td>
                                             <td>
-                                                @Html.DisplayFor(modelItem => item.Address)
-                                            </td>
-                                            <td>
                                                 @Html.DisplayFor(modelItem => item.Phone)
                                             </td>
-                                            <td>
-                                                @Html.DisplayFor(modelItem => item.Note)
-                                            </td>
-
                                             @if (item.Role == 1)
                                             {
                                                 <td>Admin</td>
@@ -350,11 +340,11 @@
                                             }
                                             @if (item.Active)
                                             {
-                                                <td>Đã kích hoạt</td>
+                                                <td class="text-success">Đã kích hoạt</td>
                                             }
                                             else
                                             {
-                                                <td>Chưa kích hoạt</td>
+                                                <td class="text-danger">Chưa kích hoạt</td>
                                             }
                                             <td class="d-flex align-items-center justify-content-between">
                                                 <a onclick="getEmployeeDetail('@(item.UserName)', @employee.WahoId)">
@@ -417,6 +407,10 @@
             url: "https://localhost:7019/waho/Employee/username",
             type: "GET",
             data: { userName: userName, wahoId : wahoId},
+            headers: {
+                //thêm header chứa token
+                "Authorization": "@token"
+            },
             success: function (data) {
                 // Gán dữ liệu vào các trường của form
                 $("#userName").val(data.userName);

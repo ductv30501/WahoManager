@@ -106,7 +106,7 @@ namespace WahoClient.Pages.Admin
             if ((int)responseNO.StatusCode == 401) return RedirectToPage("/accessDenied");
 
             string strDataNO = await responseNO.Content.ReadAsStringAsync();
-            if(responseNO.IsSuccessStatusCode)
+            if (responseNO.IsSuccessStatusCode)
             {
                 numberReturn = int.Parse(strDataNO);
 
@@ -177,43 +177,53 @@ namespace WahoClient.Pages.Admin
                 HttpResponseMessage rTotalBINMonth = await client.GetAsync($"{adminAPIUrl}/totalBillMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
                 if ((int)rTotalBINMonth.StatusCode == 401) return RedirectToPage("/accessDenied");
 
-                string DataRTotalBDINMonth = await rTotalBINMonth.Content.ReadAsStringAsync();
+                string dataRTotalBDINMonth = await rTotalBINMonth.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
                 if (rTotalBINMonth.IsSuccessStatusCode)
                 {
-                    results = JsonConvert.DeserializeObject<List<TotalMMVM>>(DataRTotalBDINMonth);
+                    results = JsonConvert.DeserializeObject<List<TotalMMVM>>(dataRTotalBDINMonth);
                 }
+
                 // order
 
                 HttpResponseMessage rTotalODINMonth = await client.GetAsync($"{adminAPIUrl}/totalOrdersMMVMs?month={monthQueryT}&year={yearQueryT}&wahoID={employeeVM.WahoId}");
                 if ((int)rTotalODINMonth.StatusCode == 401) return RedirectToPage("/accessDenied");
 
-                string DataRTotalODINMonth = await rTotalODINMonth.Content.ReadAsStringAsync();
+                string dataRTotalODINMonth = await rTotalODINMonth.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
                 if (rTotalODINMonth.IsSuccessStatusCode)
                 {
-                    resultsOrder = JsonConvert.DeserializeObject<List<TotalMMVM>>(DataRTotalODINMonth);
+                    resultsOrder = JsonConvert.DeserializeObject<List<TotalMMVM>>(dataRTotalODINMonth);
                 }
 
-                // map to list
-                if (results.Count == 0)
+                // Create a dictionary to store the product totals
+                var tempDictionary = new Dictionary<string, double>();
+
+                // Add the product totals from resultsOrder to tempDictionary
+                foreach (var ro in resultsOrder)
                 {
-                    foreach (var ro in resultsOrder)
+                    if (!tempDictionary.ContainsKey(ro.ProductName))
                     {
-                        temp.Add(new KeyValuePair<string, double>(ro.ProductName, ro.TotalQuantity));
+                        tempDictionary.Add(ro.ProductName, ro.TotalQuantity);
                     }
                 }
+
+                // Combine the product totals from results and resultsOrder
                 foreach (var rs in results)
                 {
-                    foreach (var ro in resultsOrder)
+                    if (tempDictionary.ContainsKey(rs.ProductName))
                     {
-                        if (rs.ProductName == ro.ProductName)
-                        {
-                            temp.Add(new KeyValuePair<string, double>(rs.ProductName, rs.TotalQuantity + ro.TotalQuantity));
-                        }
+                        tempDictionary[rs.ProductName] += rs.TotalQuantity;
                     }
-                    temp.Add(new KeyValuePair<string, double>(rs.ProductName, rs.TotalQuantity));
+                    else
+                    {
+                        tempDictionary.Add(rs.ProductName, rs.TotalQuantity);
+                    }
                 }
+
+                // Convert tempDictionary back to a list
+                var temp = tempDictionary.ToList();
+
                 //sort
                 temp = temp.OrderByDescending(x => x.Value).ToList();
                 for (int i = 0; i < temp.Count && i < 10; i++)
@@ -231,43 +241,52 @@ namespace WahoClient.Pages.Admin
                 HttpResponseMessage RNUMBIll = await client.GetAsync($"{adminAPIUrl}/totalNumberBillMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
                 if ((int)RNUMBIll.StatusCode == 401) return RedirectToPage("/accessDenied");
 
-                string DataRNumbill = await RNUMBIll.Content.ReadAsStringAsync();
+                string dataRNumbill = await RNUMBIll.Content.ReadAsStringAsync();
                 var results = new List<TotalMMVM>();
                 if (RNUMBIll.IsSuccessStatusCode)
                 {
-                    results = JsonConvert.DeserializeObject<List<TotalMMVM>>(DataRNumbill);
+                    results = JsonConvert.DeserializeObject<List<TotalMMVM>>(dataRNumbill);
                 }
 
                 // order
                 HttpResponseMessage RNUMOrder = await client.GetAsync($"{adminAPIUrl}/totalNummberOrdersMMVMs?month={monthQueryN}&year={yearQueryN}&wahoID={employeeVM.WahoId}");
                 if ((int)RNUMOrder.StatusCode == 401) return RedirectToPage("/accessDenied");
 
-                string DataRNumOrder = await RNUMOrder.Content.ReadAsStringAsync();
+                string dataRNumOrder = await RNUMOrder.Content.ReadAsStringAsync();
                 var resultsOrder = new List<TotalMMVM>();
                 if (RNUMOrder.IsSuccessStatusCode)
                 {
-                    resultsOrder = JsonConvert.DeserializeObject<List<TotalMMVM>>(DataRNumOrder);
+                    resultsOrder = JsonConvert.DeserializeObject<List<TotalMMVM>>(dataRNumOrder);
                 }
 
-                // map to list
-                if (results.Count == 0)
+                // Create a dictionary to store the product totals
+                var tempDictionary = new Dictionary<string, double>();
+
+                // Add the product totals from resultsOrder to tempDictionary
+                foreach (var ro in resultsOrder)
                 {
-                    foreach (var ro in resultsOrder)
+                    if (!tempDictionary.ContainsKey(ro.ProductName))
                     {
-                        temp.Add(new KeyValuePair<string, double>(ro.ProductName, ro.TotalQuantity));
+                        tempDictionary.Add(ro.ProductName, ro.TotalQuantity);
                     }
                 }
+
+                // Combine the product totals from results and resultsOrder
                 foreach (var rs in results)
                 {
-                    foreach (var ro in resultsOrder)
+                    if (tempDictionary.ContainsKey(rs.ProductName))
                     {
-                        if (rs.ProductName == ro.ProductName)
-                        {
-                            temp.Add(new KeyValuePair<string, double>(rs.ProductName, rs.TotalQuantity + ro.TotalQuantity));
-                        }
+                        tempDictionary[rs.ProductName] += rs.TotalQuantity;
                     }
-                    temp.Add(new KeyValuePair<string, double>(rs.ProductName, rs.TotalQuantity));
+                    else
+                    {
+                        tempDictionary.Add(rs.ProductName, rs.TotalQuantity);
+                    }
                 }
+
+                // Convert tempDictionary back to a list
+                var temp = tempDictionary.ToList();
+
                 //sort
                 temp = temp.OrderByDescending(x => x.Value).ToList();
                 for (int i = 0; i < temp.Count && i < 10; i++)
@@ -302,26 +321,35 @@ namespace WahoClient.Pages.Admin
                 resultsOrderDay = JsonConvert.DeserializeObject<List<DayInMonth>>(DataRNumOrderDayINM);
             }
 
-            // map to list
-            if (resultsDay.Count == 0)
+            // Create a dictionary to store the daily totals
+            var tempDayDictionary = new Dictionary<int, double>();
+
+            // Add the daily totals from resultsOrderDay to tempDayDictionary
+            foreach (var ro in resultsOrderDay)
             {
-                foreach (var ro in resultsOrderDay)
+                if (!tempDayDictionary.ContainsKey(ro.Day))
                 {
-                    tempDay.Add(new KeyValuePair<int, double>(ro.Day, ro.TotalQuantity));
+                    tempDayDictionary.Add(ro.Day, ro.TotalQuantity);
                 }
             }
+
+            // Combine the daily totals from resultsDay and resultsOrderDay
             foreach (var rs in resultsDay)
             {
-                foreach (var ro in resultsOrderDay)
+                if (tempDayDictionary.ContainsKey(rs.Day))
                 {
-                    if (rs.Day == ro.Day)
-                    {
-                        tempDay.Add(new KeyValuePair<int, double>(rs.Day, rs.TotalQuantity + ro.TotalQuantity));
-                    }
-                    tempDay.Add(new KeyValuePair<int, double>(ro.Day, ro.TotalQuantity));
+                    tempDayDictionary[rs.Day] += rs.TotalQuantity;
                 }
-                tempDay.Add(new KeyValuePair<int, double>(rs.Day, rs.TotalQuantity));
+                else
+                {
+                    tempDayDictionary.Add(rs.Day, rs.TotalQuantity);
+                }
             }
+
+            // Convert tempDayDictionary back to a list
+            var tempDay = tempDayDictionary.ToList();
+
+
             for (int i = 0; i < tempDay.Count; i++)
             {
                 Days.Add(tempDay[i].Key);
